@@ -1,0 +1,6 @@
+Form_V(nu, t, Stokes) :=
+    White_Floor(4..8 GHz)
+  + Shear_Invert(dt = kappa * nu^-2) [
+        Sparse_Narrowband_Islands(dnu/nu ~ 0.2, dt ~ 5us..1ms, dnu_c/dt < 0)
+        ⊗ Linear_Polarization_Lock(V ~ 0, psi ~ const)
+    ]

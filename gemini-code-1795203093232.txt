@@ -1,0 +1,5 @@
+Form_I(R^1) :=
+    Smooth_Carrier(P0 ~ 3.3 d)
+  + Sparse_Asymmetric_Spikes(+delta, aperiodic)
+  - Harmonic_Notch_Lattice(7 combs, freq_ratio = 24:15:9:6:4:3:2,
+                           triadic_nullspace = ZERO_DRIFT)

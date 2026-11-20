@@ -1,0 +1,4 @@
+Form_VI(S^2 x R^3 x T) :=
+    Circumnavigating_WavePacket(c ~ 3.7 km/s, T_orbit ~ 3 h)
+  + HighQ_Eigencomb(f < 1 mHz)
+      where fundamental(f0 ~ 0.309 mHz) -> 5-Singlet_Multiplet(m = -2..+2)

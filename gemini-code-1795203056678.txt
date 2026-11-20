@@ -1,0 +1,5 @@
+Form_IX(S^2 x T, Pressure) :=
+    Tidal_Harmonic_Floor
+  + Spherical_WavePacket(v ~ 310..315 m/s, passages <= 6)
+      where each_conjugate_focus -> PhaseShift(pi/2) [Hilbert Z_4 cycle]
+  + Dispersive_HighFreq_Wake(f > 0.01 Hz)
