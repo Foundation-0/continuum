@@ -1,0 +1,6 @@
+Form_VIII(R^1, T=8e5) :=
+    QuasiPeriodic_Forcing(P ~ {100k, 41k, 23k})
+  ⊗ Nonlinear_Relaxation_Oscillator(
+        decay_slope << rise_slope,
+        time_reversal_asymmetry A_rev(delta) >> 0
+    )

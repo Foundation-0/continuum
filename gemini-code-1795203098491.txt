@@ -1,0 +1,10 @@
+# Emergent Macro-Invariant of Record GPS-1126259462
+Signal({X1, X2}, T=4096s) :=
+    Stationary_Colored_Noise(dominant_power = +60 dB over residual)
+  + Discrete_Persistent_Combs(f = 60n, 500n, {fixed_lines})
+  + UNIQUE_SINGULARITY(
+        support_fraction = 4.9e-5,
+        inter_channel_op = TimeShift(+6.9 ms) ∘ ParityFlip(-1),
+        regime_I         = NonStationary_Chirp(f: 35 -> 250 Hz, invariant: df/dt ~ f^(11/3)),
+        regime_II        = Exponential_Decay(f -> const > 200 Hz, dA/dt < 0)
+    )
