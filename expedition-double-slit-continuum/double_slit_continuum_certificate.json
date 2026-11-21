@@ -1,0 +1,444 @@
+{
+  "honest_novelty_claim": "N1",
+  "law4_n0_prior_art_quarantined": [
+    "DS-N0-01: Bohr-Einstein (1927), Feynman Lectures Vol. III (1965)",
+    "DS-N0-02: Wootters & Zurek (1979)",
+    "DS-N0-03: Scully, Englert & Walther (1991), Kim et al. (2000)",
+    "DS-N0-04: Jaeger-Shimony-Vaidman (1995), Englert (1996) V^2 + D^2 <= 1",
+    "DS-N0-05: Zurek (1981, 2003) einselection & pointer basis",
+    "DS-N0-06: Couder-Fort (2006), Bush (2015), Pucci et al. (2018) hydrodynamic pilot waves",
+    "DS-N0-07: Sorkin (1994) third-order interference invariant I_ABC",
+    "DS-N0-08: Sinha et al. (2010), Park et al. (2012), Rengaraj et al. (2018) |kappa_3| bounds",
+    "DS-N0-09: De Raedt et al. (2012), Sawant et al. (2014), Magana-Loaiza et al. (2016) looped trajectories",
+    "DS-N0-10: Ghirardi-Rimini-Weber (1980), Peres-Terno (2004) no-signaling",
+    "DS-N0-11: Weinberg (1989), Gisin (1990), Polchinski (1991) nonlinear QM constraints"
+  ],
+  "oracle_class": "exact",
+  "part1_regime_I_linear_continuum_bath": {
+    "gksl_16x16_schur_dephasing": {
+      "expected_2g2_over_gamma": "9/50",
+      "g": "3/2",
+      "gamma_damp": "25",
+      "gksl_schur_pinching_exact": true,
+      "population_rates_II_ZI": [
+        "0",
+        "0"
+      ],
+      "slit_coherence_dephasing_rates_XI_YI": [
+        "9/50",
+        "9/50"
+      ]
+    },
+    "mixed_bath_strict_inequality_rows": [
+      {
+        "V2_plus_D2": "2/5",
+        "bath_purity_q": "1/4",
+        "distinguishability_D": "1/5",
+        "exact_complementarity_verified": true,
+        "gamma": "1/2",
+        "pure_bath_equality_holds": true,
+        "visibility_V": "3/5"
+      },
+      {
+        "V2_plus_D2": "13/25",
+        "bath_purity_q": "1/2",
+        "distinguishability_D": "2/5",
+        "exact_complementarity_verified": true,
+        "gamma": "1/2",
+        "pure_bath_equality_holds": true,
+        "visibility_V": "3/5"
+      },
+      {
+        "V2_plus_D2": "18/25",
+        "bath_purity_q": "3/4",
+        "distinguishability_D": "3/5",
+        "exact_complementarity_verified": true,
+        "gamma": "1/2",
+        "pure_bath_equality_holds": true,
+        "visibility_V": "3/5"
+      }
+    ],
+    "pure_bath_complementarity_rows": [
+      {
+        "V2_plus_D2": "1",
+        "bath_purity_q": "1",
+        "distinguishability_D": "0",
+        "exact_complementarity_verified": true,
+        "gamma": "0",
+        "pure_bath_equality_holds": true,
+        "visibility_V": "1"
+      },
+      {
+        "V2_plus_D2": "1",
+        "bath_purity_q": "1",
+        "distinguishability_D": "8/17",
+        "exact_complementarity_verified": true,
+        "gamma": "1/4",
+        "pure_bath_equality_holds": true,
+        "visibility_V": "15/17"
+      },
+      {
+        "V2_plus_D2": "1",
+        "bath_purity_q": "1",
+        "distinguishability_D": "4/5",
+        "exact_complementarity_verified": true,
+        "gamma": "1/2",
+        "pure_bath_equality_holds": true,
+        "visibility_V": "3/5"
+      },
+      {
+        "V2_plus_D2": "1",
+        "bath_purity_q": "1",
+        "distinguishability_D": "24/25",
+        "exact_complementarity_verified": true,
+        "gamma": "3/4",
+        "pure_bath_equality_holds": true,
+        "visibility_V": "7/25"
+      },
+      {
+        "V2_plus_D2": "1",
+        "bath_purity_q": "1",
+        "distinguishability_D": "1",
+        "exact_complementarity_verified": true,
+        "gamma": "1",
+        "pure_bath_equality_holds": true,
+        "visibility_V": "0"
+      }
+    ],
+    "quantum_eraser_deck_splitting_AUDIT047R_part4": {
+      "D_Z_sq_plus_V_X_sq": "2",
+      "D_Z_which_way": "1",
+      "M_deck_T_Lam_tilde_M_deck_eq_2_LamPlus_oplus_LamChi": true,
+      "V_minus_antifringe": "1",
+      "V_plus_fringe": "1",
+      "V_unconditioned": "0",
+      "all_eraser_no_signaling_rows_exact": true,
+      "screen_eraser_rows": [
+        {
+          "P_minus_antifringe": "0",
+          "P_plus_fringe": "1/2",
+          "P_sum_unconditioned_no_signaling": "1/2",
+          "Re_u_phi": "1",
+          "exact_sum_one_half": true,
+          "phi": "0"
+        },
+        {
+          "P_minus_antifringe": "1/20",
+          "P_plus_fringe": "9/20",
+          "P_sum_unconditioned_no_signaling": "1/2",
+          "Re_u_phi": "4/5",
+          "exact_sum_one_half": true,
+          "phi": "1/3"
+        },
+        {
+          "P_minus_antifringe": "1/10",
+          "P_plus_fringe": "2/5",
+          "P_sum_unconditioned_no_signaling": "1/2",
+          "Re_u_phi": "3/5",
+          "exact_sum_one_half": true,
+          "phi": "1/2"
+        },
+        {
+          "P_minus_antifringe": "1/4",
+          "P_plus_fringe": "1/4",
+          "P_sum_unconditioned_no_signaling": "1/2",
+          "Re_u_phi": "0",
+          "exact_sum_one_half": true,
+          "phi": "1"
+        },
+        {
+          "P_minus_antifringe": "9/20",
+          "P_plus_fringe": "1/20",
+          "P_sum_unconditioned_no_signaling": "1/2",
+          "Re_u_phi": "-4/5",
+          "exact_sum_one_half": true,
+          "phi": "3"
+        }
+      ]
+    },
+    "regime_I_all_verified": true,
+    "surgical_coherence_severing_AUDIT047R_part3": {
+      "Lam_red_equals_Lam_severed_slit_A_exact": true,
+      "monopole_Phi_B_exact": "24/5"
+    }
+  },
+  "part2_regime_II_classical_falsification": {
+    "all_classical_ensembles_trapped_D2V2_le_1_and_DpV2_le_2": true,
+    "classical_complementarity_ensembles": [
+      {
+        "D2_plus_V2": "1",
+        "D_Z_classical": "1",
+        "D_plus_V_squared": "1",
+        "V_X_classical": "0",
+        "name": "pure_which_way_classical_record",
+        "trapped_below_classical_ceilings_1_and_2": true
+      },
+      {
+        "D2_plus_V2": "1",
+        "D_Z_classical": "0",
+        "D_plus_V_squared": "1",
+        "V_X_classical": "1",
+        "name": "pure_fringe_antifringe_mixture",
+        "trapped_below_classical_ceilings_1_and_2": true
+      },
+      {
+        "D2_plus_V2": "1/2",
+        "D_Z_classical": "1/2",
+        "D_plus_V_squared": "1",
+        "V_X_classical": "1/2",
+        "name": "mixed_50_50_slit_and_fringe",
+        "trapped_below_classical_ceilings_1_and_2": true
+      },
+      {
+        "D2_plus_V2": "1",
+        "D_Z_classical": "3/5",
+        "D_plus_V_squared": "49/25",
+        "V_X_classical": "4/5",
+        "name": "pythagorean_345_optimal_classical",
+        "trapped_below_classical_ceilings_1_and_2": true
+      }
+    ],
+    "classical_phase_kick_marginal_flat_V_zero": true,
+    "fine_farkas_16vertex_chsh_delayed_choice_nogo": {
+      "E_matrix_exact": [
+        [
+          "3/5",
+          "4/5"
+        ],
+        [
+          "4/5",
+          "-3/5"
+        ]
+      ],
+      "S_CHSH_quantum_345_exact": "14/5",
+      "all_16_classical_vertices_range": [
+        -2,
+        2
+      ],
+      "farkas_gap_S_minus_2": "4/5",
+      "farkas_infeasibility_certified": true,
+      "no_signaling_marginals_exact_zero": true
+    },
+    "regime_II_falsification_verified": true,
+    "retroactive_classical_signaling_gap": "1/2"
+  },
+  "part3_sorkin_triple_slit_tomography": {
+    "part3_all_verified": true,
+    "regime_III_A_linear_looped_schur": {
+      "I_ABC_at_g_slit_0": "0",
+      "all_nonzero_and_degree0_intensity_invariant": true,
+      "rows": [
+        {
+          "I_ABC_exact": "197078942983272555503574681320265739506186877/164002015959946916978722194895498155852621008400",
+          "g_slit": "1/100",
+          "kappa_3_degree0_intensity_invariant_under_7_5": true,
+          "kappa_3_exact": "197078942983272555503574681320265739506186877/73254233795442956250495913719989176280837383752"
+        },
+        {
+          "I_ABC_exact": "299662586852155241756811566179397/42847178612193449774577423365792400",
+          "g_slit": "1/20",
+          "kappa_3_degree0_intensity_invariant_under_7_5": true,
+          "kappa_3_exact": "299662586852155241756811566179397/19138406446779740899311249103387272"
+        },
+        {
+          "I_ABC_exact": "10843326662381604416503628023/646880980265730002835887084100",
+          "g_slit": "1/10",
+          "kappa_3_degree0_intensity_invariant_under_7_5": true,
+          "kappa_3_exact": "10843326662381604416503628023/288940171185359401266696230898"
+        }
+      ]
+    },
+    "regime_III_B1_norm_conserving_cayley_kerr": {
+      "I_ABC_at_eta_0": "0",
+      "all_nonzero_and_scale_breaking": true,
+      "rows": [
+        {
+          "I_ABC_exact": "-455958535452960/32501625024992617",
+          "eta": "1/1000",
+          "intensity_scale_invariance_broken": true,
+          "kappa_3_exact": "-151986178484320/32501625024992617",
+          "kappa_3_scaled_7_5_exact": "-72725774186673056092000/7936094474815237550915017"
+        },
+        {
+          "I_ABC_exact": "-2284470168/16331375021",
+          "eta": "1/100",
+          "intensity_scale_invariance_broken": true,
+          "kappa_3_exact": "-761490056/16331375021",
+          "kappa_3_scaled_7_5_exact": "-367258900366454600/4043939819212152821"
+        },
+        {
+          "I_ABC_exact": "-48480/41093",
+          "eta": "1/10",
+          "intensity_scale_invariance_broken": true,
+          "kappa_3_exact": "-16160/41093",
+          "kappa_3_scaled_7_5_exact": "-73965855755680/135198091533193"
+        }
+      ]
+    },
+    "regime_III_B2_quartic_kerr_born": {
+      "I_ABC_unit_eta": "8116/4225",
+      "closing_slit_C_annihilates_I_ABC": true,
+      "empirical_ceiling_verified_exact": true,
+      "exact_eta_ceiling_for_DS_N0_08_1e_minus_5": "507/32464000",
+      "exact_quadratic_intensity_scaling_lam2": true,
+      "kappa3_linear_norm_unit_eta": "8116/12675"
+    },
+    "regime_I_linear_born_and_arbitrary_bath_I_ABC_zero": true,
+    "u1_phase_and_S3_slit_permutation_invariance_exact": true
+  },
+  "part4_parallel_sum_continuum_observer_screening": {
+    "observer_decoherence_competition_rows": [
+      {
+        "C_cut": "3/5",
+        "E_bnd_exact": "12/25",
+        "E_hol_gamma": "12/5",
+        "gamma_obs": "0",
+        "parallel_sum_exact_match": true,
+        "w_coh": "1"
+      },
+      {
+        "C_cut": "3/5",
+        "E_bnd_exact": "2/5",
+        "E_hol_gamma": "6/5",
+        "gamma_obs": "1",
+        "parallel_sum_exact_match": true,
+        "w_coh": "1/2"
+      },
+      {
+        "C_cut": "3/5",
+        "E_bnd_exact": "4/15",
+        "E_hol_gamma": "12/25",
+        "gamma_obs": "4",
+        "parallel_sum_exact_match": true,
+        "w_coh": "1/5"
+      },
+      {
+        "C_cut": "3/5",
+        "E_bnd_exact": "1/10",
+        "E_hol_gamma": "3/25",
+        "gamma_obs": "19",
+        "parallel_sum_exact_match": true,
+        "w_coh": "1/20"
+      }
+    ],
+    "part4_all_verified": true,
+    "rayleigh_shunt_ceiling_rows": [
+      {
+        "E_bnd_exact": "96/445",
+        "gamma_shunt": "0",
+        "parallel_sum_ceiling": "12/35",
+        "strictly_below_ceiling": true
+      },
+      {
+        "E_bnd_exact": "352/1365",
+        "gamma_shunt": "1/2",
+        "parallel_sum_ceiling": "12/35",
+        "strictly_below_ceiling": true
+      },
+      {
+        "E_bnd_exact": "224/705",
+        "gamma_shunt": "5",
+        "parallel_sum_ceiling": "12/35",
+        "strictly_below_ceiling": true
+      },
+      {
+        "E_bnd_exact": "8096/24195",
+        "gamma_shunt": "50",
+        "parallel_sum_ceiling": "12/35",
+        "strictly_below_ceiling": true
+      }
+    ],
+    "symmetric_2slit_parallel_sum_rows": [
+      {
+        "C_cut": "3",
+        "E_bnd_exact": "4/35",
+        "E_hol": "12/101",
+        "eps": "1",
+        "parallel_sum_exact_equality": true,
+        "t": "1/10"
+      },
+      {
+        "C_cut": "3",
+        "E_bnd_exact": "4/3",
+        "E_hol": "12/5",
+        "eps": "1",
+        "parallel_sum_exact_equality": true,
+        "t": "1/2"
+      },
+      {
+        "C_cut": "3",
+        "E_bnd_exact": "16/7",
+        "E_hol": "48/5",
+        "eps": "1",
+        "parallel_sum_exact_equality": true,
+        "t": "2"
+      },
+      {
+        "C_cut": "3/10",
+        "E_bnd_exact": "4/47",
+        "E_hol": "12/101",
+        "eps": "1/10",
+        "parallel_sum_exact_equality": true,
+        "t": "1/10"
+      },
+      {
+        "C_cut": "3/10",
+        "E_bnd_exact": "4/15",
+        "E_hol": "12/5",
+        "eps": "1/10",
+        "parallel_sum_exact_equality": true,
+        "t": "1/2"
+      },
+      {
+        "C_cut": "3/10",
+        "E_bnd_exact": "16/55",
+        "E_hol": "48/5",
+        "eps": "1/10",
+        "parallel_sum_exact_equality": true,
+        "t": "2"
+      },
+      {
+        "C_cut": "3/100",
+        "E_bnd_exact": "4/167",
+        "E_hol": "12/101",
+        "eps": "1/100",
+        "parallel_sum_exact_equality": true,
+        "t": "1/10"
+      },
+      {
+        "C_cut": "3/100",
+        "E_bnd_exact": "4/135",
+        "E_hol": "12/5",
+        "eps": "1/100",
+        "parallel_sum_exact_equality": true,
+        "t": "1/2"
+      },
+      {
+        "C_cut": "3/100",
+        "E_bnd_exact": "16/535",
+        "E_hol": "48/5",
+        "eps": "1/100",
+        "parallel_sum_exact_equality": true,
+        "t": "2"
+      }
+    ]
+  },
+  "probe": "double_slit_continuum_observer",
+  "r3_negative_controls": {
+    "all_r3_rejected": true,
+    "count": 10,
+    "exceptions": {
+      "classical_unphysical_DV": "ValueError",
+      "exact_frac_bool": "TypeError",
+      "exact_frac_float": "TypeError",
+      "gamma_out_of_range": "ValueError",
+      "gaussq_div_zero": "ZeroDivisionError",
+      "invalid_z2_sign": "ValueError",
+      "nonpositive_gksl_gamma": "ValueError",
+      "purity_out_of_range": "ValueError",
+      "singular_invert_q": "ValueError",
+      "sorkin_missing_mask": "ValueError"
+    }
+  },
+  "zero_floats_pure_Q_Qi": true
+}
