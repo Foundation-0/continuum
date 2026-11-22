@@ -143,7 +143,7 @@ const BLOCKS = {
     "Faded stripes prove little. Four boxes, tests sort them. Bent world possible, must pay exact price.",
   ],
   // This figure is floating-point illustration...
-  "df5ffecd": [
+  "c94b2582": [
     "This figure is browser floating-point. Its claims were checked in exact rational arithmetic in the atlas instrument. On any disagreement the exact instrument wins and this page is only the picture.",
     "Browser floats here. Exact rational checks in the atlas tool outrank this picture.",
     "Picture here uses round numbers. Real check uses exact fractions. Fractions win.",
@@ -173,10 +173,10 @@ const BLOCKS = {
     "Sort by shape, not school subject. Ten wave shapes. Map for looking, not proof.",
   ],
   // What the repository can stand behind today...
-  "1c1787ad": [
-    "What stands today is narrower and stronger: seven runnable instruments, six in exact rational arithmetic with zero floats, independently audited with falsification criteria. Below, cell area is file size in bytes alone. Threads join the exact family and the one sampled instrument.",
-    "Solid today: seven audited tools, six exact with no floats. Cell area below = bytes only.",
-    "Strong bit: seven checked tools, six with exact fractions. Box size = file size only.",
+  "31cd3da4": [
+    "What stands today is narrower and stronger: seven runnable instruments, six built on exact rational arithmetic, independently audited with falsification criteria. Below, cell area is file size in bytes alone. Threads join the exact family and the one sampled instrument.",
+    "Solid today: seven audited tools, six exact rational. Cell area below = bytes only.",
+    "Strong bit: seven checked tools, exact fractions. Box size = file size.",
   ],
   // Each instrument runs on the Python standard library...
   "defdb31a": [

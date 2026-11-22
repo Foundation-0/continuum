@@ -329,7 +329,7 @@ function paintAtlasReadout() {
   if (!el) return;
   const it = INSTRUMENTS[atlasState.hit];
   el.textContent = it
-    ? `${it.file}  ·  ${it.bytes.toLocaleString("en-GB")} bytes  ·  ${it.audit}  ·  ${it.family === "exact" ? "exact rational, zero floats" : "sampled, with null controls"}`
+    ? `${it.file}  ·  ${it.bytes.toLocaleString("en-GB")} bytes  ·  ${it.audit}  ·  ${it.family === "exact" ? "exact rational core" : "sampled, with null controls"}`
     : "Press a cell. The same instruments are listed as links below.";
 }
 
