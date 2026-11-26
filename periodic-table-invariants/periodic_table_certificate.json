@@ -20,13 +20,13 @@
       27,
       945
     ],
-    "class_a_holder_comma_gt_1": true,
     "class_a_madhava_r3_n50_speedup_floor": 27872151775,
     "class_a_madhava_telescoping_counts": [
       49,
       49,
       49
     ],
+    "class_a_mercator_comma_gt_1": true,
     "class_a_rhind_2_17_denoms": [
       12,
       51,
@@ -212,10 +212,10 @@
     "entry_count": 16,
     "family_count": 5,
     "in_module_verified_entries": 16,
-    "periodic_table_sha256": "32889667412ca4348632c7482d33ec3283b9bc7a31747cc35d7ca8483837e5db",
+    "periodic_table_sha256": "34593b6e149b932cc545db4e0081dfa5771b13d8b8a4fc45b32190e74ea0d9e6",
     "schema_version": "continuum.periodic_table_of_invariants.v2"
   },
-  "result_sha256": "6e6222fc26c926df85e43e5b7c657792345a5412477712fababf366d9b5fca05",
+  "result_sha256": "d6f8c023e4f399c1d48d96f8100e542a4692faeee1d7760ac64a6d53abd4896b",
   "schema_version": "continuum.universal_invariants_certificate.v2",
   "target_repo": "Foundation-0/continuum"
 }

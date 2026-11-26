@@ -4,7 +4,7 @@
   "entries": [
     {
       "entry_id": "PT-01",
-      "exact_witness": "gcd(12,11)=1 => 12^53 != 2^7*11^53 (gap 427408770020421687429769023309341164189038935654902132096); Holder comma 3^53/2^84 > 1 (True)",
+      "exact_witness": "gcd(12,11)=1 => 12^53 != 2^7*11^53 (gap 427408770020421687429769023309341164189038935654902132096); Mercator's comma 3^53/2^84 > 1 (True)",
       "family": "DIOPHANTINE_RESONANCE_LATTICE",
       "morphism_evidence": {
         "has_forward_inverse_bijection": false,
@@ -443,6 +443,6 @@
     "TOPOLOGICAL_PARTITION_OBSTRUCTION"
   ],
   "family_count": 5,
-  "result_sha256": "32889667412ca4348632c7482d33ec3283b9bc7a31747cc35d7ca8483837e5db",
+  "result_sha256": "34593b6e149b932cc545db4e0081dfa5771b13d8b8a4fc45b32190e74ea0d9e6",
   "schema_version": "continuum.periodic_table_of_invariants.v2"
 }

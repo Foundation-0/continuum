@@ -13,6 +13,7 @@ jobs:
   verify-3mode:
     name: Pure-Q/Z 3-Mode Isolated Verification (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -20,24 +21,44 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Verify live math & committed JSON parity across 3 isolated modes
+      - name: Verify pinned SHA-256 of verifier and test suite before execution
+        working-directory: periodic-table-invariants
+        shell: bash
+        # Pins live here (not in the scripts) to avoid self-hashing circularity; update both lines
+        # deliberately whenever either script changes. The workflow file itself is not self-hashed.
+        run: |
+          set -euo pipefail
+          printf '%s  %s\n' \
+            "${PINNED_VERIFIER_SHA256}" verify_periodic_table_invariants.py \
+            "${PINNED_TEST_SHA256}" test_periodic_table_invariants.py \
+            | sha256sum --check --strict -
+        env:
+          PINNED_VERIFIER_SHA256: "6bfd6a83add46178ced79a0a8d66ae279879eddd6c060c5bd37eb6270a606ede"
+          PINNED_TEST_SHA256: "d5f46fe6c19365673c17d28560dc2174a00b1cedd32088c176ba74d6b53997bb"
+
+      - name: Verify live math & committed JSON byte parity across 3 isolated modes
         working-directory: periodic-table-invariants
         shell: bash
         run: |
           set -euo pipefail
           export PYTHONDONTWRITEBYTECODE=1
-          OUT1=$(python3 -I -B verify_periodic_table_invariants.py --check)
-          OUT2=$(python3 -I -O -B verify_periodic_table_invariants.py --check)
-          OUT3=$(python3 -I -B -W error verify_periodic_table_invariants.py --check)
-          printf '%s\n' "$OUT1"
-          test "$OUT1" = "$OUT2"
-          test "$OUT1" = "$OUT3"
+          TMP_DIR=$(mktemp -d)
+          trap 'rm -rf "$TMP_DIR"' EXIT
+          python3 -I -B verify_periodic_table_invariants.py --check > "$TMP_DIR/out1.bin"
+          python3 -I -O -B verify_periodic_table_invariants.py --check > "$TMP_DIR/out2.bin"
+          python3 -I -B -W error verify_periodic_table_invariants.py --check > "$TMP_DIR/out3.bin"
+          test -s "$TMP_DIR/out1.bin"
+          cmp -s "$TMP_DIR/out1.bin" "$TMP_DIR/out2.bin"
+          cmp -s "$TMP_DIR/out1.bin" "$TMP_DIR/out3.bin"
+          cat "$TMP_DIR/out1.bin"
 
       - name: Run assertion-free unit, AST-guard & tamper suite across 3 isolated modes
         working-directory: periodic-table-invariants
@@ -45,21 +66,65 @@ jobs:
         run: |
           set -euo pipefail
           export PYTHONDONTWRITEBYTECODE=1
+          TMP_DIR=$(mktemp -d)
+          trap 'rm -rf "$TMP_DIR"' EXIT
           for flags in "-I -B" "-I -O -B" "-I -B -W error"; do
-            BYTES=$(python3 $flags test_periodic_table_invariants.py | wc -c)
-            echo "test_periodic_table_invariants.py [$flags]: rc=0 stdout_bytes=$BYTES"
+            set +e
+            python3 $flags test_periodic_table_invariants.py > "$TMP_DIR/suite.out"
+            RC=$?
+            set -e
+            BYTES=$(wc -c < "$TMP_DIR/suite.out" | tr -d ' ')
+            echo "test_periodic_table_invariants.py [$flags]: rc=$RC stdout_bytes=$BYTES"
+            test "$RC" -eq 0
             test "$BYTES" -eq 0
           done
 
-      - name: Verify zero CRLF and zero bytecode artifacts
+      - name: Verify zero CRLF, zero symlinks, zero non-regular files, and zero bytecode artifacts recursively
         shell: bash
         run: |
           set -euo pipefail
-          PYC_COUNT=$(find periodic-table-invariants -name '*.pyc' -o -name '__pycache__' | wc -l)
-          test "$PYC_COUNT" -eq 0
           python3 -I -B -c '
+          import os
+          import stat
           from pathlib import Path
-          for p in sorted(Path("periodic-table-invariants").iterdir()):
-              if p.is_file() and b"\r" in p.read_bytes():
+
+          MAX_FILE_BYTES = 1048576  # mirrors verify_periodic_table_invariants.MAX_FILE_BYTES
+
+          def read_regular_capped(p):
+              # O_NOFOLLOW: never follow a final-component symlink; O_NONBLOCK: a FIFO cannot hang open().
+              fd = os.open(p, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+              try:
+                  st = os.fstat(fd)
+                  if not stat.S_ISREG(st.st_mode):
+                      raise SystemExit(f"Non-regular file forbidden: {p}")
+                  if st.st_size > MAX_FILE_BYTES:
+                      raise SystemExit(f"Oversized file forbidden ({st.st_size} > {MAX_FILE_BYTES} bytes): {p}")
+                  chunks = []
+                  total = 0
+                  while True:
+                      buf = os.read(fd, 65536)
+                      if not buf:
+                          break
+                      total += len(buf)
+                      if total > MAX_FILE_BYTES:
+                          raise SystemExit(f"Oversized file forbidden (streamed > {MAX_FILE_BYTES} bytes): {p}")
+                      chunks.append(buf)
+                  return b"".join(chunks)
+              finally:
+                  os.close(fd)
+
+          for p in sorted(Path(".").rglob("*")):
+              if ".git" in p.parts:
+                  continue
+              if p.is_symlink():
+                  raise SystemExit(f"Symlink forbidden: {p}")
+              if p.name == "__pycache__" or p.suffix in (".pyc", ".pyo"):
+                  raise SystemExit(f"Bytecode artifact forbidden: {p}")
+              mode = os.lstat(p).st_mode
+              if stat.S_ISDIR(mode):
+                  continue
+              if not stat.S_ISREG(mode):
+                  raise SystemExit(f"Non-regular file forbidden: {p}")
+              if b"\r" in read_regular_capped(p):
                   raise SystemExit(f"CRLF detected in {p}")
           '
