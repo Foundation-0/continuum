@@ -173,7 +173,7 @@
     },
     {
       "entry_id": "PT-08",
-      "exact_witness": "S^2<->Q^2 two-sided bijection 5/5; S^3<->Q^3 Cayley two-sided bijection 5/5; equatorial embedding 5/5",
+      "exact_witness": "Generic Z-polynomial bijection proof (19/19 identities over Z[u,v], Z[x,y,z], Z[w1,w2,w3], Z[q0,q1,q2,q3]) + 5-point numerical round-trips S^2<->Q^2 (5/5), S^3<->Q^3 (5/5), equatorial embedding (5/5)",
       "family": "SUBTRACTIVE_CANCELLATION_WALL",
       "morphism_evidence": {
         "has_forward_inverse_bijection": true,
@@ -187,14 +187,15 @@
       "tradition": "Islamicate (Al-Biruni Isti'ab Stereographic) <-> Rational S^3(Q) Cayley Lift",
       "verification_scope": "IN_MODULE_EXACT",
       "witness_metrics": {
-        "embed_matches": 5,
-        "s2_bijection": 5,
-        "s3_bijection": 5
+        "embed_5pt_matches": 5,
+        "poly_bijection_identities": 19,
+        "s2_5pt_roundtrip": 5,
+        "s3_5pt_roundtrip": 5
       }
     },
     {
       "entry_id": "PT-09",
-      "exact_witness": "43/43 C1P classes decoded; compression 21/5 (21/8 w/ table); Tucker C_3 0/6 single-copy orders, dup-h resolved=True",
+      "exact_witness": "43/43 C1P classes decoded; fixed-width bit costs (6b phoneme ID + 4b it-marker ID = 10b descriptor, 43x6b table) yield 21/5 (21/8 w/ table); Tucker C_3 0/6 single-copy orders, dup-h resolved=True",
       "family": "TOPOLOGICAL_PARTITION_OBSTRUCTION",
       "morphism_evidence": {
         "has_forward_inverse_bijection": false,
@@ -209,13 +210,22 @@
       "verification_scope": "IN_MODULE_EXACT",
       "witness_metrics": {
         "dup_h_resolves": true,
+        "encoding_bit_widths": {
+          "descriptor_bits_per_class": 10,
+          "descriptor_bits_total": 430,
+          "encoded_bits_total": 688,
+          "it_marker_id_bits": 4,
+          "naive_bits_total": 1806,
+          "phoneme_id_bits": 6,
+          "sivasutra_table_bits": 258
+        },
         "panini_c1p_exact": 43,
         "tucker_orders": 0
       }
     },
     {
       "entry_id": "PT-10",
-      "exact_witness": "Pingala 510/510 bijection; FWHT_256 [256, 256]; A_16 5x16 H: 16/16 distinct 1-bit, 120/120 disjoint 2-bit, 2048 codewords, d_min=4; Bamana correspondence [65536, 65536]",
+      "exact_witness": "Pingala 510/510 bijection; FWHT_256 [256, 256]; A_16 5x16 H: 16/16 distinct 1-bit, 120/120 disjoint 2-bit, 2048 codewords, d_min=4; Bamana parity-conservation identity & A_16 syndrome correspondence [65536, 65536]",
       "family": "TOPOLOGICAL_PARTITION_OBSTRUCTION",
       "morphism_evidence": {
         "has_forward_inverse_bijection": true,
@@ -237,7 +247,7 @@
           "nonzero_disjoint_2bit_syndromes": 120,
           "parity_check_rows": 5
         },
-        "bamana_even_and_a16": [
+        "bamana_parity_identity_and_a16": [
           65536,
           65536
         ],
@@ -275,7 +285,7 @@
     },
     {
       "entry_id": "PT-12",
-      "exact_witness": "Casarabe C_{2,6} (13 vertices: hub 0 + inner 6-ring 1..6 + outer 6-ring 7..12; 24 edges: 12 spokes + 12 ring edges; beta_1=12, 1-cut comps=1) vs spanning tree T_13 (12 edges; beta_1=0, 1-cut comps=2); khipu tree valid=True, 1-cord tamper caught=True",
+      "exact_witness": "Casarabe C_{2,6} (13 vertices, pinned 24-edge adjacency=True, degrees=[6, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3], beta_1=12, 1-cut comps=1) vs spanning tree T_13 (12 edges; beta_1=0, 1-cut comps=2); khipu tree valid=True, 1-cord tamper caught=True",
       "family": "TOPOLOGICAL_PARTITION_OBSTRUCTION",
       "morphism_evidence": {
         "has_forward_inverse_bijection": false,
@@ -292,6 +302,22 @@
         "betti1_casarabe_vs_tree": [
           12,
           0
+        ],
+        "casarabe_adjacency_exact": true,
+        "casarabe_degree_sequence": [
+          6,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
         ],
         "cut_comps_casarabe_vs_tree": [
           1,
@@ -417,6 +443,6 @@
     "TOPOLOGICAL_PARTITION_OBSTRUCTION"
   ],
   "family_count": 5,
-  "result_sha256": "a598201702143fcb3c9e7cb45bfb7a68db724061b2d1698421b330f176e4f0f9",
+  "result_sha256": "32889667412ca4348632c7482d33ec3283b9bc7a31747cc35d7ca8483837e5db",
   "schema_version": "continuum.periodic_table_of_invariants.v2"
 }

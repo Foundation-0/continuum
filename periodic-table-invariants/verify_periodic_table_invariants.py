@@ -4,9 +4,10 @@
 Self-contained Python 3 standard-library verifier for Foundation-0/continuum.
 Contains ZERO float or complex literals, ZERO ast.Div ('/' or '/=') true divisions,
 ZERO negative-exponent powers (2**-1), ZERO pow()/getattr()/builtins escapes,
-ZERO float()/complex() calls, ZERO math.* calls outside {gcd, isqrt} (including aliases),
-ZERO string/float/1-arg/from_float Fraction(...) calls, ZERO bare assert statements,
-and ZERO unbound external provenance digests.
+ZERO __float__/__complex__/__truediv__/__rtruediv__/__itruediv__/__pow__ attribute refs,
+ZERO float()/complex() calls, ZERO math.<attr> calls or constant refs outside {gcd, isqrt}
+(including aliases), ZERO string/float/1-arg/from_float Fraction(...) calls, ZERO bare
+assert statements, and ZERO unbound external provenance digests.
 
 Every one of the 16 Periodic Table entries (PT-01..PT-16) is computed and certified
 directly in-module in exact integer (int) and rational (Fraction) arithmetic:
@@ -21,8 +22,10 @@ directly in-module in exact integer (int) and rational (Fraction) arithmetic:
          exact n = 50 speedup floor (>= 27,872,151,775x over Leibniz).
        - Class B (Subtractive Cancellation & Rational Sphere Lift): kappa_sub(x) = x/(1-x)
          for Al-Biruni Nandana (215989/11, 14b), Al-Kashi chord wall derived from k (k=25 vs 26),
-         multiscale quadratic zoom derived from ell (ell=13, 14, 16), plus Al-Biruni Isti'ab
-         stereographic S^2(Q) <-> Q^2 and Cayley S^3(Q) <-> Q^3 two-sided rational bijections.
+         multiscale quadratic zoom derived from ell (ell=13, 14, 16), plus generic multivariate
+         polynomial bijection proof (19/19 exact identities over Z[u,v], Z[x,y,z], Z[w1,w2,w3],
+         Z[q0,q1,q2,q3]) and 5-point numerical round-trips for Al-Biruni Isti'ab stereographic
+         S^2(Q)\\{N} <-> Q^2 and Cayley S^3(Q)\\{-1} <-> Q^3.
        - Class C (Topological Winding, C1P Partition, GF(2) Hypercube & Sheaf H^1):
          Chokwe Sona mirror-curve exhaustive sweep across all 576/576 grids in [1,24]^2 plus
          2-opt internal mirror surgery ((2,2): 2->1; (2,3): 1->2), Panini 14-Sivasutra
@@ -30,10 +33,11 @@ directly in-module in exact integer (int) and rational (Fraction) arithmetic:
          Pingala nasta/uddista 510/510 bijection + FWHT_256 256/256 involution & parity +
          explicit 5x16 Extended Hamming [16,11,4] A_16 SECDED parity-check matrix H
          (16/16 distinct nonzero 1-bit syndromes, 120/120 disjoint nonzero 2-bit syndromes,
-         2,048 codewords, d_min = 4) + Bamana 65,536/65,536 tableau syndrome correspondence,
-         Z_2 twisted 3-cycle sheaf (0/8 vs 2/8), explicit Casarabe C_{2,6} (13 vertices:
-         hub 0 + inner/outer 6-rings; 24 edges: 12 spokes + 12 ring edges; beta_1 = 12)
-         vs spanning tree T_13 (beta_1 = 0) cut resilience, and hierarchical tree-sum checksums.
+         2,048 codewords, d_min = 4) + Bamana 65,536/65,536 even-Judge parity-conservation
+         identity check and A_16 syndrome correspondence, Z_2 twisted 3-cycle sheaf (0/8 vs 2/8),
+         explicit Casarabe C_{2,6} (13 vertices, pinned canonical 24-edge set & degree sequence
+         [6, 4*6, 3*6], beta_1 = 12) vs spanning tree T_13 (pinned 12-edge set & degrees
+         [6, 2*6, 1*6], beta_1 = 0) cut resilience, and hierarchical tree-sum checksums.
        - Class D (Commutation, Schur Inertia & Coarse-Graining Defect): Ibn al-Nafis
          readable-record 3x3 covariance Schur complement (det 34/625 -> 688/15625, drop 81/1250),
          self-certifying 8x8 Sylvester congruence P^T M P = diag(d) separating passive hydraulic
@@ -48,8 +52,10 @@ directly in-module in exact integer (int) and rational (Fraction) arithmetic:
        Cayley steering matrix vs state-dependent xz-plane rotation, dimensionless Dougong
        Coulomb hysteresis loop area (96/1, pi*zeta = 2/3), and Housner rocking loss (111/400).
   3. Intrinsic Modular Flow & Minimal Sufficient Partition:
-       Panini C1P compression derived from decoded 43 classes / 42 phonemes / 43 slots
-       (21/5 and 21/8), Qin Jiushao non-coprime CRT exhaustive 37,960/37,960 forward+inverse
+       Panini C1P compression derived from decoded 43 classes / 42 phonemes / 43 slots / 14
+       it-markers using fixed-width index bit lengths ceil(log2(42))=6 bits per phoneme ID and
+       ceil(log2(14))=4 bits per it-marker ID (6+4=10-bit descriptor -> 21/5; + 43*6-bit slot
+       table -> 21/8), Qin Jiushao non-coprime CRT exhaustive 37,960/37,960 forward+inverse
        isomorphism Z/37960Z <-> compatible subgroup of Z/260Z x Z/365Z x Z/584Z
        (r1=r2 mod 5, r2=r3 mod 73, r1=r3 mod 4; compression 1460x, Dresden 2392/81,
        inconsistent triple refused), Antikythera gear trains (254/19, 235/19, 477/4237,
@@ -467,6 +473,153 @@ def cayley_s3_inverse_q(q: QuatQ) -> Vec3Q:
     return (q_div(q1, op0), q_div(q2, op0), q_div(q3, op0))
 
 
+PolyZ = dict[tuple[int, ...], int]
+
+
+def poly_clean(terms: dict[tuple[int, ...], int]) -> PolyZ:
+    return {exp: coeff for exp, coeff in terms.items() if coeff != 0}
+
+
+def poly_add(a: PolyZ, b: PolyZ) -> PolyZ:
+    out = dict(a)
+    for exp, coeff in b.items():
+        out[exp] = out.get(exp, 0) + coeff
+    return poly_clean(out)
+
+
+def poly_sub(a: PolyZ, b: PolyZ) -> PolyZ:
+    out = dict(a)
+    for exp, coeff in b.items():
+        out[exp] = out.get(exp, 0) - coeff
+    return poly_clean(out)
+
+
+def poly_mul(a: PolyZ, b: PolyZ) -> PolyZ:
+    out: dict[tuple[int, ...], int] = {}
+    for ea, ca in a.items():
+        for eb, cb in b.items():
+            exp = tuple(x + y for x, y in zip(ea, eb))
+            out[exp] = out.get(exp, 0) + ca * cb
+    return poly_clean(out)
+
+
+def _poly_const(nvars: int, coeff: int) -> PolyZ:
+    if coeff == 0:
+        return {}
+    return {tuple(0 for _ in range(nvars)): coeff}
+
+
+def _poly_var(nvars: int, idx: int) -> PolyZ:
+    return {tuple(1 if j == idx else 0 for j in range(nvars)): 1}
+
+
+def certify_stereo_cayley_polynomial_bijections() -> int:
+    """Generically prove S^2(Q)\\{N}<->Q^2, S^3(Q)\\{-1}<->Q^3, and equatorial embedding via exact Z-polynomials.
+
+    Returns exact count of verified polynomial identities (19 when all hold identically over Q):
+      - Z[u, v]: unit sphere, North Pole exclusion (D - Nz == 2), left inverse Pi(Phi(u,v)) == (u,v) (4 ids)
+      - Z[x, y, z] mod (x^2+y^2+z^2-1): right inverse Phi(Pi(x,y,z)) == (x,y,z) for z != 1 (4 ids)
+      - Z[w1, w2, w3]: unit S^3, South Pole exclusion (D + N0 == 2), left inverse C^-1(C(w)) == w (5 ids)
+      - Z[q0, q1, q2, q3] mod (q0^2+q1^2+q2^2+q3^2-1): right inverse C(C^-1(q)) == q for q0 != -1 (5 ids)
+      - Z[u, v]: equatorial embedding cayley_s3(u, v, 0) == (-z, x, y, 0) (1 id)
+    """
+    # Part A & E: Z[u, v] stereographic S^2 image, pole exclusion, left inverse, and equatorial embedding
+    u, v = _poly_var(2, 0), _poly_var(2, 1)
+    c1_2, c2_2 = _poly_const(2, 1), _poly_const(2, 2)
+    r2_uv = poly_add(poly_mul(u, u), poly_mul(v, v))
+    d_uv = poly_add(c1_2, r2_uv)
+    nx_uv = poly_mul(c2_2, u)
+    ny_uv = poly_mul(c2_2, v)
+    nz_uv = poly_sub(r2_uv, c1_2)
+    s2_norm_id = poly_sub(
+        poly_add(poly_add(poly_mul(nx_uv, nx_uv), poly_mul(ny_uv, ny_uv)), poly_mul(nz_uv, nz_uv)),
+        poly_mul(d_uv, d_uv),
+    )
+    d_minus_nz = poly_sub(d_uv, nz_uv)
+    s2_left_u = poly_sub(nx_uv, poly_mul(u, d_minus_nz))
+    s2_left_v = poly_sub(ny_uv, poly_mul(v, d_minus_nz))
+    n0_eq = poly_sub(c1_2, r2_uv)
+    eq_embed_id = poly_add(n0_eq, nz_uv)
+
+    # Part B: Z[x, y, z] right inverse Phi(Pi(x, y, z)) == (x, y, z) modulo S2 = x^2 + y^2 + z^2 - 1
+    x, y, z = _poly_var(3, 0), _poly_var(3, 1), _poly_var(3, 2)
+    c1_3, c2_3 = _poly_const(3, 1), _poly_const(3, 2)
+    omz = poly_sub(c1_3, z)
+    omz2 = poly_mul(omz, omz)
+    x2y2 = poly_add(poly_mul(x, x), poly_mul(y, y))
+    s2_ideal = poly_sub(poly_add(x2y2, poly_mul(z, z)), c1_3)
+    d2_clr = poly_add(omz2, x2y2)
+    nz_clr = poly_sub(x2y2, omz2)
+    d2_on_s2 = poly_sub(d2_clr, s2_ideal)
+    two_omz = poly_mul(c2_3, omz)
+    s2_right_d = poly_sub(d2_on_s2, two_omz)
+    s2_right_x = poly_sub(poly_mul(c2_3, poly_mul(x, omz)), poly_mul(x, d2_on_s2))
+    s2_right_y = poly_sub(poly_mul(c2_3, poly_mul(y, omz)), poly_mul(y, d2_on_s2))
+    s2_right_z = poly_sub(poly_sub(nz_clr, s2_ideal), poly_mul(z, d2_on_s2))
+
+    # Part C: Z[w1, w2, w3] Cayley spinor S^3 image, pole exclusion, and left inverse
+    w1, w2, w3 = _poly_var(3, 0), _poly_var(3, 1), _poly_var(3, 2)
+    r2_w = poly_add(poly_add(poly_mul(w1, w1), poly_mul(w2, w2)), poly_mul(w3, w3))
+    d_w = poly_add(c1_3, r2_w)
+    # Exact symbolic quaternion square (1 + w)^2 = (1 - ||w||^2, 2*w1, 2*w2, 2*w3)
+    n0_w = poly_sub(c1_3, r2_w)
+    n1_w = poly_add(poly_mul(c1_3, w1), poly_mul(w1, c1_3))
+    n2_w = poly_add(poly_mul(c1_3, w2), poly_mul(w2, c1_3))
+    n3_w = poly_add(poly_mul(c1_3, w3), poly_mul(w3, c1_3))
+    s3_norm_id = poly_sub(
+        poly_add(
+            poly_add(poly_mul(n0_w, n0_w), poly_mul(n1_w, n1_w)),
+            poly_add(poly_mul(n2_w, n2_w), poly_mul(n3_w, n3_w)),
+        ),
+        poly_mul(d_w, d_w),
+    )
+    d_plus_n0 = poly_add(d_w, n0_w)
+    s3_left_w1 = poly_sub(n1_w, poly_mul(w1, d_plus_n0))
+    s3_left_w2 = poly_sub(n2_w, poly_mul(w2, d_plus_n0))
+    s3_left_w3 = poly_sub(n3_w, poly_mul(w3, d_plus_n0))
+
+    # Part D: Z[q0, q1, q2, q3] right inverse C(C^-1(q)) == q modulo S3 = q0^2 + q1^2 + q2^2 + q3^2 - 1
+    q0, q1, q2, q3 = _poly_var(4, 0), _poly_var(4, 1), _poly_var(4, 2), _poly_var(4, 3)
+    c1_4, c2_4 = _poly_const(4, 1), _poly_const(4, 2)
+    op0 = poly_add(c1_4, q0)
+    op02 = poly_mul(op0, op0)
+    qvec2 = poly_add(poly_add(poly_mul(q1, q1), poly_mul(q2, q2)), poly_mul(q3, q3))
+    s3_ideal = poly_sub(poly_add(poly_mul(q0, q0), qvec2), c1_4)
+    d3_clr = poly_add(op02, qvec2)
+    n0_clr = poly_sub(op02, qvec2)
+    d3_on_s3 = poly_sub(d3_clr, s3_ideal)
+    two_op0 = poly_mul(c2_4, op0)
+    s3_right_d = poly_sub(d3_on_s3, two_op0)
+    s3_right_q0 = poly_sub(poly_add(n0_clr, s3_ideal), poly_mul(q0, d3_on_s3))
+    s3_right_q1 = poly_sub(poly_mul(c2_4, poly_mul(q1, op0)), poly_mul(q1, d3_on_s3))
+    s3_right_q2 = poly_sub(poly_mul(c2_4, poly_mul(q2, op0)), poly_mul(q2, d3_on_s3))
+    s3_right_q3 = poly_sub(poly_mul(c2_4, poly_mul(q3, op0)), poly_mul(q3, d3_on_s3))
+
+    return sum(
+        (
+            1 if s2_norm_id == {} else 0,
+            1 if d_minus_nz == c2_2 else 0,
+            1 if s2_left_u == {} else 0,
+            1 if s2_left_v == {} else 0,
+            1 if s2_right_d == {} else 0,
+            1 if s2_right_x == {} else 0,
+            1 if s2_right_y == {} else 0,
+            1 if s2_right_z == {} else 0,
+            1 if s3_norm_id == {} else 0,
+            1 if d_plus_n0 == c2_3 else 0,
+            1 if s3_left_w1 == {} else 0,
+            1 if s3_left_w2 == {} else 0,
+            1 if s3_left_w3 == {} else 0,
+            1 if s3_right_d == {} else 0,
+            1 if s3_right_q0 == {} else 0,
+            1 if s3_right_q1 == {} else 0,
+            1 if s3_right_q2 == {} else 0,
+            1 if s3_right_q3 == {} else 0,
+            1 if eq_embed_id == {} else 0,
+        )
+    )
+
+
 def pingala_nasta(n: int, k: int) -> tuple[int, ...]:
     """Authentic Pingala Chandasastra (nasta): 1-based rank k -> n-bit (0=guru, 1=laghu)."""
     require_ok(n >= 1, "Pingala n must be >= 1")
@@ -766,6 +919,47 @@ def graph_connected_components(n_verts: int, edges: tuple[tuple[int, int], ...])
 def graph_betti1(n_verts: int, edges: tuple[tuple[int, int], ...]) -> int:
     """Compute exact first Betti number beta_1(G) = |E| - |V| + c(G)."""
     return len(edges) - n_verts + graph_connected_components(n_verts, edges)
+
+
+# Canonical Casarabe C_{2,6} (hub 0 + inner 6-ring 1..6 + outer 6-ring 7..12) and spanning tree T_13 adjacency pins
+CASARABE_C2_6_EXPECTED_EDGES: frozenset[tuple[int, int]] = frozenset(
+    (
+        (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6),
+        (1, 7), (2, 8), (3, 9), (4, 10), (5, 11), (6, 12),
+        (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (1, 6),
+        (7, 8), (8, 9), (9, 10), (10, 11), (11, 12), (7, 12),
+    )
+)
+CASARABE_C2_6_EXPECTED_DEGREES: tuple[int, ...] = (6, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3)
+TREE_T13_EXPECTED_EDGES: frozenset[tuple[int, int]] = frozenset(
+    (
+        (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6),
+        (1, 7), (2, 8), (3, 9), (4, 10), (5, 11), (6, 12),
+    )
+)
+TREE_T13_EXPECTED_DEGREES: tuple[int, ...] = (6, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1)
+
+
+def graph_simple_edges_and_degrees(
+    n_verts: int,
+    edges: tuple[tuple[int, int], ...],
+) -> tuple[frozenset[tuple[int, int]], tuple[int, ...]]:
+    """Validate simple undirected graph (no self-loops or duplicate edges) and return (canonical_edges, degrees)."""
+    require_ok(n_verts >= 1, "Simple graph must have >= 1 vertex")
+    degrees = [0] * n_verts
+    canon: set[tuple[int, int]] = set()
+    for u, v in edges:
+        require_ok(0 <= u, "Simple graph vertex u < 0")
+        require_ok(u < n_verts, "Simple graph vertex u >= n_verts")
+        require_ok(0 <= v, "Simple graph vertex v < 0")
+        require_ok(v < n_verts, "Simple graph vertex v >= n_verts")
+        require_ok(u != v, "Simple graph forbids self-loops")
+        edge = (u, v) if u < v else (v, u)
+        require_ok(edge not in canon, "Simple graph forbids duplicate edges")
+        canon.add(edge)
+        degrees[u] += 1
+        degrees[v] += 1
+    return (frozenset(canon), tuple(degrees))
 
 
 def verify_khipu_tree_checksum(node: dict[str, Any]) -> bool:
@@ -1179,7 +1373,10 @@ def certify_four_class_obstructions() -> dict[str, Any]:
     _, zoom_14_b = cancellation_kappa_q(multiscale_zoom_arg_q(14))
     _, zoom_16_b = cancellation_kappa_q(multiscale_zoom_arg_q(16))
 
-    # Al-Biruni Isti'ab stereographic S^2 <-> Q^2 and Cayley S^3 <-> Q^3 two-sided rational bijections + embedding
+    # Generic multivariate polynomial bijection proof over Z[u,v], Z[x,y,z], Z[w1,w2,w3], Z[q0,q1,q2,q3]
+    stereo_cayley_poly_proof = certify_stereo_cayley_polynomial_bijections()
+
+    # Plus 5-point numerical round-trips exercising the runtime Q^2 <-> S^2(Q) and Q^3 <-> S^3(Q) maps
     stereo_pts = (
         (ZERO, ZERO),
         (ONE, ZERO),
@@ -1224,6 +1421,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
             1 if zoom_13_b == 51 else 0,
             1 if zoom_14_b == 55 else 0,
             1 if zoom_16_b == 63 else 0,
+            1 if stereo_cayley_poly_proof == 19 else 0,
             1 if stereo_bijection_ok == 5 else 0,
             1 if stereo_cayley_embed_ok == 5 else 0,
             1 if cayley_s3_bijection_ok == 5 else 0,
@@ -1308,7 +1506,9 @@ def certify_four_class_obstructions() -> dict[str, Any]:
     a16_matrix = certify_a16_secded_matrix(A16_H_ROWS)
     a16_masks = tuple(sum(bit << j for j, bit in enumerate(row)) for row in A16_H_ROWS)
 
-    bamana_even_judge = 0
+    # Bamana 4x4 tableau: (wr ^ wl) has even weight by F_2 parity-conservation identity
+    # (row-XOR parity == col-XOR parity == total bit-weight mod 2), paired with 5-bit A_16 syndrome correspondence.
+    bamana_even_judge_parity_identity = 0
     bamana_a16_exact = 0
     for w in range(65536):
         m0 = w & 0xF
@@ -1324,7 +1524,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
         wr = m0 ^ m1 ^ n1
         wl = d0 ^ d1 ^ n3
         if ((wr ^ wl).bit_count() & 1) == 0:
-            bamana_even_judge += 1
+            bamana_even_judge_parity_identity += 1
         p0 = (w & a16_masks[0]).bit_count() & 1
         a16_match = (
             (p0 ^ (wr.bit_count() & 1))
@@ -1350,7 +1550,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
                         if s2 * s0 == 1:
                             untwisted_sections += 1
 
-    # 5. Explicit Casarabe C_{2,6} graph (13 verts, 24 edges) vs spanning tree T_13 + cut resilience & khipu tree checksum
+    # 5. Explicit Casarabe C_{2,6} graph (13 verts, pinned 24-edge adjacency & degrees) vs spanning tree T_13 + cut resilience & khipu tree checksum
     casarabe_edges: tuple[tuple[int, int], ...] = (
         tuple((0, i) for i in range(1, 7))
         + tuple((i, i + 6) for i in range(1, 7))
@@ -1360,6 +1560,14 @@ def certify_four_class_obstructions() -> dict[str, Any]:
     tree_edges: tuple[tuple[int, int], ...] = (
         tuple((0, i) for i in range(1, 7)) + tuple((i, i + 6) for i in range(1, 7))
     )
+    casarabe_edge_set, casarabe_degrees = graph_simple_edges_and_degrees(13, casarabe_edges)
+    tree_edge_set, tree_degrees = graph_simple_edges_and_degrees(13, tree_edges)
+    casarabe_adjacency_exact = (
+        casarabe_edge_set == CASARABE_C2_6_EXPECTED_EDGES,
+        casarabe_degrees == CASARABE_C2_6_EXPECTED_DEGREES,
+        tree_edge_set == TREE_T13_EXPECTED_EDGES,
+        tree_degrees == TREE_T13_EXPECTED_DEGREES,
+    ) == (True, True, True, True)
     casarabe_betti1 = graph_betti1(13, casarabe_edges)
     tree_betti1 = graph_betti1(13, tree_edges)
     casarabe_cut_comps = graph_connected_components(13, casarabe_edges[1:])
@@ -1392,13 +1600,14 @@ def certify_four_class_obstructions() -> dict[str, Any]:
             1 if pingala_510_exact == 510 else 0,
             1 if fwht_involution_exact == 256 else 0,
             1 if fwht_parity_exact == 256 else 0,
-            1 if bamana_even_judge == 65536 else 0,
+            1 if bamana_even_judge_parity_identity == 65536 else 0,
             1 if bamana_a16_exact == 65536 else 0,
             1 if a16_matrix["distinct_1bit_syndromes"] == 16 else 0,
             1 if a16_matrix["nonzero_disjoint_2bit_syndromes"] == 120 else 0,
             1 if a16_matrix["codeword_count"] == 2048 else 0,
             1 if a16_matrix["min_nonzero_weight"] == 4 else 0,
             1 if (twisted_sections, untwisted_sections) == (0, 2) else 0,
+            1 if casarabe_adjacency_exact else 0,
             1 if (casarabe_betti1, tree_betti1) == (12, 0) else 0,
             1 if (casarabe_cut_comps, tree_cut_comps) == (1, 2) else 0,
             1 if (khipu_valid_ok, khipu_tamper_caught) == (True, True) else 0,
@@ -1496,7 +1705,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
         "class_a_madhava_telescoping_counts": [z_int(d1_exact), z_int(d2_exact), z_int(d3_exact)],
         "class_a_madhava_r3_n50_speedup_floor": z_int(madhava_r3_speedup),
         "class_b_cancellation_checks_ok": z_int(class_b_checks),
-        "class_b_cancellation_checks_total": 11,
+        "class_b_cancellation_checks_total": 12,
         "class_b_biruni_kappa": q_str(kb),
         "class_b_bit_losses": {
             "biruni": z_int(bb),
@@ -1506,11 +1715,12 @@ def certify_four_class_obstructions() -> dict[str, Any]:
             "zoom_14": z_int(zoom_14_b),
             "zoom_16": z_int(zoom_16_b),
         },
-        "class_b_stereo_s2_bijection_count": z_int(stereo_bijection_ok),
+        "class_b_stereo_cayley_poly_proof_identities": z_int(stereo_cayley_poly_proof),
+        "class_b_stereo_s2_roundtrip_count": z_int(stereo_bijection_ok),
         "class_b_stereo_cayley_embed_count": z_int(stereo_cayley_embed_ok),
-        "class_b_cayley_s3_bijection_count": z_int(cayley_s3_bijection_ok),
+        "class_b_cayley_s3_roundtrip_count": z_int(cayley_s3_bijection_ok),
         "class_c_topological_checks_ok": z_int(class_c_checks),
-        "class_c_topological_checks_total": 18,
+        "class_c_topological_checks_total": 19,
         "class_c_sona_576_exact_count": z_int(sona_576_exact),
         "class_c_sona_wall_surgery_2x2_2x3": [
             z_int(sona_2_2_plain),
@@ -1523,9 +1733,11 @@ def certify_four_class_obstructions() -> dict[str, Any]:
         "class_c_dup_h_resolves": dup_h_resolves,
         "class_c_pingala_510_bijection_count": z_int(pingala_510_exact),
         "class_c_fwht256_involution_and_parity": [z_int(fwht_involution_exact), z_int(fwht_parity_exact)],
-        "class_c_bamana_65536_even_and_a16": [z_int(bamana_even_judge), z_int(bamana_a16_exact)],
+        "class_c_bamana_65536_parity_identity_and_a16": [z_int(bamana_even_judge_parity_identity), z_int(bamana_a16_exact)],
         "class_c_a16_secded_matrix": a16_matrix,
         "class_c_z2_twisted_vs_untwisted_sections": [z_int(twisted_sections), z_int(untwisted_sections)],
+        "class_c_casarabe_adjacency_exact": casarabe_adjacency_exact,
+        "class_c_casarabe_degree_sequence": [z_int(d) for d in casarabe_degrees],
         "class_c_casarabe_graph_counts": [13, z_int(len(casarabe_edges)), z_int(len(tree_edges))],
         "class_c_casarabe_vs_tree_betti1": [z_int(casarabe_betti1), z_int(tree_betti1)],
         "class_c_casarabe_vs_tree_cut_comps": [z_int(casarabe_cut_comps), z_int(tree_cut_comps)],
@@ -1538,7 +1750,12 @@ def certify_four_class_obstructions() -> dict[str, Any]:
         "class_d_kemeny_snell_lumpability_defects": [q_str(delta_lumpable), q_str(delta_nonlumpable)],
         "class_d_trotter_defect_eps_1_4": q_str(trotter_defect),
         "class_d_strang_quaternion_eps_1_4": [q_str(c) for c in strang_q],
-        "panini_slot_and_phoneme_counts": [z_int(len(slots)), z_int(len(distinct_phonemes)), z_int(len(CANONICAL_PRATYAHARAS))],
+        "panini_slot_and_phoneme_counts": [
+            z_int(len(slots)),
+            z_int(len(distinct_phonemes)),
+            z_int(len(CANONICAL_PRATYAHARAS)),
+            z_int(len(SIVASUTRAS)),
+        ],
     }
 
 
@@ -1725,11 +1942,19 @@ def certify_modular_flow_and_partition(panini_counts: list[int]) -> dict[str, An
     beta2_white_t2 = pont_beta_sq_h12_q(256, 1024)
     delta_beta2_white = beta2_white_t2 - beta2_white_t1
 
-    # 4. Panini C1P compression ratios derived directly from decoded counts
-    n_slots, n_phonemes, n_classes = panini_counts
+    # 4. Panini C1P fixed-width binary encoding costs derived from decoded Sivasutra counts:
+    #    - Naive dense bitmask: 1 bit per distinct phoneme (42 bits/class -> 43 * 42 = 1,806 bits).
+    #    - Fixed-width phoneme ID: ceil(log2(42)) = 6 bits/slot (2^5 < 42 <= 2^6) -> 43 * 6 = 258-bit slot table.
+    #    - Fixed-width it-marker ID: ceil(log2(14)) = 4 bits/marker (2^3 < 14 <= 2^4).
+    #    - Pratyahara descriptor (start_phoneme_id, end_marker_id): 6 + 4 = 10 bits/class -> 43 * 10 = 430 bits.
+    n_slots, n_phonemes, n_classes, n_markers = panini_counts
+    phoneme_id_bits = (n_phonemes - 1).bit_length()
+    marker_id_bits = (n_markers - 1).bit_length()
+    descriptor_bits_per_class = phoneme_id_bits + marker_id_bits
     naive_bits = n_classes * n_phonemes
-    desc_bits = n_classes * 10
-    total_bits = desc_bits + n_slots * 6
+    desc_bits = n_classes * descriptor_bits_per_class
+    table_bits = n_slots * phoneme_id_bits
+    total_bits = desc_bits + table_bits
     panini_desc_ratio = Fraction(naive_bits, desc_bits)
     panini_total_ratio = Fraction(naive_bits, total_bits)
 
@@ -1768,6 +1993,15 @@ def certify_modular_flow_and_partition(panini_counts: list[int]) -> dict[str, An
         "two_clock_record_shift_delta_beta2": q_str(delta_beta2_record),
         "two_clock_white_noise_beta2_n16_n256": [q_str(beta2_white_t1), q_str(beta2_white_t2)],
         "two_clock_white_noise_delta_beta2": q_str(delta_beta2_white),
+        "panini_encoding_bit_widths": {
+            "phoneme_id_bits": z_int(phoneme_id_bits),
+            "it_marker_id_bits": z_int(marker_id_bits),
+            "descriptor_bits_per_class": z_int(descriptor_bits_per_class),
+            "naive_bits_total": z_int(naive_bits),
+            "descriptor_bits_total": z_int(desc_bits),
+            "sivasutra_table_bits": z_int(table_bits),
+            "encoded_bits_total": z_int(total_bits),
+        },
         "panini_c1p_descriptor_ratio": q_str(panini_desc_ratio),
         "panini_c1p_total_ratio": q_str(panini_total_ratio),
     }
@@ -1919,11 +2153,12 @@ def build_periodic_table_from_pillars(
     )
     ev_pt08 = _ev(
         (
-            h1["class_b_stereo_s2_bijection_count"],
-            h1["class_b_cayley_s3_bijection_count"],
+            h1["class_b_stereo_cayley_poly_proof_identities"],
+            h1["class_b_stereo_s2_roundtrip_count"],
+            h1["class_b_cayley_s3_roundtrip_count"],
             h1["class_b_stereo_cayley_embed_count"],
         )
-        == (5, 5, 5),
+        == (19, 5, 5, 5),
         False,
         False,
         h1["class_b_stereo_cayley_embed_count"] == 5,
@@ -1938,7 +2173,7 @@ def build_periodic_table_from_pillars(
         (
             h1["class_c_pingala_510_bijection_count"],
             h1["class_c_fwht256_involution_and_parity"],
-            h1["class_c_bamana_65536_even_and_a16"],
+            h1["class_c_bamana_65536_parity_identity_and_a16"],
             a16m["distinct_1bit_syndromes"],
             a16m["nonzero_disjoint_2bit_syndromes"],
             a16m["codeword_count"],
@@ -1964,7 +2199,15 @@ def build_periodic_table_from_pillars(
         False,
         False,
         False,
-        (h1["class_c_casarabe_vs_tree_betti1"], cg, cc, kh) == ([12, 0], [13, 24, 12], [1, 2], [True, True]),
+        (
+            h1["class_c_casarabe_adjacency_exact"],
+            h1["class_c_casarabe_degree_sequence"],
+            h1["class_c_casarabe_vs_tree_betti1"],
+            cg,
+            cc,
+            kh,
+        )
+        == (True, list(CASARABE_C2_6_EXPECTED_DEGREES), [12, 0], [13, 24, 12], [1, 2], [True, True]),
     )
     ev_pt13 = _ev(
         False,
@@ -2104,14 +2347,16 @@ def build_periodic_table_from_pillars(
             "SUBTRACTIVE_CANCELLATION_WALL",
             "Islamicate (Al-Biruni Isti'ab Stereographic) <-> Rational S^3(Q) Cayley Lift",
             "Division-Only Rational Stereographic & Cayley Spinor Bijections",
-            f"S^2<->Q^2 two-sided bijection {h1['class_b_stereo_s2_bijection_count']}/5; S^3<->Q^3 Cayley two-sided bijection {h1['class_b_cayley_s3_bijection_count']}/5; "
-            f"equatorial embedding {h1['class_b_stereo_cayley_embed_count']}/5",
+            f"Generic Z-polynomial bijection proof ({h1['class_b_stereo_cayley_poly_proof_identities']}/19 identities over Z[u,v], Z[x,y,z], Z[w1,w2,w3], Z[q0,q1,q2,q3]) + "
+            f"5-point numerical round-trips S^2<->Q^2 ({h1['class_b_stereo_s2_roundtrip_count']}/5), S^3<->Q^3 ({h1['class_b_cayley_s3_roundtrip_count']}/5), "
+            f"equatorial embedding ({h1['class_b_stereo_cayley_embed_count']}/5)",
             "CLASS_B_CANCELLATION",
             ev_pt08,
             {
-                "s2_bijection": h1["class_b_stereo_s2_bijection_count"],
-                "s3_bijection": h1["class_b_cayley_s3_bijection_count"],
-                "embed_matches": h1["class_b_stereo_cayley_embed_count"],
+                "poly_bijection_identities": h1["class_b_stereo_cayley_poly_proof_identities"],
+                "s2_5pt_roundtrip": h1["class_b_stereo_s2_roundtrip_count"],
+                "s3_5pt_roundtrip": h1["class_b_cayley_s3_roundtrip_count"],
+                "embed_5pt_matches": h1["class_b_stereo_cayley_embed_count"],
             },
         ),
         _make_entry(
@@ -2119,12 +2364,14 @@ def build_periodic_table_from_pillars(
             "TOPOLOGICAL_PARTITION_OBSTRUCTION",
             "South Asian (Panini 14 Sivasutras) <-> Minimal Sufficient Partition",
             "C1P Contiguous Interval Compression & Tucker C_3 Obstruction",
-            f"{h1['class_c_panini_43_c1p_count']}/43 C1P classes decoded; compression {h3['panini_c1p_descriptor_ratio']} ({h3['panini_c1p_total_ratio']} w/ table); "
+            f"{h1['class_c_panini_43_c1p_count']}/43 C1P classes decoded; fixed-width bit costs "
+            f"(6b phoneme ID + 4b it-marker ID = 10b descriptor, 43x6b table) yield {h3['panini_c1p_descriptor_ratio']} ({h3['panini_c1p_total_ratio']} w/ table); "
             f"Tucker C_3 {h1['class_c_tucker_c3_single_copy_orders']}/6 single-copy orders, dup-h resolved={h1['class_c_dup_h_resolves']}",
             "CLASS_C_TOPOLOGICAL",
             ev_pt09,
             {
                 "panini_c1p_exact": h1["class_c_panini_43_c1p_count"],
+                "encoding_bit_widths": h3["panini_encoding_bit_widths"],
                 "tucker_orders": h1["class_c_tucker_c3_single_copy_orders"],
                 "dup_h_resolves": h1["class_c_dup_h_resolves"],
             },
@@ -2136,14 +2383,15 @@ def build_periodic_table_from_pillars(
             "F_2^n Hypercube Bijection & Explicit 5x16 GF(2) SECDED Parity-Check Matrix H",
             f"Pingala {h1['class_c_pingala_510_bijection_count']}/510 bijection; FWHT_256 {h1['class_c_fwht256_involution_and_parity']}; "
             f"A_16 5x16 H: {a16m['distinct_1bit_syndromes']}/16 distinct 1-bit, {a16m['nonzero_disjoint_2bit_syndromes']}/120 disjoint 2-bit, "
-            f"{a16m['codeword_count']} codewords, d_min={a16m['min_nonzero_weight']}; Bamana correspondence {h1['class_c_bamana_65536_even_and_a16']}",
+            f"{a16m['codeword_count']} codewords, d_min={a16m['min_nonzero_weight']}; "
+            f"Bamana parity-conservation identity & A_16 syndrome correspondence {h1['class_c_bamana_65536_parity_identity_and_a16']}",
             "CLASS_C_TOPOLOGICAL",
             ev_pt10,
             {
                 "pingala_bijection": h1["class_c_pingala_510_bijection_count"],
                 "fwht256_involution_and_parity": h1["class_c_fwht256_involution_and_parity"],
                 "a16_secded_matrix": a16m,
-                "bamana_even_and_a16": h1["class_c_bamana_65536_even_and_a16"],
+                "bamana_parity_identity_and_a16": h1["class_c_bamana_65536_parity_identity_and_a16"],
             },
         ),
         _make_entry(
@@ -2161,12 +2409,14 @@ def build_periodic_table_from_pillars(
             "TOPOLOGICAL_PARTITION_OBSTRUCTION",
             "Andean Tree-Sum Checksums & Amazonian Casarabe C_{2,6} Radial-Ring Topology",
             "Hierarchical Tree-Sum Integrity & Casarabe C_{2,6} Cycle Cut Resilience (beta_1)",
-            f"Casarabe C_{{2,6}} ({cg[0]} vertices: hub 0 + inner 6-ring 1..6 + outer 6-ring 7..12; {cg[1]} edges: 12 spokes + 12 ring edges; "
+            f"Casarabe C_{{2,6}} ({cg[0]} vertices, pinned 24-edge adjacency={h1['class_c_casarabe_adjacency_exact']}, degrees={h1['class_c_casarabe_degree_sequence']}, "
             f"beta_1={h1['class_c_casarabe_vs_tree_betti1'][0]}, 1-cut comps={cc[0]}) vs spanning tree T_13 ({cg[2]} edges; "
             f"beta_1={h1['class_c_casarabe_vs_tree_betti1'][1]}, 1-cut comps={cc[1]}); khipu tree valid={kh[0]}, 1-cord tamper caught={kh[1]}",
             "CLASS_C_TOPOLOGICAL",
             ev_pt12,
             {
+                "casarabe_adjacency_exact": h1["class_c_casarabe_adjacency_exact"],
+                "casarabe_degree_sequence": h1["class_c_casarabe_degree_sequence"],
                 "graph_counts_v_ec_et": cg,
                 "betti1_casarabe_vs_tree": h1["class_c_casarabe_vs_tree_betti1"],
                 "cut_comps_casarabe_vs_tree": cc,
@@ -2261,14 +2511,25 @@ def _is_nonneg_int_const(expr: ast.expr) -> bool:
 
 
 def check_source_zero_floats_and_logs(py_path: Path) -> int:
-    """Parse Python AST and count forbidden float/complex/div/pow/getattr/builtins/alias/Fraction constructs (must be 0)."""
+    """Parse Python AST and count forbidden float/complex/div/pow/getattr/builtins/alias/math/Fraction constructs (must be 0)."""
     src = py_path.read_text(encoding="utf-8")
     tree = ast.parse(src, filename=str(py_path))
     forbidden_names = frozenset(
         ("float", "log", "log2", "log10", "sqrt", "complex", "pow", "getattr", "eval", "exec", "__import__")
     )
     forbidden_attrs = forbidden_names | frozenset(
-        ("from_float", "from_decimal", "__truediv__", "__rtruediv__", "__itruediv__", "__pow__")
+        (
+            "from_float",
+            "from_decimal",
+            "__float__",
+            "__complex__",
+            "__truediv__",
+            "__rtruediv__",
+            "__itruediv__",
+            "__pow__",
+            "__rpow__",
+            "__ipow__",
+        )
     )
     forbidden_mods = frozenset(("cmath", "decimal", "statistics", "builtins", "operator", "importlib", "ctypes"))
     forbidden_refs = frozenset(("builtins", "__builtins__"))
@@ -2283,13 +2544,15 @@ def check_source_zero_floats_and_logs(py_path: Path) -> int:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 local = alias.asname if alias.asname is not None else alias.name
+                root_mod = alias.name.split(".")[0]
                 if alias.name == "math":
                     math_aliases.add(local)
                 elif alias.name == "fractions":
                     frac_mod_aliases.add(local)
-                elif alias.name in forbidden_mods:
+                elif root_mod in forbidden_mods:
                     bad_nodes += 1
         elif isinstance(node, ast.ImportFrom):
+            root_mod = (node.module or "").split(".")[0]
             if node.level > 0:
                 bad_nodes += 1
             elif node.module == "math":
@@ -2303,7 +2566,7 @@ def check_source_zero_floats_and_logs(py_path: Path) -> int:
                         frac_cls_aliases.add(local)
                     elif alias.name == "*":
                         bad_nodes += 1
-            elif node.module in forbidden_mods:
+            elif root_mod in forbidden_mods:
                 bad_nodes += 1
 
     for node in ast.walk(tree):
@@ -2312,9 +2575,21 @@ def check_source_zero_floats_and_logs(py_path: Path) -> int:
                 bad_nodes += 1
         elif isinstance(node, ast.Div):
             bad_nodes += 1
+        elif isinstance(node, ast.Assert):
+            bad_nodes += 1
         elif isinstance(node, ast.Name):
             if node.id in forbidden_refs:
                 bad_nodes += 1
+        elif isinstance(node, ast.Attribute):
+            if node.attr in forbidden_attrs:
+                bad_nodes += 1
+            elif isinstance(node.value, ast.Name):
+                if node.value.id in math_aliases:
+                    if node.attr not in allowed_math:
+                        bad_nodes += 1
+                elif node.value.id in frac_mod_aliases:
+                    if node.attr == "Fraction":
+                        bad_nodes += 1
         elif isinstance(node, ast.BinOp):
             if isinstance(node.op, ast.Pow):
                 if not _is_nonneg_int_const(node.right):
@@ -2338,16 +2613,6 @@ def check_source_zero_floats_and_logs(py_path: Path) -> int:
                             if isinstance(arg, ast.Constant):
                                 if isinstance(arg.value, (str, float, complex)):
                                     bad_nodes += 1
-            elif isinstance(fn, ast.Attribute):
-                if fn.attr in forbidden_attrs:
-                    bad_nodes += 1
-                elif isinstance(fn.value, ast.Name):
-                    if fn.value.id in math_aliases:
-                        if fn.attr not in allowed_math:
-                            bad_nodes += 1
-                    elif fn.value.id in frac_mod_aliases:
-                        if fn.attr == "Fraction":
-                            bad_nodes += 1
     return bad_nodes
 
 
@@ -2392,20 +2657,21 @@ def validate_certificate(cert: dict[str, Any]) -> None:
     require_ok(h1["class_a_antikythera_beat_9_times_53"] == 477, "Antikythera beat witness mismatch")
     require_ok(h1["class_a_madhava_r3_n50_speedup_floor"] == 27872151775, "Madhava R3 n=50 speedup witness mismatch")
 
-    require_ok(h1["class_b_cancellation_checks_total"] == 11, "Expected 11 Class-B checks")
+    require_ok(h1["class_b_cancellation_checks_total"] == 12, "Expected 12 Class-B checks")
     require_ok(h1["class_b_cancellation_checks_ok"] == h1["class_b_cancellation_checks_total"], "Class-B check mismatch")
     require_ok(h1["class_b_biruni_kappa"] == "215989/11", "Al-Biruni kappa witness mismatch")
-    require_ok(h1["class_b_stereo_s2_bijection_count"] == 5, "Stereographic S^2 bijection count mismatch")
-    require_ok(h1["class_b_cayley_s3_bijection_count"] == 5, "Cayley S^3 bijection count mismatch")
+    require_ok(h1["class_b_stereo_cayley_poly_proof_identities"] == 19, "Generic polynomial bijection proof count mismatch")
+    require_ok(h1["class_b_stereo_s2_roundtrip_count"] == 5, "Stereographic S^2 5-point round-trip mismatch")
+    require_ok(h1["class_b_cayley_s3_roundtrip_count"] == 5, "Cayley S^3 5-point round-trip mismatch")
 
-    require_ok(h1["class_c_topological_checks_total"] == 18, "Expected 18 Class-C checks")
+    require_ok(h1["class_c_topological_checks_total"] == 19, "Expected 19 Class-C checks")
     require_ok(h1["class_c_topological_checks_ok"] == h1["class_c_topological_checks_total"], "Class-C check mismatch")
     require_ok(h1["class_c_sona_576_exact_count"] == 576, "Sona 576/576 sweep mismatch")
     require_ok(h1["class_c_panini_43_c1p_count"] == 43, "Panini 43/43 C1P count mismatch")
     require_ok(h1["class_c_tucker_c3_single_copy_orders"] == 0, "Tucker C_3 witness mismatch")
     require_ok(h1["class_c_pingala_510_bijection_count"] == 510, "Pingala 510/510 bijection mismatch")
     require_ok(h1["class_c_fwht256_involution_and_parity"] == [256, 256], "FWHT_256 witness mismatch")
-    require_ok(h1["class_c_bamana_65536_even_and_a16"] == [65536, 65536], "Bamana 65536 A_16 witness mismatch")
+    require_ok(h1["class_c_bamana_65536_parity_identity_and_a16"] == [65536, 65536], "Bamana 65536 parity identity and A_16 mismatch")
     require_ok(
         h1["class_c_a16_secded_matrix"] == {
             "parity_check_rows": 5,
@@ -2418,6 +2684,11 @@ def validate_certificate(cert: dict[str, Any]) -> None:
         "A_16 SECDED 5x16 matrix witness mismatch",
     )
     require_ok(h1["class_c_z2_twisted_vs_untwisted_sections"] == [0, 2], "Z_2 sheaf section witness mismatch")
+    require_ok(h1["class_c_casarabe_adjacency_exact"] is True, "Casarabe C_{2,6} adjacency mismatch")
+    require_ok(
+        h1["class_c_casarabe_degree_sequence"] == list(CASARABE_C2_6_EXPECTED_DEGREES),
+        "Casarabe C_{2,6} degree sequence mismatch",
+    )
     require_ok(h1["class_c_casarabe_vs_tree_betti1"] == [12, 0], "Casarabe Betti_1 witness mismatch")
 
     require_ok(h1["class_d_commutation_checks_total"] == 8, "Expected 8 Class-D checks")
@@ -2556,8 +2827,8 @@ def format_summary(cert: dict[str, Any]) -> str:
         (
             "Foundation-0/continuum: Self-Contained Cross-Civilizational Periodic Table of Invariants",
             f"AST_FLOAT_DIV_LOG={cert['ast_float_div_and_log_count']} "
-            f"OBSTRUCTIONS: A={h1['class_a_diophantine_checks_ok']}/15 B={h1['class_b_cancellation_checks_ok']}/11 "
-            f"C={h1['class_c_topological_checks_ok']}/18 D={h1['class_d_commutation_checks_ok']}/8",
+            f"OBSTRUCTIONS: A={h1['class_a_diophantine_checks_ok']}/15 B={h1['class_b_cancellation_checks_ok']}/12 "
+            f"C={h1['class_c_topological_checks_ok']}/19 D={h1['class_d_commutation_checks_ok']}/8",
             f"OPPOSING_PAIRS={h2['opposing_pair_checks_ok']}/13 MODULAR_FLOW={h3['modular_flow_checks_ok']}/15",
             f"PERIODIC_TABLE: entries={pts['entry_count']} in_module={pts['in_module_verified_entries']} "
             f"families={pts['family_count']} sha256={pts['periodic_table_sha256']}",

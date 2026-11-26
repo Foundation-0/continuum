@@ -75,11 +75,27 @@ def test_ast_and_runtime_float_guards() -> None:
         ("getattr_math", "import math\nx = getattr(math, 'sqrt')(2)\n"),
         ("getattr_builtins", "x = getattr(__builtins__, 'float')(1)\n"),
         ("dunder_truediv", "x = (1).__truediv__(2)\n"),
+        ("dunder_rtruediv", "x = (1).__rtruediv__(2)\n"),
+        ("dunder_itruediv", "x = (1).__itruediv__(2)\n"),
+        ("dunder_float_frac", "from fractions import Fraction\nx = Fraction(1, 2).__float__()\n"),
+        ("dunder_float_var", "_y = 1\nx = _y.__float__()\n"),
+        ("dunder_float_ref", "_y = 1\nf = _y.__float__\n"),
+        ("dunder_complex", "x = (1).__complex__()\n"),
+        ("dunder_pow", "x = (2).__pow__(-1)\n"),
+        ("dunder_rpow", "x = (2).__rpow__(1)\n"),
+        ("dunder_ipow", "x = (2).__ipow__(-1)\n"),
         ("rel_import", "from . import helper\n"),
+        ("dotted_import_importlib", "import importlib.util\n"),
+        ("dotted_from_importlib", "from importlib.util import find_spec\n"),
+        ("bare_assert", "assert True\n"),
         ("math_sqrt", "import math\nx = math.sqrt(2)\n"),
         ("math_sin", "import math\nx = math.sin(1)\n"),
+        ("math_const_e", "import math\nx = math.e\n"),
+        ("math_const_pi", "import math\nx = math.pi\n"),
         ("math_alias_sin", "import math as m\nx = m.sin(1)\n"),
+        ("math_alias_e", "import math as m\nx = m.e\n"),
         ("from_math_sqrt", "from math import sqrt\nx = sqrt(2)\n"),
+        ("from_math_e", "from math import e\nx = e\n"),
         ("import_decimal", "import decimal\n"),
         ("from_decimal", "from decimal import Decimal\n"),
         ("from_frac_star", "from fractions import *\n"),
@@ -95,6 +111,7 @@ def test_ast_and_runtime_float_guards() -> None:
         ("frac_from_float", "from fractions import Fraction\nx = Fraction.from_float(1)\n"),
         ("frac_from_decimal", "from fractions import Fraction\nx = Fraction.from_decimal(1)\n"),
         ("attr_frac", "import fractions\nx = fractions.Fraction(1, 2)\n"),
+        ("attr_frac_ref", "import fractions\nF = fractions.Fraction\n"),
         ("attr_frac_alias", "import fractions as fr\nx = fr.Fraction(1, 2)\n"),
     )
     with tempfile.TemporaryDirectory() as td:
@@ -197,6 +214,9 @@ def test_primitives_and_boundaries() -> None:
     check_raises_val(lambda: ptv.stereographic_forward_r2_q(ptv.ZERO, ptv.ZERO, ptv.ONE), "stereo north pole", "North Pole")
     check_raises_val(lambda: ptv.cayley_s3_inverse_q((ptv.ONE, ptv.ONE, ptv.ZERO, ptv.ZERO)), "cayley off s3", "unit S^3")
     check_raises_val(lambda: ptv.cayley_s3_inverse_q((Fraction(-1, 1), ptv.ZERO, ptv.ZERO, ptv.ZERO)), "cayley south", "South Pole")
+    check(ptv._poly_const(2, 0) == {}, "poly_const zero")
+    check(ptv._poly_const(2, 3) == {(0, 0): 3}, "poly_const nonzero")
+    check(ptv.certify_stereo_cayley_polynomial_bijections() == 19, "generic poly bijection proof != 19")
 
     check(ptv.pingala_nasta(1, 1) == (0,) and ptv.pingala_nasta(1, 2) == (1,), "pingala n=1")
     check_raises_val(lambda: ptv.pingala_nasta(0, 1), "pingala n=0", "Pingala n must be >= 1")
@@ -242,6 +262,27 @@ def test_primitives_and_boundaries() -> None:
     check_raises_val(lambda: ptv.graph_connected_components(2, ((2, 0),)), "graph u>=n", "u >= n_verts")
     check_raises_val(lambda: ptv.graph_connected_components(2, ((0, -1),)), "graph v<0", "v < 0")
     check_raises_val(lambda: ptv.graph_connected_components(2, ((0, 2),)), "graph v>=n", "v >= n_verts")
+
+    # Simple graph adjacency & degree pinning + planted mis-wired Casarabe C_{2,6} ring (i % 7) control
+    check(ptv.graph_simple_edges_and_degrees(1, ()) == (frozenset(), (0,)), "simple graph 1 vert")
+    check(ptv.graph_simple_edges_and_degrees(2, ((1, 0),)) == (frozenset(((0, 1),)), (1, 1)), "simple graph norm edge")
+    check_raises_val(lambda: ptv.graph_simple_edges_and_degrees(0, ()), "simple 0 verts", "Simple graph must have >= 1 vertex")
+    check_raises_val(lambda: ptv.graph_simple_edges_and_degrees(2, ((-1, 0),)), "simple u<0", "Simple graph vertex u < 0")
+    check_raises_val(lambda: ptv.graph_simple_edges_and_degrees(2, ((2, 0),)), "simple u>=n", "Simple graph vertex u >= n_verts")
+    check_raises_val(lambda: ptv.graph_simple_edges_and_degrees(2, ((0, -1),)), "simple v<0", "Simple graph vertex v < 0")
+    check_raises_val(lambda: ptv.graph_simple_edges_and_degrees(2, ((0, 2),)), "simple v>=n", "Simple graph vertex v >= n_verts")
+    check_raises_val(lambda: ptv.graph_simple_edges_and_degrees(2, ((0, 0),)), "simple self-loop", "forbids self-loops")
+    check_raises_val(lambda: ptv.graph_simple_edges_and_degrees(2, ((0, 1), (1, 0))), "simple dup edge", "forbids duplicate edges")
+    miswired_casarabe = (
+        tuple((0, i) for i in range(1, 7))
+        + tuple((i, i + 6) for i in range(1, 7))
+        + tuple((i, (i % 7) + 1) for i in range(1, 7))
+        + tuple((i + 6, (i % 6) + 7) for i in range(1, 7))
+    )
+    bad_eset, bad_degs = ptv.graph_simple_edges_and_degrees(13, miswired_casarabe)
+    check(ptv.graph_betti1(13, miswired_casarabe) == 12, "miswired ring still has beta1=12")
+    check(bad_eset != ptv.CASARABE_C2_6_EXPECTED_EDGES, "miswired C_{2,6} ring matched canonical edge set")
+    check(bad_degs != ptv.CASARABE_C2_6_EXPECTED_DEGREES, "miswired C_{2,6} ring matched canonical degrees")
 
     check_raises_val(lambda: ptv.schur_3x3_elim_last(((ptv.ONE,),)), "schur 1x1", "exactly 3 rows")
     check_raises_val(
@@ -372,11 +413,16 @@ def test_dynamic_morphism_evidence_degradation() -> None:
     r5 = _entry_by_id(ptv.build_periodic_table_from_pillars(h1_base, h2_base, h3), "PT-05")
     check(r5["morphism_grade"] == "EXACT_SHARED_OPERATOR", "PT-05 grade did not flip on degraded CRT bijection")
 
-    # PT-08: degrading stereographic S^2 bijection flips EXACT_ISOMORPHISM -> EXACT_SHARED_OPERATOR
+    # PT-08: degrading generic polynomial proof OR stereographic S^2 round-trip flips EXACT_ISOMORPHISM -> EXACT_SHARED_OPERATOR
     h1 = copy.deepcopy(h1_base)
-    h1["class_b_stereo_s2_bijection_count"] = 4
+    h1["class_b_stereo_cayley_poly_proof_identities"] = 18
+    r8p = _entry_by_id(ptv.build_periodic_table_from_pillars(h1, h2_base, h3_base), "PT-08")
+    check(r8p["morphism_grade"] == "EXACT_SHARED_OPERATOR", "PT-08 grade did not flip on degraded poly proof")
+
+    h1 = copy.deepcopy(h1_base)
+    h1["class_b_stereo_s2_roundtrip_count"] = 4
     r8 = _entry_by_id(ptv.build_periodic_table_from_pillars(h1, h2_base, h3_base), "PT-08")
-    check(r8["morphism_grade"] == "EXACT_SHARED_OPERATOR", "PT-08 grade did not flip on degraded S^2 bijection")
+    check(r8["morphism_grade"] == "EXACT_SHARED_OPERATOR", "PT-08 grade did not flip on degraded S^2 roundtrip")
 
     # PT-09: degrading Tucker C_3 single-copy orders flips PROVABLE_OBSTRUCTION -> EXACT_SHARED_OPERATOR
     h1 = copy.deepcopy(h1_base)
@@ -389,6 +435,15 @@ def test_dynamic_morphism_evidence_degradation() -> None:
     h1["class_c_a16_secded_matrix"]["min_nonzero_weight"] = 3
     r10 = _entry_by_id(ptv.build_periodic_table_from_pillars(h1, h2_base, h3_base), "PT-10")
     check(r10["morphism_grade"] == "EXACT_SHARED_OPERATOR", "PT-10 grade did not flip on degraded A_16 d_min")
+
+    # PT-12: degrading Casarabe C_{2,6} adjacency leaves zero true evidence flags -> fail closed
+    h1 = copy.deepcopy(h1_base)
+    h1["class_c_casarabe_adjacency_exact"] = False
+    check_raises_val(
+        lambda: ptv.build_periodic_table_from_pillars(h1, h2_base, h3_base),
+        "PT-12 degraded Casarabe adjacency",
+        "at least one verified",
+    )
 
     # PT-13: equating H_8 inertia with hydraulic inertia flips NON_CONGRUENT -> EXACT_SHARED_OPERATOR
     h1 = copy.deepcopy(h1_base)
@@ -553,22 +608,25 @@ def test_cli_on_disk_binding_and_tampers() -> None:
     tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_a_antikythera_beat_9_times_53", 476), "forged_beat", "Antikythera beat witness mismatch")
     tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_a_madhava_r3_n50_speedup_floor", 99999999999999), "C6_forged_madhava", "Madhava R3 n=50 speedup witness mismatch")
 
-    tamper_cert(_set_pair("four_class_obstructions", "class_b_cancellation_checks_total", "class_b_cancellation_checks_ok", 10), "h1_b_tot", "Expected 11 Class-B checks")
-    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_b_cancellation_checks_ok", 10), "h1_b_ok", "Class-B check mismatch")
+    tamper_cert(_set_pair("four_class_obstructions", "class_b_cancellation_checks_total", "class_b_cancellation_checks_ok", 11), "h1_b_tot", "Expected 12 Class-B checks")
+    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_b_cancellation_checks_ok", 11), "h1_b_ok", "Class-B check mismatch")
     tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_b_biruni_kappa", "1/1"), "forged_kappa", "Al-Biruni kappa witness mismatch")
-    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_b_stereo_s2_bijection_count", 4), "forged_stereo", "Stereographic S^2 bijection count mismatch")
-    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_b_cayley_s3_bijection_count", 4), "forged_cayley", "Cayley S^3 bijection count mismatch")
+    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_b_stereo_cayley_poly_proof_identities", 18), "forged_poly_proof", "Generic polynomial bijection proof count mismatch")
+    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_b_stereo_s2_roundtrip_count", 4), "forged_stereo", "Stereographic S^2 5-point round-trip mismatch")
+    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_b_cayley_s3_roundtrip_count", 4), "forged_cayley", "Cayley S^3 5-point round-trip mismatch")
 
-    tamper_cert(_set_pair("four_class_obstructions", "class_c_topological_checks_total", "class_c_topological_checks_ok", 17), "h1_c_tot", "Expected 18 Class-C checks")
-    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_topological_checks_ok", 17), "h1_c_ok", "Class-C check mismatch")
+    tamper_cert(_set_pair("four_class_obstructions", "class_c_topological_checks_total", "class_c_topological_checks_ok", 18), "h1_c_tot", "Expected 19 Class-C checks")
+    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_topological_checks_ok", 18), "h1_c_ok", "Class-C check mismatch")
     tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_sona_576_exact_count", 575), "forged_sona576", "Sona 576/576 sweep mismatch")
     tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_panini_43_c1p_count", 42), "forged_panini43", "Panini 43/43 C1P count mismatch")
     tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_tucker_c3_single_copy_orders", 1), "forged_tucker", "Tucker C_3 witness mismatch")
     tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_pingala_510_bijection_count", 509), "forged_pingala", "Pingala 510/510 bijection mismatch")
     tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_fwht256_involution_and_parity", [255, 256]), "forged_fwht", "FWHT_256 witness mismatch")
-    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_bamana_65536_even_and_a16", [1, 65536]), "C6_forged_bamana", "Bamana 65536 A_16 witness mismatch")
+    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_bamana_65536_parity_identity_and_a16", [1, 65536]), "C6_forged_bamana", "Bamana 65536 parity identity and A_16 mismatch")
     tamper_cert(lambda d: d["four_class_obstructions"]["class_c_a16_secded_matrix"].__setitem__("min_nonzero_weight", 3), "forged_a16_matrix", "A_16 SECDED 5x16 matrix witness mismatch")
     tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_z2_twisted_vs_untwisted_sections", [1, 2]), "forged_z2", "Z_2 sheaf section witness mismatch")
+    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_casarabe_adjacency_exact", False), "forged_casarabe_adj", "Casarabe C_{2,6} adjacency mismatch")
+    tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_casarabe_degree_sequence", [6, 3, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3]), "forged_casarabe_deg", "Casarabe C_{2,6} degree sequence mismatch")
     tamper_cert(lambda d: d["four_class_obstructions"].__setitem__("class_c_casarabe_vs_tree_betti1", [1, 0]), "forged_betti1", "Casarabe Betti_1 witness mismatch")
 
     tamper_cert(_set_pair("four_class_obstructions", "class_d_commutation_checks_total", "class_d_commutation_checks_ok", 7), "h1_d_tot", "Expected 8 Class-D checks")
