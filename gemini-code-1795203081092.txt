@@ -1,0 +1,5 @@
+Form_III(S^2) :=
+    Constant_Sphere(F_bar, relative_ripple ~ 1e-5)
+  * [ Isotropic_Gaussian_Field(SO(3)_invariant)
+      ⊗ Damped_Harmonic_Comb(ell_peaks ~ {220, 540, 810}, exp_cutoff) ]
+  + Faint_Low_Ell_Anomalies(axis_lock[2,3], local_negative_basin)

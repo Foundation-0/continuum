@@ -1,0 +1,4 @@
+Form_VII(R^1, 1 Hz) :=
+    Stiff_MeanReverting_SDE(anchor = 50.000 Hz, increments ~ Gaussian)
+  + Periodic_Dirac_Kicks(lattice = {900s, 3600s}, parity = f_diurnal(t mod 86400s))
+  -> Heavy_Tailed_Marginals(kurtosis >> 3)
