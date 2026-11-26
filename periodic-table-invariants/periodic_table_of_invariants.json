@@ -1,0 +1,205 @@
+{
+  "compute_policy_status": "CPU_ONLY_PURE_Q_NO_ENERGY_CLAIMS",
+  "continuum_scope": "Cross-civilizational periodic table of exact invariants (Foundation-0/continuum)",
+  "entries": [
+    {
+      "entry_id": "PT-01",
+      "exact_witness": "12^53 != 2^7 * 11^53; Holder comma 3^53/2^84 > 1 (in-module check)",
+      "family": "DIOPHANTINE_RESONANCE_LATTICE",
+      "morphism_grade": "PROVABLE_OBSTRUCTION",
+      "obstruction_class": "CLASS_A_DIOPHANTINE",
+      "operator": "Exact Integer Power Comparison (r^53 != 2^k)",
+      "provenance_key": "logfree_power_unifier_cert",
+      "provenance_sha256": "e9f692bde32df8b8e3c7adffb3a73233ada299f2ef906157106cc21706db1f0f",
+      "tradition": "Islamicate (Al-Farabi 53-TET)"
+    },
+    {
+      "entry_id": "PT-02",
+      "exact_witness": "355/113 beats 22/7 by >= 4740x; first beater 52163/16604 (in-module check)",
+      "family": "DIOPHANTINE_RESONANCE_LATTICE",
+      "morphism_grade": "EXACT_SHARED_OPERATOR",
+      "obstruction_class": "CLASS_A_DIOPHANTINE",
+      "operator": "Hurwitz CF Convergent [3; 7, 15, 1]",
+      "provenance_key": "eastasia_egypt_maya_cert",
+      "provenance_sha256": "73e94f1377b250397cfde80f3224a97b53fb275154e161457149a35aa3c4f707",
+      "tradition": "East Asian (Zu Chongzhi pi)"
+    },
+    {
+      "entry_id": "PT-03",
+      "exact_witness": "2/17 = 1/12+1/51+1/68 (max 68 < 153); 5/21 = 1/6+1/14 (max 14 < 945) (in-module check)",
+      "family": "DIOPHANTINE_RESONANCE_LATTICE",
+      "morphism_grade": "PROVABLE_OBSTRUCTION",
+      "obstruction_class": "CLASS_A_DIOPHANTINE",
+      "operator": "Unit-Fraction Min-Max-Denom vs Greedy Sylvester",
+      "provenance_key": "eastasia_egypt_maya_cert",
+      "provenance_sha256": "73e94f1377b250397cfde80f3224a97b53fb275154e161457149a35aa3c4f707",
+      "tradition": "Ancient Egyptian (Rhind 2/n & Moscow Frustum)"
+    },
+    {
+      "entry_id": "PT-04",
+      "exact_witness": "254/19 Metonic; 254*223 - 239*235 = 477 = 9*53, distinct from 3^53/2^84 (in-module check)",
+      "family": "DIOPHANTINE_RESONANCE_LATTICE",
+      "morphism_grade": "EXACT_SHARED_OPERATOR",
+      "obstruction_class": "CLASS_A_DIOPHANTINE",
+      "operator": "Gear-Train Rational Modular Section",
+      "provenance_key": "mediterranean_africa_cert",
+      "provenance_sha256": "ec1c3c9feeebed1c7ae7e926113d2eca46c84386fa32ef574f8591b8f857b9ab",
+      "tradition": "Greco-Roman (Antikythera Epicyclic Gears)"
+    },
+    {
+      "entry_id": "PT-05",
+      "exact_witness": "x = 12345 mod 37960; phase compression = 1460; Dresden 2392/81 (in-module check)",
+      "family": "DIOPHANTINE_RESONANCE_LATTICE",
+      "morphism_grade": "EXACT_ISOMORPHISM",
+      "obstruction_class": "CLASS_A_DIOPHANTINE",
+      "operator": "Non-Coprime CRT Modular Section (lcm = 37960)",
+      "provenance_key": "eastasia_egypt_maya_cert",
+      "provenance_sha256": "73e94f1377b250397cfde80f3224a97b53fb275154e161457149a35aa3c4f707",
+      "tradition": "East Asian & Mesoamerican (Qin Jiushao CRT + Maya Multi-Clock)"
+    },
+    {
+      "entry_id": "PT-06",
+      "exact_witness": "Provenance cert south_asia_exact_operators_cert: Delta_3 O(1/n^7), >= 27871841005x speedup at n=50",
+      "family": "DIOPHANTINE_RESONANCE_LATTICE",
+      "morphism_grade": "EXACT_SHARED_OPERATOR",
+      "obstruction_class": "CLASS_A_DIOPHANTINE",
+      "operator": "Rational Telescoping Remainder Accelerator R_1, R_2, R_3",
+      "provenance_key": "south_asia_exact_operators_cert",
+      "provenance_sha256": "6128ab702a65bb117aa1feb12c0e660aaca5029c289823bf5f4304ff007155ba",
+      "tradition": "South Asian (Kerala School Madhava Antya-samskara)"
+    },
+    {
+      "entry_id": "PT-07",
+      "exact_witness": "Al-Biruni 215989/11 (14b); Al-Kashi k=26 (>=53b); zoom ell=14 (>=53b) (in-module check)",
+      "family": "SUBTRACTIVE_CANCELLATION_WALL",
+      "morphism_grade": "EXACT_ISOMORPHISM",
+      "obstruction_class": "CLASS_B_CANCELLATION",
+      "operator": "kappa_sub(x) = x / (1 - x)",
+      "provenance_key": "logfree_power_unifier_cert",
+      "provenance_sha256": "e9f692bde32df8b8e3c7adffb3a73233ada299f2ef906157106cc21706db1f0f",
+      "tradition": "Islamicate (Al-Biruni Nandana & Al-Kashi Chord Wall) <-> Float64 Cliff"
+    },
+    {
+      "entry_id": "PT-08",
+      "exact_witness": "Trigonometric-free, division-only exact rational sphere and spinor transport map",
+      "family": "SUBTRACTIVE_CANCELLATION_WALL",
+      "morphism_grade": "EXACT_ISOMORPHISM",
+      "obstruction_class": "CLASS_B_CANCELLATION",
+      "operator": "Stereographic Rational Lift C(w) in SU(2, Q)",
+      "provenance_key": "primary_heritage_engines_cert",
+      "provenance_sha256": "d0d2e98a6469ae6fff7954cb8b8bfd7222a2d6a549ad17bdd59d669dfd8eeb7c",
+      "tradition": "Islamicate (Al-Biruni Istiab Stereographic) <-> Rational S^3(Q) Cayley"
+    },
+    {
+      "entry_id": "PT-09",
+      "exact_witness": "Descriptor ratio 21/5; 0/6 single-copy {y,sh,h} orders (in-module); 43/43 C1P in provenance cert",
+      "family": "TOPOLOGICAL_PARTITION_OBSTRUCTION",
+      "morphism_grade": "EXACT_ISOMORPHISM",
+      "obstruction_class": "CLASS_C_TOPOLOGICAL",
+      "operator": "C1P Contiguous Interval Compression & Tucker C_3 Obstruction",
+      "provenance_key": "south_asia_exact_operators_cert",
+      "provenance_sha256": "6128ab702a65bb117aa1feb12c0e660aaca5029c289823bf5f4304ff007155ba",
+      "tradition": "South Asian (Panini 14 Sivasutras) <-> Minimal Sufficient Partition"
+    },
+    {
+      "entry_id": "PT-10",
+      "exact_witness": "Provenance certs: 510/510 nasta/uddista, 256/256 FWHT_256 parity, 65536/65536 Bamana even judge",
+      "family": "TOPOLOGICAL_PARTITION_OBSTRUCTION",
+      "morphism_grade": "EXACT_ISOMORPHISM",
+      "obstruction_class": "CLASS_C_TOPOLOGICAL",
+      "operator": "F_2^n Hypercube Bijection & Linear Parity Check",
+      "provenance_key": "south_asia_exact_operators_cert",
+      "provenance_sha256": "6128ab702a65bb117aa1feb12c0e660aaca5029c289823bf5f4304ff007155ba",
+      "tradition": "South Asian (Pingala) + West African (Bamana/Ifa) <-> F_2^8 Walsh-Hadamard & SECDED"
+    },
+    {
+      "entry_id": "PT-11",
+      "exact_witness": "(3,5)->1, (4,6)->2, (2,2)+wall->1 & twisted H^1 0/8 sections (in-module); 576/576 in provenance cert",
+      "family": "TOPOLOGICAL_PARTITION_OBSTRUCTION",
+      "morphism_grade": "EXACT_SHARED_OPERATOR",
+      "obstruction_class": "CLASS_C_TOPOLOGICAL",
+      "operator": "Torus-Knot Mirror Coprimality loop_count(m,n) == gcd(m,n)",
+      "provenance_key": "mediterranean_africa_cert",
+      "provenance_sha256": "ec1c3c9feeebed1c7ae7e926113d2eca46c84386fa32ef574f8591b8f857b9ab",
+      "tradition": "Sub-Saharan African (Chokwe Sona Mirror Curves) <-> Discrete Z_2 Sheaf H^1"
+    },
+    {
+      "entry_id": "PT-12",
+      "exact_witness": "Casarabe Betti_1=12 vs tree Betti_1=0 (in-module); 276 archaeological summation cords in provenance cert",
+      "family": "TOPOLOGICAL_PARTITION_OBSTRUCTION",
+      "morphism_grade": "EXACT_SHARED_OPERATOR",
+      "obstruction_class": "CLASS_C_TOPOLOGICAL",
+      "operator": "Hierarchical Tree-Sum Checksums & Radial-Ring Cycle Cut Resilience",
+      "provenance_key": "andean_khipu_networks_cert",
+      "provenance_sha256": "b1ba3bd1a07616e16ec5a9c5b18b29c5f1fd589806f712abf3b1a5fcf76dff23",
+      "tradition": "Andean (Inca Khipu DB) & Amazonian (Casarabe/Upano LiDAR Networks)"
+    },
+    {
+      "entry_id": "PT-13",
+      "exact_witness": "Readable Schur det 34/625 -> 688/15625, drop 81/1250 (in-module); passive PSD hydraulic non-congruent to indefinite H_8 in provenance cert",
+      "family": "COMMUTATION_SCHUR_STRATUM",
+      "morphism_grade": "SHARED_BLOCK_ELIMINATION_NON_CONGRUENT",
+      "obstruction_class": "CLASS_D_COMMUTATION",
+      "operator": "Schur Complement Block Elimination (L \\boxslash B)",
+      "provenance_key": "spinor_hippopede_records_cert",
+      "provenance_sha256": "0223cd356d5ed7fa031c75000b9566a3ef1e163be3d7dabb9906f0f11c93fd2b",
+      "tradition": "Islamicate (Ibn al-Nafis) & Nabataean/Roman Hydraulics (Petra/Gier)"
+    },
+    {
+      "entry_id": "PT-14",
+      "exact_witness": "Markov lumpable 0/1 vs non-lumpable 1/2; Trotter 262144/17850625 vs Strang k-axis 0/1 (in-module check)",
+      "family": "COMMUTATION_SCHUR_STRATUM",
+      "morphism_grade": "EXACT_SHARED_OPERATOR",
+      "obstruction_class": "CLASS_D_COMMUTATION",
+      "operator": "Commutation Defect delta_emg & Order-2 BCH Cancellation",
+      "provenance_key": "palindromic_strang_verifier",
+      "provenance_sha256": "1e2cecc81aa8547681b4405232346492e6d24d99323ed810ae3c6006050816d9",
+      "tradition": "Palindromic Strang Splitting & Maslov-Doob Markov Lumpability"
+    },
+    {
+      "entry_id": "PT-15",
+      "exact_witness": "Planar 0/1, balanced torque 0/1, 2D-plane retention 1/1 vs S^2 288/3125 & SU(2) ||C_3||^2=5/36 (in-module check)",
+      "family": "OPPOSING_PAIR_CONSERVATION_AND_DAMPING",
+      "morphism_grade": "EXACT_SHARED_OPERATOR",
+      "obstruction_class": "CLASS_D_COMMUTATION",
+      "operator": "Opposing-Pair Curl Annihilation (Abelian 0/1 vs Non-Abelian != 0)",
+      "provenance_key": "rational_cayley_steering_cert",
+      "provenance_sha256": "8f4dff457e9ceeb980bd78ace220f2ddf3d0458bf57f20dd6c535adf4c9c176d",
+      "tradition": "Islamicate (Al-Tusi Couple) + Spinor-Hippopede + Antagonistic Torque + 2D-Plane Cayley"
+    },
+    {
+      "entry_id": "PT-16",
+      "exact_witness": "Dougong dimensionless loop area 96, pi*zeta=2/3; Housner b/h=1/3 loss=111/400 (in-module check)",
+      "family": "OPPOSING_PAIR_CONSERVATION_AND_DAMPING",
+      "morphism_grade": "EXACT_SHARED_OPERATOR",
+      "obstruction_class": "CLASS_D_COMMUTATION",
+      "operator": "Cyclic Friction-Hysteresis & Impact Energy Dissipation",
+      "provenance_key": "antagonistic_cone_gait_cert",
+      "provenance_sha256": "15ea0d8b755a390488d4a8ea87ef48f782fdacdf320179751fe72fd53c480793",
+      "tradition": "East Asian (Dougong) + Andean (Machu Picchu Rocking) + Antagonistic Cone Gait"
+    }
+  ],
+  "entry_count": 16,
+  "families": [
+    "COMMUTATION_SCHUR_STRATUM",
+    "DIOPHANTINE_RESONANCE_LATTICE",
+    "OPPOSING_PAIR_CONSERVATION_AND_DAMPING",
+    "SUBTRACTIVE_CANCELLATION_WALL",
+    "TOPOLOGICAL_PARTITION_OBSTRUCTION"
+  ],
+  "family_count": 5,
+  "provenance_digests": {
+    "andean_khipu_networks_cert": "b1ba3bd1a07616e16ec5a9c5b18b29c5f1fd589806f712abf3b1a5fcf76dff23",
+    "antagonistic_cone_gait_cert": "15ea0d8b755a390488d4a8ea87ef48f782fdacdf320179751fe72fd53c480793",
+    "eastasia_egypt_maya_cert": "73e94f1377b250397cfde80f3224a97b53fb275154e161457149a35aa3c4f707",
+    "logfree_power_unifier_cert": "e9f692bde32df8b8e3c7adffb3a73233ada299f2ef906157106cc21706db1f0f",
+    "mediterranean_africa_cert": "ec1c3c9feeebed1c7ae7e926113d2eca46c84386fa32ef574f8591b8f857b9ab",
+    "palindromic_strang_verifier": "1e2cecc81aa8547681b4405232346492e6d24d99323ed810ae3c6006050816d9",
+    "primary_heritage_engines_cert": "d0d2e98a6469ae6fff7954cb8b8bfd7222a2d6a549ad17bdd59d669dfd8eeb7c",
+    "rational_cayley_steering_cert": "8f4dff457e9ceeb980bd78ace220f2ddf3d0458bf57f20dd6c535adf4c9c176d",
+    "south_asia_exact_operators_cert": "6128ab702a65bb117aa1feb12c0e660aaca5029c289823bf5f4304ff007155ba",
+    "spinor_hippopede_records_cert": "0223cd356d5ed7fa031c75000b9566a3ef1e163be3d7dabb9906f0f11c93fd2b"
+  },
+  "result_sha256": "0e4c8150d43302c004be678d09179befe5adcf17cdf9ae8d4a6949bd1a2a23e5",
+  "schema_version": "continuum.periodic_table_of_invariants.v1"
+}

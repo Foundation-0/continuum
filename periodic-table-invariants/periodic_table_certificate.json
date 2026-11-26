@@ -1,0 +1,78 @@
+{
+  "ast_float_and_log_count": 0,
+  "compute_policy_status": "CPU_ONLY_PURE_Q_NO_ENERGY_CLAIMS",
+  "four_class_obstructions": {
+    "class_a_antikythera_beat_9_times_53": 477,
+    "class_a_diophantine_checks_ok": 9,
+    "class_a_diophantine_checks_total": 9,
+    "class_a_zu_beats_22_7_floor": 4740,
+    "class_b_biruni_kappa": "215989/11",
+    "class_b_cancellation_checks_ok": 8,
+    "class_b_cancellation_checks_total": 8,
+    "class_c_sona_loops_3x5_4x6_2x2_wall": [
+      1,
+      2,
+      2,
+      1
+    ],
+    "class_c_topological_checks_ok": 9,
+    "class_c_topological_checks_total": 9,
+    "class_c_tucker_c3_single_copy_orders": 0,
+    "class_c_z2_twisted_vs_untwisted_sections": [
+      0,
+      2
+    ],
+    "class_d_commutation_checks_ok": 7,
+    "class_d_commutation_checks_total": 7,
+    "class_d_markov_lumpability_defects": [
+      "0",
+      "1/2"
+    ],
+    "class_d_schur_det_unreadable_to_readable": [
+      "34/625",
+      "688/15625"
+    ],
+    "class_d_schur_trace_drop": "81/1250",
+    "class_d_trotter_defect_eps_1_4": "262144/17850625"
+  },
+  "modular_flow_and_partition": {
+    "antikythera_anomalistic_rate": "56165/4237",
+    "antikythera_metonic_ratio": "254/19",
+    "inconsistent_crt_refused": true,
+    "maya_crt_solution_mod_37960": 12345,
+    "maya_dresden_eclipse_ratio": "2392/81",
+    "maya_grand_sync_lcm": 37960,
+    "maya_phase_compression_ratio": 1460,
+    "modular_flow_checks_ok": 15,
+    "modular_flow_checks_total": 15,
+    "panini_c1p_descriptor_ratio": "21/5",
+    "two_clock_record_shift_delta_beta2": "144/31"
+  },
+  "opposing_pair_conservation": {
+    "abelian_zero_residual_witnesses": {
+      "al_tusi_planar_curl": "0",
+      "antagonistic_balanced_net_torque": "0",
+      "cayley_2dplane_orth_retention": "1",
+      "collinear_strang_defect": "0"
+    },
+    "nonabelian_or_dissipative_nonzero_witnesses": {
+      "al_tusi_s2_hippopede_px": "288/3125",
+      "cayley_tangent_orth_sq_retention": "9/25",
+      "dougong_pi_zeta": "2/3",
+      "machu_picchu_housner_loss": "111/400",
+      "spinor_hippopede_c3_norm2": "5/36"
+    },
+    "opposing_pair_checks_ok": 13,
+    "opposing_pair_checks_total": 13
+  },
+  "periodic_table_summary": {
+    "entry_count": 16,
+    "family_count": 5,
+    "periodic_table_sha256": "0e4c8150d43302c004be678d09179befe5adcf17cdf9ae8d4a6949bd1a2a23e5",
+    "provenance_count": 10,
+    "schema_version": "continuum.periodic_table_of_invariants.v1"
+  },
+  "result_sha256": "a5ac291cacebadfee2aa7cc14b8ab543a18f2574f472a115a246ef60363675c3",
+  "schema_version": "continuum.universal_invariants_certificate.v1",
+  "target_repo": "Foundation-0/continuum"
+}
