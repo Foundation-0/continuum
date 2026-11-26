@@ -1,30 +1,119 @@
 {
-  "ast_float_and_log_count": 0,
+  "ast_float_div_and_log_count": 0,
   "compute_policy_status": "CPU_ONLY_PURE_Q_NO_ENERGY_CLAIMS",
   "four_class_obstructions": {
     "class_a_antikythera_beat_9_times_53": 477,
-    "class_a_diophantine_checks_ok": 9,
-    "class_a_diophantine_checks_total": 9,
-    "class_a_zu_beats_22_7_floor": 4740,
-    "class_b_biruni_kappa": "215989/11",
-    "class_b_cancellation_checks_ok": 8,
-    "class_b_cancellation_checks_total": 8,
-    "class_c_sona_loops_3x5_4x6_2x2_wall": [
-      1,
-      2,
-      2,
-      1
+    "class_a_diophantine_checks_ok": 15,
+    "class_a_diophantine_checks_total": 15,
+    "class_a_egypt_5_21_denoms": [
+      6,
+      14
     ],
-    "class_c_topological_checks_ok": 9,
-    "class_c_topological_checks_total": 9,
+    "class_a_farabi_gap": "427408770020421687429769023309341164189038935654902132096",
+    "class_a_farabi_obstructed": true,
+    "class_a_greedy_2_17_denoms": [
+      9,
+      153
+    ],
+    "class_a_greedy_5_21_denoms": [
+      5,
+      27,
+      945
+    ],
+    "class_a_holder_comma_gt_1": true,
+    "class_a_madhava_r3_n50_speedup_floor": 27872151775,
+    "class_a_madhava_telescoping_counts": [
+      49,
+      49,
+      49
+    ],
+    "class_a_rhind_2_17_denoms": [
+      12,
+      51,
+      68
+    ],
+    "class_a_rhind_beats_greedy": true,
+    "class_a_zu_beats_22_7_floor": 4740,
+    "class_a_zu_first_beater": "52163/16604",
+    "class_b_biruni_kappa": "215989/11",
+    "class_b_bit_losses": {
+      "biruni": 14,
+      "kashi_25": 51,
+      "kashi_26": 53,
+      "zoom_13": 51,
+      "zoom_14": 55,
+      "zoom_16": 63
+    },
+    "class_b_cancellation_checks_ok": 11,
+    "class_b_cancellation_checks_total": 11,
+    "class_b_cayley_s3_bijection_count": 5,
+    "class_b_stereo_cayley_embed_count": 5,
+    "class_b_stereo_s2_bijection_count": 5,
+    "class_c_a16_secded_matrix": {
+      "code_length": 16,
+      "codeword_count": 2048,
+      "distinct_1bit_syndromes": 16,
+      "min_nonzero_weight": 4,
+      "nonzero_disjoint_2bit_syndromes": 120,
+      "parity_check_rows": 5
+    },
+    "class_c_bamana_65536_even_and_a16": [
+      65536,
+      65536
+    ],
+    "class_c_casarabe_graph_counts": [
+      13,
+      24,
+      12
+    ],
+    "class_c_casarabe_vs_tree_betti1": [
+      12,
+      0
+    ],
+    "class_c_casarabe_vs_tree_cut_comps": [
+      1,
+      2
+    ],
+    "class_c_dup_h_resolves": true,
+    "class_c_fwht256_involution_and_parity": [
+      256,
+      256
+    ],
+    "class_c_khipu_valid_and_tamper": [
+      true,
+      true
+    ],
+    "class_c_panini_43_c1p_count": 43,
+    "class_c_pingala_510_bijection_count": 510,
+    "class_c_sona_576_exact_count": 576,
+    "class_c_sona_wall_surgery_2x2_2x3": [
+      2,
+      1,
+      1,
+      2
+    ],
+    "class_c_topological_checks_ok": 18,
+    "class_c_topological_checks_total": 18,
     "class_c_tucker_c3_single_copy_orders": 0,
     "class_c_z2_twisted_vs_untwisted_sections": [
       0,
       2
     ],
-    "class_d_commutation_checks_ok": 7,
-    "class_d_commutation_checks_total": 7,
-    "class_d_markov_lumpability_defects": [
+    "class_d_commutation_checks_ok": 8,
+    "class_d_commutation_checks_total": 8,
+    "class_d_inertia_h8_vs_hydraulic8": [
+      [
+        4,
+        4,
+        0
+      ],
+      [
+        7,
+        0,
+        1
+      ]
+    ],
+    "class_d_kemeny_snell_lumpability_defects": [
       "0",
       "1/2"
     ],
@@ -33,12 +122,25 @@
       "688/15625"
     ],
     "class_d_schur_trace_drop": "81/1250",
-    "class_d_trotter_defect_eps_1_4": "262144/17850625"
+    "class_d_strang_quaternion_eps_1_4": [
+      "4032063/4293185",
+      "205632/858637",
+      "16/65",
+      "0"
+    ],
+    "class_d_trotter_defect_eps_1_4": "262144/17850625",
+    "panini_slot_and_phoneme_counts": [
+      43,
+      42,
+      43
+    ]
   },
   "modular_flow_and_partition": {
     "antikythera_anomalistic_rate": "56165/4237",
     "antikythera_metonic_ratio": "254/19",
     "inconsistent_crt_refused": true,
+    "maya_compatible_subgroup_order": 37960,
+    "maya_crt_bijection_exhaustive_ok": 37960,
     "maya_crt_solution_mod_37960": 12345,
     "maya_dresden_eclipse_ratio": "2392/81",
     "maya_grand_sync_lcm": 37960,
@@ -46,17 +148,31 @@
     "modular_flow_checks_ok": 15,
     "modular_flow_checks_total": 15,
     "panini_c1p_descriptor_ratio": "21/5",
-    "two_clock_record_shift_delta_beta2": "144/31"
+    "panini_c1p_total_ratio": "21/8",
+    "two_clock_record_shift_delta_beta2": "144/31",
+    "two_clock_white_noise_beta2_n16_n256": [
+      "1",
+      "1"
+    ],
+    "two_clock_white_noise_delta_beta2": "0"
   },
   "opposing_pair_conservation": {
     "abelian_zero_residual_witnesses": {
       "al_tusi_planar_curl": "0",
       "antagonistic_balanced_net_torque": "0",
+      "antagonistic_mixed_coupling_h_ant": "0",
       "cayley_2dplane_orth_retention": "1",
       "collinear_strang_defect": "0"
     },
+    "dougong_loop_area": "96",
+    "housner_b_over_h": "1/3",
     "nonabelian_or_dissipative_nonzero_witnesses": {
-      "al_tusi_s2_hippopede_px": "288/3125",
+      "al_tusi_s2_hippopede_py": "288/3125",
+      "bch_c3_e1_2e2_vec": [
+        "-1/3",
+        "-1/6",
+        "0"
+      ],
       "cayley_tangent_orth_sq_retention": "9/25",
       "dougong_pi_zeta": "2/3",
       "machu_picchu_housner_loss": "111/400",
@@ -68,11 +184,11 @@
   "periodic_table_summary": {
     "entry_count": 16,
     "family_count": 5,
-    "periodic_table_sha256": "0e4c8150d43302c004be678d09179befe5adcf17cdf9ae8d4a6949bd1a2a23e5",
-    "provenance_count": 10,
-    "schema_version": "continuum.periodic_table_of_invariants.v1"
+    "in_module_verified_entries": 16,
+    "periodic_table_sha256": "a598201702143fcb3c9e7cb45bfb7a68db724061b2d1698421b330f176e4f0f9",
+    "schema_version": "continuum.periodic_table_of_invariants.v2"
   },
-  "result_sha256": "a5ac291cacebadfee2aa7cc14b8ab543a18f2574f472a115a246ef60363675c3",
-  "schema_version": "continuum.universal_invariants_certificate.v1",
+  "result_sha256": "1647446d6808623db4adfb37bd645da2b89f0110def0224694de07cc39122776",
+  "schema_version": "continuum.universal_invariants_certificate.v2",
   "target_repo": "Foundation-0/continuum"
 }
