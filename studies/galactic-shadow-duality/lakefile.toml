@@ -1,0 +1,5 @@
+name = "GalacticShadow"
+defaultTargets = ["GalacticShadow"]
+
+[[lean_lib]]
+name = "GalacticShadow"

@@ -1,0 +1,133 @@
+# Track S174 (EXP-Q60a+EXP-Q60b): Galactic Algorithms Crossover Horizon, Dark-Mode Shadow & Scale-Inversion Duality — Stage-2 Fortress Report (Delta-3)
+
+- **Track / Queue:** `Track S174` / `EXP-Q60a+EXP-Q60b` (`STAGE2_FORTRESS`, Delta-3 remediation closing 100% of `AUDIT-S174-EXP-Q60-S2-DELTA2.md` (`b96267fa...`) `HIGH-1`, `MED-1..3`, `LOW-1..4`, on top of the Delta-2 closure of `AUDIT-S174-EXP-Q60-S2.md` `HIGH-1..4`, `MED-1..8`, `LOW-1..7`; inherited Stage-1 verdict `2/2 PROMOTE_TO_STAGE2`)
+- **Stage-1 Preregistration Pin:** `PREREG-W22-GALACTIC-SHADOW` (`sha256: 8145a7c7bbc25a14ba0cc38d0866e9884f8459ea5bb0a8af6713f14fdbc0565f`)
+- **Target Downstream Surfaces:** Ready for external re-audit, PR submission to `Foundation-0/continuum`, and cross-link to `Foundation-0/cave-expedition#31` (local Stage-2 fortress verified on CPU; not pushed/merged in this track)
+- **Arithmetic & Proof Regime:** Pure exact $\mathbb{Q}/\mathbb{Z}$ + Pure-`Init` Lean `4.36.0` (`0` Mathlib, `0` floats, `0` `float()`/`pow()`/`operator`/`getattr`/non-allowlisted `import_module`, literal-only non-negative `**` exponents (all other powers via runtime-checked `_ipow`), `0` `ast.Div`, `0` bare asserts, `WEIGHTS=0`, `cpu_only=true`)
+- **Novelty Classification (`Law 4`):** **`N1`** (rigorous synthesis, exact mechanization, hardened verification, and quantitative audit correction built atop `N0` literature and existing `Foundation-0` primitives)
+
+---
+
+## 1. Executive Summary & Law-4 Scope Accounting
+
+Track S174 elevates `EXP-Q60a+EXP-Q60b` into a standalone Stage-2 Fortress unifying three phenomena under exact $\mathbb{Q}/\mathbb{Z}$ arithmetic and machine-checked Lean `4.36.0` proofs:
+
+1. **Exact Crossover Horizon $N^*$ & Dichotomy:** For deterministic algorithm cost models $(f, g)$, the global eventual-dominance crossover horizon $N^* = \min\{N_0 \ge 1 : \forall N \ge N_0,\; f(N) < g(N)\}$ is unique when it exists ([GalacticShadow.lean](GalacticShadow.lean#L16-L58)) and partitions instances into `GALACTIC_SHADOW` ($N_{\max}^{\text{phys}} < N^*$), `TERRESTRIAL_CROSSOVER` ($N^* \le N_{\max}^{\text{phys}}$), or `NO_ASYMPTOTIC_ADVANTAGE` (`15/15` matched real algorithm pairs: `10` `GALACTIC_SHADOW`, `4` `TERRESTRIAL_CROSSOVER`, `1` `NO_ASYMPTOTIC_ADVANTAGE`, including Portal 220 `igholami/sssp-lean` with exact integer crossover $N^* = 590^{64} + 1 > 2^{266}$). Fractional physical horizons $2^{k_n/k_d}$ are compared on integer problem sizes $N \le \lfloor 2^{k_n/k_d} \rfloor$ (exact integer $k_d$-th root). Tower bounds obey canonical tetration semantics $\operatorname{tower}_2(h, x) = 2^{2^{\cdots^{2^x}}}$ with $h$ base-2 layers (`h=1` is $2^x$, `h=2` is $2^{2^x}$, `h=3` is $2^{2^{2^x}}$), and overlapping incomparable intervals fail closed (`HORIZON_INCOMPARABLE`) unless resolved exactly from cleared-denominator power inequalities.
+2. **Exact Reciprocal Scale-Inversion Duality (`CS-09` $\leftrightarrow$ `CS-Galactic`):** Under the exact $\mathbb{Q}_+$ reciprocal map $u(N) = 1/N$ (`PosRat.unitRecip`, [GalacticShadow.lean](GalacticShadow.lean#L72-L108)), involution `(q.inv).inv = q` and strict order-reversal ($1/N_{\text{crit}} < 1/M \iff M < N_{\text{crit}}$ and $1/N^* < 1/N_{\text{phys}} \iff N_{\text{phys}} < N^*$) unify finite-sample extrapolation mirages (`CS-09` MUX `BF16`, $u = 1/256$: $S=3$ passes with $\eta_3 = 3/254 < 9/542$, $S=4$ collapses with $\eta_4 = 4/253 > 19/6878 = 1/362$, whereas `Al-Kashi` exact $\mathbb{Q}$ has $\eta_S(0) = 0$, so passing reduces to the universal margin positivity $9^S < 10^S$ ($0 < 2(10^S - 9^S)$) for all $S \ge 1$, proved in Lean and spot-checked exactly in Python on $S \in [1, 16]$; [GalacticShadow.lean](GalacticShadow.lean#L133-L140)) with physical-horizon asymptotic mirages (`CS-Galactic`).
+3. **Dark-Mode Shadow ($\Pi_\infty$) & `⧅`/`⧄`/`⫩` Parity:** Physical-horizon projection $\Pi_\infty$ onto computable scales annihilates the $N > N_{\max}^{\text{phys}}$ tail, leaving an exact dark-mode kernel of dimension $\dim_{\mathrm{dark}} = 1$, cross-coupling rank $r_{\mathrm{cross}} = 1$, kernel basis `[[-1/1, 1/1]]`, coupling map `[[-2/1]]`, and Moore–Penrose Schur pushforward `[[4/1]]`, with all blocks $M_{AA}, M_{AB}, M_{BA}, M_{BB}$ extracted inside Lean from the full $3 \times 3$ operator `piInf3` ([GalacticShadow.lean](GalacticShadow.lean#L159-L187); full field-by-field `LIVE_ALETHEIA_CALCULUS_PASS` parity with `aletheia.calculus` on `⧅`, `⧄`, and `⫩`).
+
+### Honest Epistemic Scope (`N0` / `N1` / `N2`)
+
+| Layer | Classification | Attribution & Exact Boundaries |
+| :--- | :--- | :--- |
+| Galactic algorithm taxonomy, crossovers, and examples | **`N0`** | Faithfully attributed to Richard J. Lipton (2010, *Galactic Algorithms*, and follow-ups 2011 `matrix-breakthrough-2011`, comment-7566 Strassen/CW crossovers, 2014 `galactic-sorting-2014`, 2019 `integer-mult-nlogn-2019`) and Gholami–Hajiaghayi (Nov 2026, `arXiv:2611.34911v1` / `igholami/sssp-lean` Alg. 8 $N \le L_N^{64}$). |
+| Mutation coupling hypothesis ($M_1 \to M_2$) | **`N0`** | Faithfully attributed to Richard A. DeMillo, Richard J. Lipton, and Frederick G. Sayward (1978, *Hints on Test Data Selection: Help for the Practicing Programmer*, Computer 11(4):34–41). |
+| Repo-prior witnesses (`CS-09`, `S161`, `S164`, `S166`/`CS-29`, `S171`, `⧅`/`⧄`/`⫩`) | **`N0` / Prior Repo** | Previously established repo baselines cited strictly by track/issue identifiers without claiming novelty. |
+| Lean `4.36.0` formalization, Stage-1 bug discovery, `R1–R7` verifier | **`N1`** | New unified pure-`Init` Lean mechanization (`12/12` theorems, `416` lines, exact signature & kernel type pinning), Stage-1 `[1, 256]` Karatsuba truncation audit correction (`165` mirage vs `[257, 279]` re-crossings & universal $N^* = 280$), exact multi-height/polylog/quadratic `R1–R7` oracle, and `264/264` dual uncapped mutation hardening. |
+| Unproven claims | **`N2` (None claimed)** | No new asymptotic matrix-multiplication exponent or physical hardware runtime speedup benchmark is claimed. |
+
+---
+
+## 2. Artifact Manifest (Deterministic SHA-256 Pinning)
+
+| File | Role | Lines / Mode | SHA-256 |
+| :--- | :--- | :--- | :--- |
+| [GalacticShadow.lean](GalacticShadow.lean) | Pure-`Init` Lean `4.36.0` formalization (`12` public theorems) | `416` lines, `0` warnings | `de3356872dbf6ab1d263d2a2167266e2ca99bc518e1df266a008ffbd9ae76b5e` |
+| [lean-toolchain](lean-toolchain) | Pinned toolchain (`leanprover/lean4:v4.36.0`) | Declarative | `582a63f8f9c5128067b688778c1051cf1464c3ca9d57b9325025c051c29b774a` |
+| [lakefile.toml](lakefile.toml) | Pure-`Init` declarative Lake manifest (`0` `lakefile.lean`, pinned to `GalacticShadow`) | Safe key allowlist | `6dba36945b6b6db0121bc9d8d2070b6c6057a02c8b758b9c9e498694874cd739` |
+| [lake-manifest.json](lake-manifest.json) | Dependency-free manifest (`packages: []`) | `0` Mathlib | `b3ac284e48dc3ce4790960b4400f824095bfc9fed69f846edcee4b6d69755e2e` |
+| [galactic_shadow_verifier.py](galactic_shadow_verifier.py) | Hardened `R1–R7` exact oracle & bundle verifier (`PINNED_LEAN_SHA256` + theorem sig SHA `369d3878...`) | `2,905` lines, stdlib-only exact $\mathbb{Q}/\mathbb{Z}$ | `99796efb58a6031392bfb8cd55b6692feb096685e52e079d07882c91058bfa89` |
+| [test_galactic_shadow_r5.py](test_galactic_shadow_r5.py) | `5`-group R1–R7, Delta-2 (`HIGH-1..4`/`MED-1..8`/`LOW-1..7`) + Delta-3 (`HIGH-1`/`MED-1..3`/`LOW-1..4`) regression & mutation-killing suite | `1,152` lines, `5/5 OK` | `bc3b2a36f4afbe7b582edbb6f5c52fb2ed0b5eb4deb84a4e7d69eb30be1746d4` |
+| [s174_stage2_certificate.json](s174_stage2_certificate.json) | Canonical offline static certificate (`payload_sha256: e0195c06321ef71d11eb201b5ed0b22f11255f34cb7ab92766adc62d08e5c182`) | `565` lines, `STATIC_ONLY` pinned | `6e9f530c5c453dba060cb653aab3dd5bfa85120946d41cb8518268b5c9c5edd2` |
+
+**`STATIC_ONLY` vs Live Mode Separation (`[LOW-1]`):**
+- Committed [s174_stage2_certificate.json](s174_stage2_certificate.json) sets `live_lean_checked = false` (`lean_live_mode = "STATIC_ONLY"`, `theorem_types_live_checked = false`, and `zero_axiom_theorems`/`propext_only_theorems`/`propext_quot_theorems` = `null` — never fabricating offline axiom counts) and `aletheia_calculus_parity.live_checked = false` (`mode = "SELF_CONTAINED_EXACT"`), so offline `--check` strictly rejects any forged live claim (`RC=2`).
+- **`--check --live-lean` alone:** replays live ELF Lean `4.36.0` (`lake build` + all `12/12` kernel `example` type pins + `#print axioms`), yielding `payload_sha256 = 54550b2ffd16f6c2dab4e4589bd394f38d0db763ee1701d9ace3d601985a9248` (canonical stdout SHA-256 `760019d3a5240116709bde35df52b0c7790df353a4f4fa56cfbababea785cc77`).
+- **`--check --live-lean --aletheia-root <aletheia>`:** replays both live Lean `4.36.0` and live `aletheia.calculus` full parity, yielding `payload_sha256 = cba1c8ca1891bd617da8480063f118df6a43282d289eb07d9e3c63d43b67218d` (canonical stdout SHA-256 `a246e347be05179fb5536bd3927bae08225731c6cea0d5ba41ef12c3c76004f6`).
+
+---
+
+## 3. Lean `4.36.0` Theorem Inventory & Axiom Audit (`12/12 PASS`)
+
+Compiled cleanly via both standalone `lean GalacticShadow.lean` and isolated `/tmp` `lake build` + all `12/12` kernel-checked `example : <type> := @GalacticShadow.<thm>` type pins + `#print axioms` (`0` warnings, `0` `.lake/` residue in track directory, `0` `Classical.choice`, `0` `sorryAx`). Static signature digest pinned at `369d38789473f0efce7c1c57718aefb00023a79bf4f875fc0ce2d5153d6b3046`.
+
+| # | Public Theorem (`GalacticShadow.*`) | Axiom Partition | Statement Verified (1-to-1 with `GalacticShadow.lean`) |
+| :-: | :--- | :--- | :--- |
+| 1 | `crossover_horizon_unique` ([L16](GalacticShadow.lean#L16-L21)) | `[]` (`0` axioms) | Uniqueness of minimum crossover horizon $N^*$ under `IsCrossoverHorizon`. |
+| 2 | `affine_crossover_monotone_and_exact` ([L24](GalacticShadow.lean#L24-L49)) | `[propext, Quot.sound]` | Strict monotonicity & exact threshold $N^* = \lfloor (f_a - f_b)/(s_b - s_a) \rfloor + 1$ for affine costs $(f_a, s_a)$ vs $(f_b, s_b)$ with $s_a < s_b, f_b \le f_a$. |
+| 3 | `galactic_vs_terrestrial_dichotomy` ([L52](GalacticShadow.lean#L52-L57)) | `[]` (`0` axioms) | Exhaustive split $N_{\max}^{\text{phys}} < N^*$ (`GALACTIC_SHADOW`, no wins on $[1, N_{\max}^{\text{phys}}]$) vs $N^* \le N_{\max}^{\text{phys}}$ (`TERRESTRIAL_CROSSOVER`, win at $N_{\max}^{\text{phys}}$). |
+| 4 | `scale_inversion_cs09_galactic_dual` ([L72](GalacticShadow.lean#L72-L108)) | `[]` (`0` axioms) | Exact $\mathbb{Q}_+$ (`PosRat`) reciprocal involution `(q1.inv).inv = q1`, general order-reversal `PosRat.lt q2.inv q1.inv ↔ PosRat.lt q1 q2`, exact $u = 1/N$ (`unitRecip`) equivalences $(1/N_{\text{crit}} < 1/M \iff M < N_{\text{crit}})$ and $(1/N^* < 1/N_{\text{phys}} \iff N_{\text{phys}} < N^*)$, and positive scaling invariance ($c > 0$). |
+| 5 | `two_sided_completeness_gate` ([L111](GalacticShadow.lean#L111-L128)) | `[]` (`0` axioms) | Exact operational iff: $(N^* \le N_{\text{phys}} \wedge N_{\text{crit}} \le M_{\text{obs}}) \iff (\exists n \in [1, N_{\text{phys}}], P(n)) \wedge (\exists k \le M_{\text{obs}}, \text{TailFail}(k))$ under `IsCrossoverHorizon P nStar` and minimality of `nCrit`. |
+| 6 | `mux_cs09_vs_alkashi_exact_witness` ([L133](GalacticShadow.lean#L133-L140)) | `[propext]` | Exact cleared integer witnesses using `muxHalfMarginDen 9 10 S = 2 * (10^S - 9^S)`: `BF16` `S=3` passes (`542`, `3*542 < 9*254`), `S=4` collapses (`6878 = 19*362`, `19*253 < 4*6878`), and `Al-Kashi` $u=0$ ($\eta_S(0) = 0$) reduces to the universal margin positivity $\forall S \ge 1,\; 9^S < 10^S \wedge 0 < \text{muxHalfMarginDen}\;9\;10\;S$ (Python: `alkashi_u0_passes_checked_s_1_to_16` + `alkashi_u0_all_s_ge_1_lean_theorem`). |
+| 7 | `dark_mode_shadow_and_schur_erasure` ([L171](GalacticShadow.lean#L171-L187)) | `[propext, Quot.sound]` | Blocks extracted inside Lean from the full $3 \times 3$ operator `piInf3 = [[4, 1, -1], [1, 2, 2], [-1, 2, 2]]` via `piInfAt i j`: $M_{BB} = \begin{pmatrix} 2 & 2 \\ 2 & 2 \end{pmatrix}$ (`piInfMbb`) and cleared Moore–Penrose pseudoinverse $M_{BB}^+ = \frac{1}{8}\begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}$: exact rank-1 dark kernel (`v1 = -k, v2 = k`), nonzero coupling $M_{AB} \cdot (-1, 1)^T = $ `piInfAt 0 1 * (-1) + piInfAt 0 2 * 1 = -2 ≠ 0`, all 4 Moore–Penrose identities (scaled by `8`), and exact Schur pushforward `8 * piInfAt 0 0 - M_AB · (8 M_BB^+ M_BA) = 8*4` with `M_BA = (piInfAt 1 0, piInfAt 2 0)`. |
+| 8 | `pi_inf_asymptotic_erasure_shadow` ([L193](GalacticShadow.lean#L193-L225)) | `[propext, Quot.sound]` | For any polynomial models with $e_A < e_B, 0 < c_B, 1 \le N_{\text{phys}}$, and $c_B N_{\text{phys}}^{e_B} \le c_A N_{\text{phys}}^{e_A}$: proves BOTH eventual asymptotic dominance ($\exists N_0 \ge 1, \forall n \ge N_0, c_A n^{e_A} < c_B n^{e_B}$) AND total physical-horizon erasure `piInfErasure nPhys` ($\forall n \in [1, N_{\text{phys}}], \neg(c_A n^{e_A} < c_B n^{e_B})$). |
+| 9 | `finite_fourier_vs_fwht256_crossover` ([L228](GalacticShadow.lean#L228-L245)) | `[propext, Quot.sound]` | `FiniteFourier` vs `FWHT_256` exact `IsCrossoverHorizon` proofs for BOTH `C=3` at `m*=10` (`N* = 2^10 = 1024 > 256`) AND `C=4` at `m*=17` (`N* = 2^17 = 131072 > 256`). |
+| 10 | `karatsuba_exact_recurrence_global_crossover` ([L301](GalacticShadow.lean#L301-L354)) | `[propext, Quot.sound]` | Proves `¬ win(164)`, ALL `[165, 256]` wins (Stage-1 mirage), **ALL `23/23` integers** in `[257, 279]` fail (`∀ n, 257 ≤ n ≤ 279 → ¬(T_K(n) < 2n^2)`), and universal global crossover `∀ n ≥ 280, karatsubaSteps n < 2 * n^2`. |
+| 11 | `strassen_holosphere_cs29_real_crossovers` ([L370](GalacticShadow.lean#L370-L400)) | `[propext, Quot.sound]` | Exact constructive witnesses: Strassen bracket `1366^24 < 4^125 < 1367^24` (`N* = 1367 ≤ 37837`), HoloSphere-V4 (`T* = 6`), CS-29 (`T* = 6`), AKS sorting (`m* = 79`), universal S161 dominance `AG(4, q) < PG(5, q)` for all `q ≥ 2`, and Portal 220 `igholami/sssp-lean` (`2^266 < 590^64`, `2^589 < 590^64 < 2^590`, `591^64 < 2^590`: dyadic `m* = 590`; plus `590^64 + 1 < 2^590`, `591^64 + 1 < 2^590`, `592^64 ≤ 2 * 591^64`: exact integer crossover `N* = 590^64 + 1`). |
+| 12 | `lipton_demillo_sayward_r5_coupling_witness` ([L407](GalacticShadow.lean#L407-L414)) | `[propext]` | True 2nd-order pairwise fault-masking witness on `ldsMaskGate`: $M_1$ mutants (`swapSub`, `flipCmp`) are each individually killed on non-boundary inputs `(9, 10)` and `(11, 10)`, their $M_2$ combination masks both on `(9, 10)` and `(11, 10)`, and the exact boundary `(10, 10)` kills the masked pair. |
+
+**Axiom Summary:** `4` zero-axiom `[]` theorems + `2` `[propext]`-only theorems + `6` `[propext, Quot.sound]` theorems = `12/12` public declarations kernel-checked.
+
+---
+
+## 4. Stage-1 Audit Findings & Portfolio Verification (`15/15 PASS`)
+
+### 4.1 Critical Stage-1 Findings Exposed & Resolved in Stage-2
+
+1. **Karatsuba Truncated-Window Mirage (`165` vs `[257, 279]` Re-Crossings & Global $N^* = 280$):**
+   Stage-1 scanned only `n in range(1, 257)` for $T_K(n) = 3 T_K(\lceil n/2 \rceil) + 4n$ ($T_K(1)=2$) against $2n^2$ and reported $N^* = 165$. Scanning further reveals an exact **23-integer re-crossing interval `[257, 279]`** (every integer $257 \le n \le 279$ fails `T_K(n) < 2n^2`, proved in both Lean Theorem 10 and Python `_verify_karatsuba_recurrence_exact`):
+   - `T_K(256) = 63,562 < 2 * 256^2 = 131,072`
+   - `T_K(257) = 155,414 >= 2 * 257^2 = 132,098` (re-enters schoolbook advantage)
+   - `T_K(279) = 156,354 >= 2 * 279^2 = 155,682` (23rd consecutive re-crossing failure)
+   - `T_K(280) = 156,358 < 2 * 280^2 = 156,800` (**true global crossover $N^* = 280$**, proved universally $\forall n \ge 280$ in Lean and checked exhaustively through `8192`).
+2. **Stage-1 Prose Note Correction (`karatsuba_vs_schoolbook_limbs`):**
+   Stage-1 prose cited `N*=39`, whereas the exact continuous power model $9 N^{1585/1000} < 2 N^2$ resolves to $N^* = 38$ (`38 < 4096`). Both Stage-2 code and report align at `N* = 38`.
+3. **Portal 220 Real-World Nov 2026 Galactic Witness (`igholami/sssp-lean`, `arXiv:2611.34911v1`):**
+   Gholami & Hajiaghayi's randomized $O(m + n \log\log\log n)$ undirected SSSP algorithm (`Alg. 8`, `ShortestPaths.lean:76`) routes every graph with $N \le L_N^{64}$ (`L_N = ceil(log_2(N + 2))`) to scan-based $O(N^2 + m)$ Dijkstra. Pure-$\mathbb{Z}$ verification and Lean Theorem 11 confirm $2^{266} < 2^{589} < 590^{64} < 2^{590}$ (`590^64` has `590` bits / `178` decimal digits) and $591^{64} < 2^{590}$. On the dyadic grid $N = 2^m$ (the `polylog_dyadic` model) the crossover is $m^* = 590$ ($N = 2^{590}$). Over **all integers**, with $L_N = \lceil \log_2(N+2) \rceil$, the exact crossover of $N > L_N^{64}$ is $N^* = 590^{64} + 1 \approx 2^{589.09}$ (`590`-bit): at $N = 590^{64}$, $L_N = 590$ and $N \le L_N^{64}$; for all $N \ge 590^{64} + 1$, either $L_N = 590$ (so $N > 590^{64}$) or $L_N = L \ge 591$ and $N \ge 2^{L-1} - 1 > L^{64}$ by induction from $591^{64} + 1 < 2^{590}$ and $(L+1)^{64} \le 2 L^{64}$ (checked at $L = 591$: $592^{64} \le 2 \cdot 591^{64}$; `SSSP_P220_INT_FAIL` guard + Lean Theorem 11). Both $590^{64} + 1$ and $2^{590}$ exceed $2^{266}$ (`GALACTIC_SHADOW`).
+
+### 4.2 Exact `15`-Pair Real Algorithm Portfolio (`detect_galactic_shadow`)
+
+Canonical tower notation: $\operatorname{tower}_2(h, x)$ denotes $h$ nested base-2 exponentiations (`h=1`: $2^x$; `h=2`: $2^{2^x}$; `h=3`: $2^{2^{2^x}}$).
+
+| # | `pair_id` | Status | `N*` | `N_phys_max` | Ratio at `N_phys` |
+| :-: | :--- | :--- | :--- | :--- | :--- |
+| 1 | `williams_23727_vs_stothers_23737_halving` | `GALACTIC_SHADOW` | exact `2^1000 + 1` (`1001`-bit int) | `2^266` (exact `267`-bit int) | `null` |
+| 2 | `pass_omega_9_4_vs_strassen_q28c` | `GALACTIC_SHADOW` | `2^(6.906285e21)` (`tower_height=1`) | `2^266` | `null` |
+| 3 | `strassen_hybrid_vs_cubed_gemm_sm86` | `TERRESTRIAL_CROSSOVER` | `1367` | `37837` | `null` |
+| 4 | `dickson_10x_cw_vs_cubed_gemm_8gib` | `GALACTIC_SHADOW` | `161560` | `37837` | `null` |
+| 5 | `harvey_vanderhoeven_nlogn_vs_schonhage_strassen` | `GALACTIC_SHADOW` | `2^(1729^12)` (`tower_height=1`) | `68719476736` (`2^36`) | `null` |
+| 6 | `karatsuba_vs_schoolbook_limbs` | `TERRESTRIAL_CROSSOVER` | `38` | `4096` (`2^12`) | `null` |
+| 7 | `aks_sorting_network_vs_batcher_bitonic` | `GALACTIC_SHADOW` | `604462909807314587353088` (`2^79`) | `2147483648` (`2^31`) | `78/31` |
+| 8 | `aks_primality_vs_aprcl_deterministic` | `GALACTIC_SHADOW` | `2^(2^64)` (`tower_height=2, log2_exp=64`) | `68719476736` (`2^36`) | `null` |
+| 9 | `aks_primality_vs_miller_rabin_nondominance` | `NO_ASYMPTOTIC_ADVANTAGE` | `null` | `16384` (`2^14`) | `null` |
+| 10 | `finite_fourier_vs_fwht_256` | `GALACTIC_SHADOW` | `1024` (`2^10`) | `256` (`2^8`) | `9/8` |
+| 11 | `siliquant_voronoi_asymptotic_vs_a16_lop3_popc` | `GALACTIC_SHADOW` | `4000001` | `49152` | `18889/3456` |
+| 12 | `holosphere_v4_cayley_su2_sfast_vs_dense_kv` | `TERRESTRIAL_CROSSOVER` | `6` | `8192` (`2^13`) | `3/4096` |
+| 13 | `holosphere_high_overhead_rf_vs_dense_attention` | `GALACTIC_SHADOW` | `1048576` (`2^20`) | `131072` (`2^17`) | `1048576/131073` |
+| 14 | `cs29_ephemeral_worker_vs_inline_coordinator` | `TERRESTRIAL_CROSSOVER` | `6` | `40` | `23/128` |
+| 15 | `igholami_sssp_lean_vs_dijkstra_cutoff` | `GALACTIC_SHADOW` | dyadic `2^590` (`m* = 590`, `N = 2^m` grid); exact integer crossover `590^64 + 1` (`590`-bit) | `2^266` | `null` |
+
+---
+
+## 5. Operator Parity (`⧅`, `⧄`, `⫩`), `EXP-Q60b` R5 Gate & Mutation Hardening
+
+- **Full Field-by-Field Operator Parity (`[MED-6]`):** Both self-contained exact $\mathbb{Q}$ (`SELF_CONTAINED_EXACT`) and live `aletheia.calculus` (`LIVE_ALETHEIA_CALCULUS_PASS`) agree identically across ALL fields on $\Pi_\infty$ (`dim_dark = 1`, `r_cross = 1`, `kernel_basis = [[-1/1, 1/1]]`, `coupling_map = [[-2/1]]`, full Schur `[[4/1]]`), full-rank pushforward (`dim_dark = 0`, `r_cross = 0`, `kernel_basis = ()`, `coupling_map = None`, full Schur `[[3/1]]`), and `⫩` R5 gates (`passed=True, kill_ratio=1/1` vs leak `passed=False, kill_ratio=1/2`).
+- **S161 Dominance & Cross-Scale Ratio (`[LOW-7]`):** Universal same-$q$ dominance $AG(4, q) < PG(5, q)$ is proved $\forall q \ge 2$ in Lean Theorem 11 (and checked for $q \in [2, 27]$ in Python). Separately, comparing the Track S161 projective baseline `PG(5, 27) = 29,840,942` against the affine architecture `AG(4, 25)_pconn = 782,242` yields the cross-scale shrinkage ratio `PG(5, 27) / AG(4, 25)_pconn = 14920471/391121` (`s161_cross_scale_pg5_27_over_ag4_25_q`).
+- **Boundary & Rejection Checks (`EXP-Q60b`):** Exact `N*=11` discriminator passes at `N_phys=11` (`TERRESTRIAL_CROSSOVER`) and flags shadow at `N_phys=10` (`GALACTIC_SHADOW`); `9/9` malformed/bool/float/dup-key/Unicode-digit/huge-denom inputs rejected.
+- **Lipton–DeMillo–Sayward Coupling & True 2nd-Order Fault Masking (`[MED-8]`):** Pure-AST mutant engine (`0` `eval`/`exec`/`compile`, fail-closed on unknown `ast.cmpop`) kills `12/12` (`1/1`) first-order mutants $M_1$ and `60/60` (`1/1`, `0` survivors) pairwise second-order combinations $M_2$ on `gate_kernel`, while verifying a true 2nd-order pairwise fault-masking witness on `mask_kernel`: $M_1$ (`sub_swap`) and $M_1$ (`cmp_neg`) are each individually killed without boundary `(100, 100)`, their $M_2$ combination survives non-boundary `{(99, 100), (101, 100)}`, and adding the exact boundary `(100, 100)` kills the masked pair.
+- **Dual Uncapped Verifier Mutation Hardening (`aletheia mutate --max-mutants 0 --workers 8`):**
+  - **Pass 1 (`default`):** `264/264` killed (**`100.0%`**, `0` survivors, `null_mutant: passed`, `truncated: false`).
+  - **Pass 2 (`--guards need`):** `264/264` killed (**`100.0%`**, `0` survivors, `null_mutant: passed`, `truncated: false`).
+- **Delta-3 Remediation Closure Matrix (`100%` of `AUDIT-S174-EXP-Q60-S2-DELTA2.md`, `b96267fa...`):**
+  - `HIGH-1`: `_resolve_power_horizon_gt_exact` now compares on integer problem sizes $N \le F = \lfloor 2^{k_n/k_d} \rfloor$ (exact `_iroot_floor` Newton descent): shadow iff $r_n^q \ge r_d^q F^p$ (bit-budgeted on `k_n`, `k_d`, `p (k_n // k_d + 1)`). R5: `5/2*N` (and `2*N`) vs `N^2` @ `pow2_bound("3/2")` -> `GALACTIC_SHADOW` (`N* = 3 > 2^{1.5}`), `199/100*N` -> `TERRESTRIAL_CROSSOVER`; `> 2^4096` continued-fraction convergent (`2259`/`1849`-bit, $(r_n/r_d)^{10} \in (\lfloor 2^{8201/2} \rfloor, 2^{8201/2})$) vs `N^(11/10)` @ `pow2_bound("8201/2")` -> `GALACTIC_SHADOW`.
+  - `MED-1`: Portal 220 aligned across code (`_verify_portal_220_sssp_lean_witness` + `SSSP_P220_INT_FAIL`), certificate (`integer_crossover_n_star_str = 590^64 + 1`, `dyadic_crossover_m_star = 590`), Lean Theorem 11 (`590^64 + 1 < 2^590`, `591^64 + 1 < 2^590`, `592^64 <= 2 * 591^64`), and this report (§4.1 item 3, §4.2 row 15).
+  - `MED-2`: `tokenize_lean4` now decrements `pending_args` on raw-string, char, and `s!` arguments and, independently of argument counting, forbids `{`/`}` in every plain string after an allowlisted argument macro until a column-0 top-level declaration keyword (all 5 audit repros incl. `x[0]!` / `throwNamedErrorAt x[0]! foo` -> `LEAN_AMBIG_INTERP`).
+  - `MED-3`: `verify_pure_q_ast` admits `**`/`**=` only with non-negative int-literal exponents (`AST_NONLITERAL_POW_FORBIDDEN`; all `35` computed powers routed through runtime-checked `_ipow`), bans `operator`/`_operator`/`struct`/`ctypes`/`pickle`/`marshal`, `getattr`/`vars`/`globals`/`__builtins__`, `truediv`/`pow`/`__truediv__`/`__pow__`/`__float__` attributes, `from importlib import import_module`, and any `import_module` call other than the literal `"aletheia.calculus"` (`AST_FORBIDDEN_DYNAMIC_IMPORT`).
+  - `LOW-1..4`: Lean Thm 6 states the substantive universal margin positivity ($9^S < 10^S \wedge 0 < 2(10^S - 9^S)$) and Python reports `alkashi_u0_passes_checked_s_1_to_16` + Lean-theorem pointer; Lean Thm 7 extracts all blocks from `piInf3`; polylog `m_mono` uses cancelling `ba - bb` when `ob <= oa` (audit repro -> exact `m* = 1`); all `REPORT.md` Lean anchors re-derived and LDS helpers (`_lds_apply_sub_swap`, `_lds_apply_cmp_neg`, non-`Return` `If` bodies, unknown statements) fail closed with `LDS_AST_UNSUPPORTED`.
+- **Delta-2 Remediation Closure Matrix (`100%` of `AUDIT-S174-EXP-Q60-S2.md`):**
+  - `HIGH-1..4`: Exact multi-height `tower_height` comparison + fail-closed `HORIZON_INCOMPARABLE` + exact power tie/overlap refinement + `2^266` report fix; analytic peak/monotonicity polylog solver (immune to early dips, uncapped); quadratic vertex minimum check (`N*=1` everywhere-dominant); Lean Thm 4 exact `PosRat` `u = 1/N` reciprocal order-reversal.
+  - `MED-1..8`: S168 Delta-3 `dbg_trace`/`m!`/`throwError`/`throwErrorAt`/`stop`/`macro_rules` fail-closed `LEAN_AMBIG_INTERP`; Lean Thms 5–12 upgraded 1-to-1 with `REPORT.md`; static theorem signature SHA + `PINNED_LEAN_SHA256` + live kernel `example` type pins; `tower_cutoff` `asymp_rank` enforcement; bounded rational digits/exponents & bit budgets; full `kernel_basis`/`coupling_map` live `aletheia.calculus` parity; `float()`/`pow()`/`2**-1` AST bans; true 2nd-order pairwise LDS masking witness.
+  - `LOW-1..7`: Distinct `--live-lean` vs `--live-lean --aletheia-root` payload SHAs + `EXP-Q60a+EXP-Q60b`; ASCII-only `_FRAC_RE`; unused `--json` removed + non-empty `lean --version` stderr rejected; `os.path.lexists` + extra `.lean` ban + strict `lakefile.toml` target/root/glob pinning; non-conflated `LEAN_AMBIG_INTERP` tests; fail-closed unknown `cmpop` + computed `alkashi_u0_passes_all_s`; explicit cross-scale `PG(5, 27) / AG(4, 25)_pconn` labeling.
+- **Isolation, RO Snapshot & Security Audit Gates (`PASS`):**
+  - `3x -I` (`-I -B`, `-I -O -B`, `-I -B -W error`) bit-identical on RW workspace and fresh `chmod -R a-w` RO copy (`/dev/shm/test_s174_d3_ro`, cleanly deleted post-check).
+  - Standalone `lean 4.36.0` (`0` warnings, `0` `.lake/`), RO `--check --live-lean`, offline forgery rejection (`RC=2`), and `aletheia audit-check --lean-audit --strict-ancestors --safety-scan --strict-unseeded PASS`.
