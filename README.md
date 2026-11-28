@@ -52,6 +52,6 @@ node tools/build-condensed.mjs  # regenerate site/condensed.json after editing v
 Pushes to `main` test and publish the site with GitHub Pages
 (`.github/workflows/pages.yml`).
 
-The research content itself lives in the open pull requests: #1 (the
-framework), #2 (the anthology of session forms) and #16 (the audited
-instruments the site draws on, now on main, superseding #3).
+The research framework (#1) and the anthology of session forms (#2) are
+in open pull requests. The audited instruments the site draws on landed on
+main through #16, which superseded #3.

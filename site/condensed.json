@@ -142,10 +142,10 @@
    "Solid today: seven audited tools, six exact rational. Cell area below = bytes only.",
    "Strong bit: seven checked tools, exact fractions. Box size = file size."
   ],
-  "defdb31a": [
-   "Each runs on the Python standard library and prints a reproducible verdict. They sit in an open pull request, not on main; links go to that branch. Merging is the repository's call, not this page's.",
-   "Standard-library Python, reproducible verdicts, open pull request. Merge is the repo's call.",
-   "Plain Python tools. Same answer every run. Waiting in pull request."
+  "a2da1802": [
+   "Each runs on the Python standard library and prints a reproducible verdict.",
+   "Standard-library Python with byte-for-byte reproducible verdicts.",
+   "Plain Python. Same answer each run."
   ],
   "f1ba1b87": [
    "This page grades its own sentences, read from the repository on 22 November 2026. Exact: rational arithmetic, independently verified. Sampled: stated cases, null controls. Proposed: argued, untested. Falsified: tested, wrong as stated, repair named.",
