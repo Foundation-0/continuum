@@ -43,7 +43,7 @@ MAX_POLYLOG_M = 1 << 60
 EXPECTED_TOOLCHAIN = "leanprover/lean4:v4.36.0"
 EXPECTED_LEAN_VERSION_TOKEN = "version 4.36.0,"
 MAX_LEAN_LINES = 420
-PINNED_LEAN_SHA256 = "de3356872dbf6ab1d263d2a2167266e2ca99bc518e1df266a008ffbd9ae76b5e"
+PINNED_LEAN_SHA256 = "98018d32582b630d0195e30db680d581745094b7ce4470c9a0a6c62529449862"
 PINNED_THEOREM_SIG_SHA256 = "369d38789473f0efce7c1c57718aefb00023a79bf4f875fc0ce2d5153d6b3046"
 
 EXPECTED_THEOREMS: tuple[str, ...] = (
@@ -1886,7 +1886,7 @@ def build_real_algorithm_portfolio() -> list[dict[str, Any]]:
         },
         {
             "pair_id": "igholami_sssp_lean_vs_dijkstra_cutoff",
-            "source": "Portal 220 / arXiv:2611.34911v1 (igholami/sssp-lean Alg. 8: N <= L_N^64; dyadic N = 2^m crossover m* = 590 (N = 2^590); exact integer crossover N* = 590^64 + 1 > 2^266)",
+            "source": "Portal 220 / arXiv:2611.34911v1 (igholami/sssp-lean Alg. 8: N <= L_N^64; dyadic N = 2^m crossover m* = 590 (N = 2^590); first integer crossing 589^64 + 1; eventual integer crossover N* = 590^64 + 1 > 2^266)",
             "expected_status": "GALACTIC_SHADOW",
             "cost_asymp": {"kind": "polylog_dyadic", "coeff": "1", "n_exponent": "0", "log_exponent": "64", "log_offset": 1},
             "cost_practical": {"kind": "polylog_dyadic", "coeff": "1", "n_exponent": "1", "log_exponent": "0", "log_offset": 0},
@@ -2559,31 +2559,58 @@ def _verify_portal_220_sssp_lean_witness(
 ) -> dict[str, Any]:
     """Pure-Z verification of Portal 220 (arXiv:2611.34911v1 / igholami/sssp-lean) cutoff 590^64 > 2^266.
 
-    MED-1 (Delta-2): with L_N = ceil(log2(N + 2)) = (N + 1).bit_length(), the exact INTEGER crossover of
-    N > L_N^64 is N* = 590^64 + 1 (L = 590 on [2^589 - 1, 2^590 - 2] and N = 590^64 <= L^64 fails), while
-    N = 2^590 is only the DYADIC (N = 2^m) crossover m* = 590. Universality for all N >= 590^64 + 1:
-    L = 590 gives N > 590^64; L >= 591 gives N >= 2^(L-1) - 1 > L^64 by induction from 591^64 + 1 < 2^590
-    and (L + 1)^64 <= 2 * L^64 (ratio decreasing in L, checked at L = 591).
+    With L_N = ceil(log2(N + 2)) = (N + 1).bit_length(), the predicate P(N) := N > L_N^64 has TWO distinct integer
+    crossover points, both computed here by an exact band scan (L = m on [2^(m-1) - 1, 2^m - 2]) and NOT assigned:
+
+    * FIRST crossing (least N with P(N)): N_first = 589^64 + 1 (the first band with 2^m - 2 > m^64 is m = 589).
+    * EVENTUAL crossover (least N0 with P(N) for ALL N >= N0, the eventual-dominance N* used by the portfolio and by
+      the Karatsuba N* = 280 witness): N* = 590^64 + 1. Between them P re-fails on [2^589 - 1, 590^64] because
+      2^589 < 590^64 (a Karatsuba-style re-crossing window), so N_first < N*.
+
+    The dyadic (N = 2^m) crossover is m* = 590. Universality beyond the scan: for L >= L0 = base + 1,
+    2^(L-1) - 1 > L^64 holds at L0 and (L + 1)^64 <= 2 * L^64 holds at L0 (and for all L >= L0 because the ratio
+    ((L + 1) / L)^64 decreases in L), so every band with L >= L0 lies entirely inside P by induction.
     """
+    need(2 <= base <= 4096 and 1 <= exp <= 4096, "SSSP_P220_INT_FAIL", "Portal 220 integer-crossover band scan out of bounds")
     cut_590_64 = _ipow(base, exp)
     cut_591_64 = _ipow(base + 1, exp)
     cut_592_64 = _ipow(base + 2, exp)
     univ_266 = 1 << univ_bits
-    p589 = 1 << 589
-    p590 = 1 << 590
+    p589 = 1 << (base - 1)
+    p590 = 1 << base
     need(cut_590_64 > univ_266 and p589 < cut_590_64 < p590 and cut_591_64 < p590, "SSSP_P220_FAIL", "Portal 220 590^64 cutoff witness failed")
-    n_int_star = cut_590_64 + 1
-    l_at_cut = (cut_590_64 + 1).bit_length()
-    l_at_star = (n_int_star + 1).bit_length()
+    l0 = base + 1
+    first_crossing = 0
+    last_failing = 0
+    for m in range(2, l0 + 1):
+        band_lo = (1 << (m - 1)) - 1
+        band_hi = (1 << m) - 2
+        power = _ipow(m, exp)
+        if first_crossing == 0 and band_hi > power:
+            first_crossing = max(band_lo, power + 1)
+        if band_lo <= min(band_hi, power):
+            last_failing = min(band_hi, power)
+    tail_ok = (
+        (1 << (l0 - 1)) - 1 > _ipow(l0, exp)
+        and _ipow(l0 + 1, exp) <= 2 * _ipow(l0, exp)
+    )
+    n_int_star = last_failing + 1
+    first_pow_base = _ipow(base - 1, exp)
     need(
-        l_at_cut == base
-        and cut_590_64 <= _ipow(l_at_cut, exp)
-        and l_at_star == base
-        and n_int_star > _ipow(l_at_star, exp)
+        tail_ok
+        and first_crossing == first_pow_base + 1
+        and (first_crossing + 1).bit_length() == base - 1
+        and first_crossing > _ipow((first_crossing + 1).bit_length(), exp)
+        and last_failing == cut_590_64
+        and n_int_star == cut_590_64 + 1
+        and (cut_590_64 + 1).bit_length() == base
+        and (n_int_star + 1).bit_length() == base
+        and n_int_star > _ipow((n_int_star + 1).bit_length(), exp)
+        and first_crossing < n_int_star
         and cut_591_64 + 1 < p590
         and cut_592_64 <= 2 * cut_591_64,
         "SSSP_P220_INT_FAIL",
-        "Portal 220 exact integer crossover 590^64 + 1 witness failed",
+        "Portal 220 exact integer crossover (first 589^64 + 1, eventual 590^64 + 1) witness failed",
     )
     return {
         "source": "arXiv:2611.34911v1 / igholami/sssp-lean (Alg. 8: N <= L_N^64, L_N = ceil(log2(N + 2)))",
@@ -2593,10 +2620,15 @@ def _verify_portal_220_sssp_lean_witness(
         "dyadic_crossover_m_star": 590,
         "dyadic_crossover_n_label": "2^590 (N = 2^m dyadic grid only)",
         "dyadic_bracket_589_590_exact": True,
+        "first_crossing_n_str": str(first_crossing),
+        "first_crossing_n_label": "589^64 + 1 (least N with N > L_N^64)",
+        "first_crossing_bit_length": first_crossing.bit_length(),
+        "refail_window_first_n_str": str(p589 - 1),
+        "refail_window_last_n_str": str(cut_590_64),
         "integer_crossover_n_star_str": str(n_int_star),
-        "integer_crossover_n_star_label": "590^64 + 1",
+        "integer_crossover_n_star_label": "590^64 + 1 (eventual: least N0 with N > L_N^64 for all N >= N0)",
         "integer_crossover_bit_length": n_int_star.bit_length(),
-        "integer_crossover_universal_induction_exact": True,
+        "integer_crossover_universal_induction_exact": tail_ok,
     }
 
 
@@ -2768,8 +2800,6 @@ def build_certificate(
         "lean_bundle": lean_info,
         "novelty_classification": "N1",
         "oracle_class": "exact",
-        "prior_stage1_prereg_id": "PREREG-W22-GALACTIC-SHADOW",
-        "prior_stage1_prereg_sha256": "8145a7c7bbc25a14ba0cc38d0866e9884f8459ea5bb0a8af6713f14fdbc0565f",
         "queue_id": "EXP-Q60a+EXP-Q60b",
         "schema": "s174.q60.galactic_shadow_certificate.v2",
         "source_sha256": source_hashes,

@@ -366,7 +366,7 @@ private theorem lt_of_eq_lt {x y z : Nat} (h1 : x = y) (h2 : y < z) : x < z := b
 private theorem lt_of_lt_eq {x y z : Nat} (h1 : x < y) (h2 : y = z) : x < z := by
   cases h2; exact h1
 
-/-- Theorem 11: Real stack crossovers: Strassen (1366/1367, N*=1367 <= 37837), HoloSphere-V4 (T*=6), CS-29 (T*=6), AKS sorting (m*=79), S161 AG(4,q) < PG(5,q) for all q >= 2, and Portal 220 sssp-lean (2^266 < 590^64 < 2^590, 591^64 < 2^590: dyadic N = 2^m crossover m* = 590; 590^64 + 1 < 2^590, 591^64 + 1 < 2^590, 592^64 <= 2 * 591^64: exact integer crossover N* = 590^64 + 1 of N > L_N^64). -/
+/-- Theorem 11: Real stack crossovers: Strassen (1366/1367, N*=1367 <= 37837), HoloSphere-V4 (T*=6), CS-29 (T*=6), AKS sorting (m*=79), S161 AG(4,q) < PG(5,q) for all q >= 2, and Portal 220 sssp-lean (2^266 < 590^64 < 2^590, 591^64 < 2^590: dyadic N = 2^m crossover m* = 590; 590^64 + 1 < 2^590, 591^64 + 1 < 2^590, 592^64 <= 2 * 591^64). This theorem proves these numeric inequalities only; it does not formalize an integer crossover N* of N > L_N^64. The integer crossover points (first crossing 589^64 + 1, eventual crossover 590^64 + 1) are computed by the Python verifier's exact band scan, not by this theorem. -/
 theorem strassen_holosphere_cs29_real_crossovers :
     (1366 ^ 24 < 4 ^ 125 ∧ 4 ^ 125 < 1367 ^ 24 ∧ 1367 ≤ 37837) ∧
     IsCrossoverHorizon (fun t => 65536 + t < 12288 * t) 6 ∧

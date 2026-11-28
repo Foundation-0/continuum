@@ -882,13 +882,32 @@ class TestS174GalacticShadowR5(unittest.TestCase):
         self._assert_err("CS09_DUAL_FAIL", lambda: gsv._verify_cs09_galactic_duality_witness(scale_pairs=((4, 3),)))
         self.assertTrue(gsv._verify_portal_220_sssp_lean_witness()["exceeds_universe_2_pow_266"])
         self._assert_err("SSSP_P220_FAIL", lambda: gsv._verify_portal_220_sssp_lean_witness(base=2))
-        # MED-1 (Delta-2): exact integer crossover N* = 590^64 + 1 (vs dyadic 2^590), independently recomputed
+        # Portal 220 integer crossovers, independently recomputed: FIRST crossing 589^64 + 1 (least N with N > L_N^64) and
+        # EVENTUAL crossover N* = 590^64 + 1 (least N0 with N > L_N^64 for all N >= N0); the dyadic crossover is m* = 590.
         p220 = gsv._verify_portal_220_sssp_lean_witness()
+        n_first = 589 ** 64 + 1
         n_int = 590 ** 64 + 1
+        self.assertEqual(p220["first_crossing_n_str"], str(n_first))
         self.assertEqual(p220["integer_crossover_n_star_str"], str(n_int))
-        self.assertEqual((p220["integer_crossover_bit_length"], p220["dyadic_crossover_m_star"], p220["integer_crossover_n_star_label"]), (590, 590, "590^64 + 1"))
-        self.assertTrue(n_int - 1 <= ((n_int - 1) + 1).bit_length() ** 64 and n_int > (n_int + 1).bit_length() ** 64)
+        self.assertEqual(
+            (p220["first_crossing_bit_length"], p220["integer_crossover_bit_length"], p220["dyadic_crossover_m_star"]),
+            (589, 590, 590),
+        )
+        self.assertEqual(p220["refail_window_first_n_str"], str((1 << 589) - 1))
+        self.assertEqual(p220["refail_window_last_n_str"], str(590 ** 64))
+        self.assertIs(p220["integer_crossover_universal_induction_exact"], True)
+        self.assertTrue(n_first > (n_first + 1).bit_length() ** 64 and n_first - 1 <= ((n_first - 1) + 1).bit_length() ** 64)
+        self.assertTrue(n_int > (n_int + 1).bit_length() ** 64 and n_int - 1 <= ((n_int - 1) + 1).bit_length() ** 64)
+        # The first crossing is NOT the eventual crossover: P re-fails at 2^589 - 1 <= 590^64 (L = 590 band).
+        n_refail = (1 << 589) - 1
+        self.assertTrue(n_refail <= (n_refail + 1).bit_length() ** 64 and n_first < n_refail < n_int)
         self.assertTrue(589 ** 64 < (1 << 589) - 2 and ((1 << 589) - 1) <= ((1 << 589) - 1 + 1).bit_length() ** 64)
+        # Exhaustive brute-force cross-check of the band scan on a small instance (base=6, exp=2): first=26, eventual=37.
+        p_small = gsv._verify_portal_220_sssp_lean_witness(base=6, exp=2, univ_bits=2)
+        fails_small = [n for n in range(1, 4096) if n <= ((n + 1).bit_length()) ** 2]
+        self.assertEqual(min(n for n in range(1, 4096) if n not in fails_small), int(p_small["first_crossing_n_str"]))
+        self.assertEqual(max(fails_small) + 1, int(p_small["integer_crossover_n_star_str"]))
+        self.assertEqual((p_small["first_crossing_n_str"], p_small["integer_crossover_n_star_str"]), ("26", "37"))
         self._assert_err("SSSP_P220_INT_FAIL", lambda: gsv._verify_portal_220_sssp_lean_witness(base=(1 << 589) + 1, exp=1))
         mux_w = gsv._verify_mux_cs09_witness()
         self.assertIs(mux_w[4], True)

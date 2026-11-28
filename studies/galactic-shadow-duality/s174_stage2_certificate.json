@@ -90,10 +90,15 @@
       "dyadic_crossover_m_star": 590,
       "dyadic_crossover_n_label": "2^590 (N = 2^m dyadic grid only)",
       "exceeds_universe_2_pow_266": true,
+      "first_crossing_bit_length": 589,
+      "first_crossing_n_label": "589^64 + 1 (least N with N > L_N^64)",
+      "first_crossing_n_str": "1938111981431118598628903515753047043696668555260980322369489207124043350454271623211173187479582684856639938987287147281633027619968763786364928512965370630489835656691917635842",
       "integer_crossover_bit_length": 590,
-      "integer_crossover_n_star_label": "590^64 + 1",
+      "integer_crossover_n_star_label": "590^64 + 1 (eventual: least N0 with N > L_N^64 for all N >= N0)",
       "integer_crossover_n_star_str": "2160373020882152640073530204217550203038369458649719437938848235440878340387193555035212269915534933515580375897610000000000000000000000000000000000000000000000000000000000000001",
       "integer_crossover_universal_induction_exact": true,
+      "refail_window_first_n_str": "2026130648867672343023636652192949780767796011837127392576004555513014068072709055859231957493703024554784124321924213467966382361040905912054138102594708831572842677442143322111",
+      "refail_window_last_n_str": "2160373020882152640073530204217550203038369458649719437938848235440878340387193555035212269915534933515580375897610000000000000000000000000000000000000000000000000000000000000000",
       "source": "arXiv:2611.34911v1 / igholami/sssp-lean (Alg. 8: N <= L_N^64, L_N = ceil(log2(N + 2)))"
     },
     "portfolio_matched": 15,
@@ -493,7 +498,7 @@
         "observed_status": "GALACTIC_SHADOW",
         "pair_id": "igholami_sssp_lean_vs_dijkstra_cutoff",
         "shadow_detected": true,
-        "source": "Portal 220 / arXiv:2611.34911v1 (igholami/sssp-lean Alg. 8: N <= L_N^64; dyadic N = 2^m crossover m* = 590 (N = 2^590); exact integer crossover N* = 590^64 + 1 > 2^266)"
+        "source": "Portal 220 / arXiv:2611.34911v1 (igholami/sssp-lean Alg. 8: N <= L_N^64; dyadic N = 2^m crossover m* = 590 (N = 2^590); first integer crossing 589^64 + 1; eventual integer crossover N* = 590^64 + 1 > 2^266)"
       }
     ],
     "portfolio_total": 15,
@@ -526,7 +531,7 @@
   "lean_bundle": {
     "axioms_verified_count": 0,
     "file_sha256": {
-      "GalacticShadow.lean": "de3356872dbf6ab1d263d2a2167266e2ca99bc518e1df266a008ffbd9ae76b5e",
+      "GalacticShadow.lean": "98018d32582b630d0195e30db680d581745094b7ce4470c9a0a6c62529449862",
       "lake-manifest.json": "b3ac284e48dc3ce4790960b4400f824095bfc9fed69f846edcee4b6d69755e2e",
       "lakefile.toml": "6dba36945b6b6db0121bc9d8d2070b6c6057a02c8b758b9c9e498694874cd739",
       "lean-toolchain": "582a63f8f9c5128067b688778c1051cf1464c3ca9d57b9325025c051c29b774a"
@@ -547,14 +552,12 @@
   },
   "novelty_classification": "N1",
   "oracle_class": "exact",
-  "payload_sha256": "e0195c06321ef71d11eb201b5ed0b22f11255f34cb7ab92766adc62d08e5c182",
-  "prior_stage1_prereg_id": "PREREG-W22-GALACTIC-SHADOW",
-  "prior_stage1_prereg_sha256": "8145a7c7bbc25a14ba0cc38d0866e9884f8459ea5bb0a8af6713f14fdbc0565f",
+  "payload_sha256": "3f3359b1c61c655bf577f72244cf790e153f6ec773675672218a330ba2dd8701",
   "queue_id": "EXP-Q60a+EXP-Q60b",
   "schema": "s174.q60.galactic_shadow_certificate.v2",
   "source_sha256": {
-    "galactic_shadow_verifier.py": "99796efb58a6031392bfb8cd55b6692feb096685e52e079d07882c91058bfa89",
-    "test_galactic_shadow_r5.py": "bc3b2a36f4afbe7b582edbb6f5c52fb2ed0b5eb4deb84a4e7d69eb30be1746d4"
+    "galactic_shadow_verifier.py": "7de664951759a2bc5922db80cb2d8d68311d3e995d8e4e528dcf4a2bfde3d997",
+    "test_galactic_shadow_r5.py": "21d3c2f4a2508ca03ce70c1f856418a57ef8af4cf8ecb1d97667e37c719f42da"
   },
   "stage": "STAGE2_FORTRESS",
   "track": "S174",

@@ -35,11 +35,11 @@ jobs:
         run: |
           set -euo pipefail
           sha256sum --check --strict - <<'EOF'
-          de3356872dbf6ab1d263d2a2167266e2ca99bc518e1df266a008ffbd9ae76b5e  GalacticShadow.lean
-          99796efb58a6031392bfb8cd55b6692feb096685e52e079d07882c91058bfa89  galactic_shadow_verifier.py
-          bc3b2a36f4afbe7b582edbb6f5c52fb2ed0b5eb4deb84a4e7d69eb30be1746d4  test_galactic_shadow_r5.py
-          6e9f530c5c453dba060cb653aab3dd5bfa85120946d41cb8518268b5c9c5edd2  s174_stage2_certificate.json
-          0e2f68fc4443a0aabfe1d0967e45337574b7a924fdbc1180a0a5d152e66426e4  REPORT.md
+          98018d32582b630d0195e30db680d581745094b7ce4470c9a0a6c62529449862  GalacticShadow.lean
+          7de664951759a2bc5922db80cb2d8d68311d3e995d8e4e528dcf4a2bfde3d997  galactic_shadow_verifier.py
+          21d3c2f4a2508ca03ce70c1f856418a57ef8af4cf8ecb1d97667e37c719f42da  test_galactic_shadow_r5.py
+          d057ee8ba21c30435ac2d876c1ebc2080553668009a8943bce73ba7ca3610718  s174_stage2_certificate.json
+          66824cba8e804b1b7a697c15144a9f1f9bdfe16005a39d7470546632ecd3cff1  REPORT.md
           582a63f8f9c5128067b688778c1051cf1464c3ca9d57b9325025c051c29b774a  lean-toolchain
           6dba36945b6b6db0121bc9d8d2070b6c6057a02c8b758b9c9e498694874cd739  lakefile.toml
           b3ac284e48dc3ce4790960b4400f824095bfc9fed69f846edcee4b6d69755e2e  lake-manifest.json
@@ -171,7 +171,7 @@ jobs:
           if mode != "LIVE_LEAN_4_36_0_PASS":
               raise SystemExit(f"unexpected mode: {mode}")
           psha = d["payload_sha256"]
-          if psha != "54550b2ffd16f6c2dab4e4589bd394f38d0db763ee1701d9ace3d601985a9248":
+          if psha != "a967e497db93ccca05b352f6fcaa425429b8f224d2d8b78438bd875ac1bcc80f":
               raise SystemExit(f"unexpected payload_sha256: {psha}")
           '
           rm -f /tmp/s174_live_lean.json
