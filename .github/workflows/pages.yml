@@ -1,0 +1,73 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Test the instruments and the site
+        run: npm test
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+        if: github.event_name != 'pull_request'
+      - name: Assemble the site
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir _site
+          cp -R site src css _site/
+          touch _site/.nojekyll
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="color-scheme" content="dark light">
+            <meta http-equiv="refresh" content="0; url=site/">
+            <link rel="canonical" href="site/">
+            <title>Continuum</title>
+            <style>html{background:#070f19;color:#eef4fc;font:1rem system-ui,sans-serif}@media (prefers-color-scheme:light){html{background:#faf5eb;color:#102135}}body{margin:0;min-height:100vh;display:grid;place-items:center}a{color:inherit}</style>
+          </head>
+          <body>
+            <p><a href="site/">Continuum</a></p>
+          </body>
+          </html>
+          HTML
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        if: github.event_name != 'pull_request'
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

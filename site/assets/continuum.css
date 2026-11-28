@@ -1,0 +1,42 @@
+/* Continuum additions to the Eido site stylesheet. The frame point
+   (Eido D1) writes --rounding, --density and --contrast; this file is
+   where the page actually spends them, so every printed component of
+   the state vector has a visible effect and no other one. */
+
+:root {
+  --rounding: 0.62;
+  --density: 0.35;
+  --contrast: 0.08;
+}
+
+/* Density breathes the flow: denser frames pull the movements closer. */
+main#main > article {
+  --breath: clamp(2.2rem, calc(1.4rem + (1 - var(--density)) * 9vh), 7rem);
+}
+
+/* Rounding softens the one surface a hand needs: the controls. */
+.btn, .chip, .copy {
+  border-radius: calc(0.25rem + var(--rounding) * 2.2rem);
+}
+
+/* Contrast deepens the wash behind an engaged control. */
+.btn[aria-pressed="true"], .chip[aria-pressed="true"] {
+  background: oklch(0.84 0.125 var(--h-crest) / calc(0.08 + var(--contrast) * 0.9));
+}
+:root[data-theme="light"] .btn[aria-pressed="true"],
+:root[data-theme="light"] .chip[aria-pressed="true"] {
+  background: oklch(0.54 0.12 var(--h-crest) / calc(0.06 + var(--contrast) * 0.9));
+}
+
+/* Claim grades in the record. Colour is redundant with the word in
+   every badge: the text alone carries the grade. */
+.badge.thesis { color: var(--code-ink); }
+.badge.sampled { color: var(--accent-3); box-shadow: inset 0 0 0 var(--hair) var(--accent-3); }
+.badge.falsified { color: var(--alert); box-shadow: inset 0 0 0 var(--hair) var(--alert-line); }
+
+figure.movement { margin: 0; }
+
+@media print {
+  .controls, .weft-nav .theme { display: none; }
+  canvas.stage { break-inside: avoid; }
+}
