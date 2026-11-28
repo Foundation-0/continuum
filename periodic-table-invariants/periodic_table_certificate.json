@@ -20,13 +20,13 @@
       27,
       945
     ],
-    "class_a_holder_comma_gt_1": true,
     "class_a_madhava_r3_n50_speedup_floor": 27872151775,
     "class_a_madhava_telescoping_counts": [
       49,
       49,
       49
     ],
+    "class_a_mercator_comma_gt_1": true,
     "class_a_rhind_2_17_denoms": [
       12,
       51,
@@ -44,11 +44,12 @@
       "zoom_14": 55,
       "zoom_16": 63
     },
-    "class_b_cancellation_checks_ok": 11,
-    "class_b_cancellation_checks_total": 11,
-    "class_b_cayley_s3_bijection_count": 5,
+    "class_b_cancellation_checks_ok": 12,
+    "class_b_cancellation_checks_total": 12,
+    "class_b_cayley_s3_roundtrip_count": 5,
     "class_b_stereo_cayley_embed_count": 5,
-    "class_b_stereo_s2_bijection_count": 5,
+    "class_b_stereo_cayley_poly_proof_identities": 19,
+    "class_b_stereo_s2_roundtrip_count": 5,
     "class_c_a16_secded_matrix": {
       "code_length": 16,
       "codeword_count": 2048,
@@ -57,9 +58,25 @@
       "nonzero_disjoint_2bit_syndromes": 120,
       "parity_check_rows": 5
     },
-    "class_c_bamana_65536_even_and_a16": [
+    "class_c_bamana_65536_parity_identity_and_a16": [
       65536,
       65536
+    ],
+    "class_c_casarabe_adjacency_exact": true,
+    "class_c_casarabe_degree_sequence": [
+      6,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
     ],
     "class_c_casarabe_graph_counts": [
       13,
@@ -92,8 +109,8 @@
       1,
       2
     ],
-    "class_c_topological_checks_ok": 18,
-    "class_c_topological_checks_total": 18,
+    "class_c_topological_checks_ok": 19,
+    "class_c_topological_checks_total": 19,
     "class_c_tucker_c3_single_copy_orders": 0,
     "class_c_z2_twisted_vs_untwisted_sections": [
       0,
@@ -132,7 +149,8 @@
     "panini_slot_and_phoneme_counts": [
       43,
       42,
-      43
+      43,
+      14
     ]
   },
   "modular_flow_and_partition": {
@@ -149,6 +167,15 @@
     "modular_flow_checks_total": 15,
     "panini_c1p_descriptor_ratio": "21/5",
     "panini_c1p_total_ratio": "21/8",
+    "panini_encoding_bit_widths": {
+      "descriptor_bits_per_class": 10,
+      "descriptor_bits_total": 430,
+      "encoded_bits_total": 688,
+      "it_marker_id_bits": 4,
+      "naive_bits_total": 1806,
+      "phoneme_id_bits": 6,
+      "sivasutra_table_bits": 258
+    },
     "two_clock_record_shift_delta_beta2": "144/31",
     "two_clock_white_noise_beta2_n16_n256": [
       "1",
@@ -185,10 +212,10 @@
     "entry_count": 16,
     "family_count": 5,
     "in_module_verified_entries": 16,
-    "periodic_table_sha256": "a598201702143fcb3c9e7cb45bfb7a68db724061b2d1698421b330f176e4f0f9",
+    "periodic_table_sha256": "34593b6e149b932cc545db4e0081dfa5771b13d8b8a4fc45b32190e74ea0d9e6",
     "schema_version": "continuum.periodic_table_of_invariants.v2"
   },
-  "result_sha256": "1647446d6808623db4adfb37bd645da2b89f0110def0224694de07cc39122776",
+  "result_sha256": "d6f8c023e4f399c1d48d96f8100e542a4692faeee1d7760ac64a6d53abd4896b",
   "schema_version": "continuum.universal_invariants_certificate.v2",
   "target_repo": "Foundation-0/continuum"
 }

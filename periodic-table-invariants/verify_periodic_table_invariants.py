@@ -2,11 +2,12 @@
 """Pure-Q/Z Self-Contained Verifier for Cross-Civilizational Universal Invariants & Periodic Table.
 
 Self-contained Python 3 standard-library verifier for Foundation-0/continuum.
-Contains ZERO float or complex literals, ZERO ast.Div ('/' or '/=') true divisions,
-ZERO negative-exponent powers (2**-1), ZERO pow()/getattr()/builtins escapes,
-ZERO float()/complex() calls, ZERO math.* calls outside {gcd, isqrt} (including aliases),
-ZERO string/float/1-arg/from_float Fraction(...) calls, ZERO bare assert statements,
-and ZERO unbound external provenance digests.
+Backed by a static AST allowlist scan (check_source_zero_floats_and_logs) over both this module
+and test_periodic_table_invariants.py plus runtime boundary guards: contains ZERO float or complex
+literals, ZERO '/', '//', or '%' division/modulo AST operators, ZERO negative/variable '**' powers,
+ZERO float/complex/pow/divmod/getattr/vars/eval/exec/compile/memoryview/format/open escapes,
+ZERO dunder attribute accesses, ZERO unguarded Fraction/math/sys alias rebindings, ZERO format-spec
+f-strings, ZERO bare assert statements, and ZERO unbound external provenance digests.
 
 Every one of the 16 Periodic Table entries (PT-01..PT-16) is computed and certified
 directly in-module in exact integer (int) and rational (Fraction) arithmetic:
@@ -21,8 +22,10 @@ directly in-module in exact integer (int) and rational (Fraction) arithmetic:
          exact n = 50 speedup floor (>= 27,872,151,775x over Leibniz).
        - Class B (Subtractive Cancellation & Rational Sphere Lift): kappa_sub(x) = x/(1-x)
          for Al-Biruni Nandana (215989/11, 14b), Al-Kashi chord wall derived from k (k=25 vs 26),
-         multiscale quadratic zoom derived from ell (ell=13, 14, 16), plus Al-Biruni Isti'ab
-         stereographic S^2(Q) <-> Q^2 and Cayley S^3(Q) <-> Q^3 two-sided rational bijections.
+         multiscale quadratic zoom derived from ell (ell=13, 14, 16), plus generic multivariate
+         polynomial bijection proof (19/19 exact identities over Z[u,v], Z[x,y,z], Z[w1,w2,w3],
+         Z[q0,q1,q2,q3]) and 5-point numerical round-trips for Al-Biruni Isti'ab stereographic
+         S^2(Q)\\{N} <-> Q^2 and Cayley S^3(Q)\\{-1} <-> Q^3.
        - Class C (Topological Winding, C1P Partition, GF(2) Hypercube & Sheaf H^1):
          Chokwe Sona mirror-curve exhaustive sweep across all 576/576 grids in [1,24]^2 plus
          2-opt internal mirror surgery ((2,2): 2->1; (2,3): 1->2), Panini 14-Sivasutra
@@ -30,10 +33,11 @@ directly in-module in exact integer (int) and rational (Fraction) arithmetic:
          Pingala nasta/uddista 510/510 bijection + FWHT_256 256/256 involution & parity +
          explicit 5x16 Extended Hamming [16,11,4] A_16 SECDED parity-check matrix H
          (16/16 distinct nonzero 1-bit syndromes, 120/120 disjoint nonzero 2-bit syndromes,
-         2,048 codewords, d_min = 4) + Bamana 65,536/65,536 tableau syndrome correspondence,
-         Z_2 twisted 3-cycle sheaf (0/8 vs 2/8), explicit Casarabe C_{2,6} (13 vertices:
-         hub 0 + inner/outer 6-rings; 24 edges: 12 spokes + 12 ring edges; beta_1 = 12)
-         vs spanning tree T_13 (beta_1 = 0) cut resilience, and hierarchical tree-sum checksums.
+         2,048 codewords, d_min = 4) + Bamana 65,536/65,536 even-Judge parity-conservation
+         identity check and A_16 syndrome correspondence, Z_2 twisted 3-cycle sheaf (0/8 vs 2/8),
+         explicit Casarabe C_{2,6} (13 vertices, pinned canonical 24-edge set & degree sequence
+         [6, 4*6, 3*6], beta_1 = 12) vs spanning tree T_13 (pinned 12-edge set & degrees
+         [6, 2*6, 1*6], beta_1 = 0) cut resilience, and hierarchical tree-sum checksums.
        - Class D (Commutation, Schur Inertia & Coarse-Graining Defect): Ibn al-Nafis
          readable-record 3x3 covariance Schur complement (det 34/625 -> 688/15625, drop 81/1250),
          self-certifying 8x8 Sylvester congruence P^T M P = diag(d) separating passive hydraulic
@@ -48,8 +52,10 @@ directly in-module in exact integer (int) and rational (Fraction) arithmetic:
        Cayley steering matrix vs state-dependent xz-plane rotation, dimensionless Dougong
        Coulomb hysteresis loop area (96/1, pi*zeta = 2/3), and Housner rocking loss (111/400).
   3. Intrinsic Modular Flow & Minimal Sufficient Partition:
-       Panini C1P compression derived from decoded 43 classes / 42 phonemes / 43 slots
-       (21/5 and 21/8), Qin Jiushao non-coprime CRT exhaustive 37,960/37,960 forward+inverse
+       Panini C1P compression derived from decoded 43 classes / 42 phonemes / 43 slots / 14
+       it-markers using fixed-width index bit lengths ceil(log2(42))=6 bits per phoneme ID and
+       ceil(log2(14))=4 bits per it-marker ID (6+4=10-bit descriptor -> 21/5; + 43*6-bit slot
+       table -> 21/8), Qin Jiushao non-coprime CRT exhaustive 37,960/37,960 forward+inverse
        isomorphism Z/37960Z <-> compatible subgroup of Z/260Z x Z/365Z x Z/584Z
        (r1=r2 mod 5, r2=r3 mod 73, r1=r3 mod 4; compression 1460x, Dresden 2392/81,
        inconsistent triple refused), Antikythera gear trains (254/19, 235/19, 477/4237,
@@ -73,8 +79,23 @@ import hashlib
 import hmac
 import json
 import math
+import sys
 from fractions import Fraction
+from os import (
+    O_CREAT,
+    O_NOFOLLOW,
+    O_NONBLOCK,
+    O_RDONLY,
+    O_TRUNC,
+    O_WRONLY,
+    close as os_close,
+    fstat,
+    open as os_open,
+    read as os_read,
+    write as os_write,
+)
 from pathlib import Path
+from stat import S_ISREG
 from typing import Any
 
 SCHEMA_VERSION = "continuum.universal_invariants_certificate.v2"
@@ -87,6 +108,16 @@ TWO = Fraction(2, 1)
 FOUR = Fraction(4, 1)
 
 HEX_DIGITS = frozenset("0123456789abcdef")
+
+# Fail-closed I/O and JSON resource bounds (independent of interpreter flags / environment):
+#   MAX_FILE_BYTES      : hard cap on any file read via _read_regular_file_bytes_nofollow (fstat st_size AND
+#                         streamed byte count); the largest shipped file is ~140 KB, so 1 MiB leaves 7x headroom.
+#   MAX_JSON_INT_DIGITS : explicit json parse_int digit cap, enforced even when PYTHONINTMAXSTRDIGITS=0 or
+#                         -X int_max_str_digits=0 disables CPython's built-in int/str conversion limit.
+#   MAX_JSON_NESTING_DEPTH : pre-parse bracket-depth cap (and post-parse payload depth cap) for JSON inputs.
+MAX_FILE_BYTES = 1048576
+MAX_JSON_INT_DIGITS = 1024
+MAX_JSON_NESTING_DEPTH = 64
 
 ALLOWED_FAMILIES = frozenset(
     (
@@ -188,8 +219,8 @@ CANONICAL_PRATYAHARAS: tuple[tuple[str, str, str, int], ...] = (
     ("zal", "sh", "l", 4),
 )
 
-QuatQ = tuple[Fraction, Fraction, Fraction, Fraction]
-Vec3Q = tuple[Fraction, Fraction, Fraction]
+QuatQ = "tuple[Fraction, Fraction, Fraction, Fraction]"
+Vec3Q = "tuple[Fraction, Fraction, Fraction]"
 
 
 def require_ok(cond: bool, msg: str) -> None:
@@ -202,6 +233,45 @@ def q_div(a: Fraction, b: Fraction) -> Fraction:
     """Exact rational division a / b without Python true-division operator ('/')."""
     require_ok(b != ZERO, "Rational division by zero")
     return Fraction(a.numerator * b.denominator, a.denominator * b.numerator)
+
+
+def z_divmod_nonneg(num: int, den: int) -> tuple[int, int]:
+    """Exact binary shift-subtract (quotient, remainder) for int num >= 0 and int den >= 1 (zero //, %, /, or divmod)."""
+    require_ok(type(num) is int, "z_divmod num must be exact int")
+    require_ok(type(den) is int, "z_divmod den must be exact int")
+    require_ok(num >= 0, "z_divmod num must be >= 0")
+    require_ok(den >= 1, "z_divmod den must be >= 1")
+    shift = num.bit_length() - den.bit_length()
+    rem = num
+    quot = 0
+    while shift >= 0:
+        cand = den << shift
+        if rem >= cand:
+            rem -= cand
+            quot |= 1 << shift
+        shift -= 1
+    return (quot, rem)
+
+
+def z_floor_div(num: int, den: int) -> int:
+    """Exact non-negative integer floor quotient floor(num / den) without // or /."""
+    return z_divmod_nonneg(num, den)[0]
+
+
+def z_mod(num: int, den: int) -> int:
+    """Exact Euclidean residue num mod den in [0, den - 1] for signed int num and int den >= 1 without %."""
+    require_ok(type(num) is int, "z_mod num must be exact int")
+    if num >= 0:
+        return z_divmod_nonneg(num, den)[1]
+    rem = z_divmod_nonneg(-num, den)[1]
+    return 0 if rem == 0 else den - rem
+
+
+def q_floor_div(a: Fraction, b: Fraction) -> int:
+    """Exact rational floor quotient floor(a / b) for Fraction a >= 0 and b > 0 without // or /."""
+    require_ok(a >= ZERO, "q_floor_div dividend must be >= 0")
+    require_ok(b > ZERO, "q_floor_div divisor must be > 0")
+    return z_floor_div(a.numerator * b.denominator, a.denominator * b.numerator)
 
 
 def is_hex64(value: Any) -> bool:
@@ -229,15 +299,19 @@ def z_int(val: int) -> int:
 
 
 def assert_no_floats_recursive(obj: Any) -> None:
-    """Recursively reject any runtime float or complex instance in a serialized payload."""
-    require_ok(not isinstance(obj, (float, complex)), "Runtime float or complex forbidden in serialized payload")
-    if isinstance(obj, dict):
-        for k, v in obj.items():
-            assert_no_floats_recursive(k)
-            assert_no_floats_recursive(v)
-    elif isinstance(obj, (list, tuple)):
-        for item in obj:
-            assert_no_floats_recursive(item)
+    """Iteratively reject any runtime float/complex instance or payload nesting depth > 64."""
+    stack: list[tuple[Any, int]] = [(obj, 0)]
+    while stack:
+        cur, depth = stack.pop()
+        require_ok(depth <= MAX_JSON_NESTING_DEPTH, "Maximum payload nesting depth exceeded")
+        require_ok(not isinstance(cur, (float, complex)), "Runtime float or complex forbidden in serialized payload")
+        if isinstance(cur, dict):
+            for k, v in cur.items():
+                stack.append((k, depth + 1))
+                stack.append((v, depth + 1))
+        elif isinstance(cur, (list, tuple)):
+            for item in cur:
+                stack.append((item, depth + 1))
 
 
 def _reject_json_float(token: str) -> Any:
@@ -256,14 +330,123 @@ def _reject_duplicate_json_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return out
 
 
+def _parse_bounded_json_int(token: str) -> int:
+    """Explicit JSON parse_int hook: refuse integer literals longer than MAX_JSON_INT_DIGITS digits.
+
+    Enforced before int() conversion so the bound holds regardless of PYTHONINTMAXSTRDIGITS /
+    -X int_max_str_digits (including 0 = unlimited) and costs O(len(token)) rather than O(len(token)^2).
+    """
+    digits = token[1:] if token.startswith("-") else token
+    require_ok(len(digits) <= MAX_JSON_INT_DIGITS, f"JSON integer literal exceeds {MAX_JSON_INT_DIGITS} digits")
+    return int(token)
+
+
+def _require_json_nesting_depth(raw: str) -> None:
+    """Pre-parse scan refusing JSON whose array/object bracket depth exceeds MAX_JSON_NESTING_DEPTH.
+
+    Brackets inside string literals (including escaped quotes) are ignored, so the bound is checked
+    before the recursive json scanner runs instead of relying on RecursionError.
+    """
+    depth = 0
+    in_str = False
+    escaped = False
+    for ch in raw:
+        if in_str:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_str = False
+        elif ch == '"':
+            in_str = True
+        elif ch == "[" or ch == "{":
+            depth = depth + 1
+            require_ok(depth <= MAX_JSON_NESTING_DEPTH, "Maximum JSON nesting depth exceeded")
+        elif ch == "]" or ch == "}":
+            depth = depth - 1
+
+
 def loads_strict_no_float_json(raw: str) -> Any:
-    """Parse JSON while failing closed on floats, NaN/Infinity tokens, or duplicate keys."""
-    return json.loads(
-        raw,
-        parse_float=_reject_json_float,
-        parse_constant=_reject_json_constant,
-        object_pairs_hook=_reject_duplicate_json_keys,
-    )
+    """Parse JSON while failing closed on BOM, oversized ints, syntax/depth errors, floats, NaN/Inf, or duplicate keys."""
+    require_ok(type(raw) is str, "Strict JSON input must be str")
+    require_ok(not raw.startswith("\ufeff"), "UTF-8 BOM forbidden in JSON")
+    _require_json_nesting_depth(raw)
+    try:
+        parsed = json.loads(
+            raw,
+            parse_float=_reject_json_float,
+            parse_int=_parse_bounded_json_int,
+            parse_constant=_reject_json_constant,
+            object_pairs_hook=_reject_duplicate_json_keys,
+        )
+    except (ValueError, RecursionError) as exc:
+        raise ValueError(f"Strict JSON parse failed: {exc}") from None
+    assert_no_floats_recursive(parsed)
+    return parsed
+
+
+def _read_regular_file_bytes_nofollow(path: Path, label: str, max_bytes: int = MAX_FILE_BYTES) -> bytes:
+    """Read at most max_bytes of regular-file bytes without following symlinks or blocking.
+
+    Layers: is_symlink pre-check; os.open(O_RDONLY | O_NOFOLLOW | O_NONBLOCK) so a FIFO/device at the
+    path cannot hang open(); fstat S_ISREG on the opened fd; fstat st_size <= max_bytes; and a streaming
+    byte cap (st_size can under-report, e.g. procfs or a file growing mid-read). Every OSError is
+    converted into a structured ValueError.
+    """
+    require_ok(not path.is_symlink(), f"Symlink path forbidden for {label}")
+    try:
+        fd = os_open(str(path), O_RDONLY | O_NOFOLLOW | O_NONBLOCK)
+    except FileNotFoundError:
+        raise ValueError(f"Missing committed {label} on disk") from None
+    except OSError as exc:
+        raise ValueError(f"OS open refused for {label}: {exc}") from None
+    try:
+        st = fstat(fd)
+        require_ok(S_ISREG(st.st_mode), f"Non-regular file forbidden for {label}")
+        require_ok(st.st_size <= max_bytes, f"Oversized file forbidden for {label}: st_size exceeds {max_bytes} bytes")
+        chunks: list[bytes] = []
+        total = 0
+        while True:
+            buf = os_read(fd, 65536)
+            if not buf:
+                break
+            total = total + len(buf)
+            require_ok(total <= max_bytes, f"Oversized file forbidden for {label}: streamed bytes exceed {max_bytes} bytes")
+            chunks.append(buf)
+        return b"".join(chunks)
+    except OSError as exc:
+        raise ValueError(f"OS read refused for {label}: {exc}") from None
+    finally:
+        os_close(fd)
+
+
+def _decode_strict_utf8_no_bom_crlf(raw_bytes: bytes, label: str) -> str:
+    """Decode UTF-8 bytes after rejecting UTF-8 BOM, CRLF, and invalid UTF-8 sequences."""
+    require_ok(not raw_bytes.startswith(b"\xef\xbb\xbf"), f"UTF-8 BOM bytes forbidden in {label}")
+    require_ok(b"\r" not in raw_bytes, f"CRLF forbidden in {label}")
+    try:
+        return raw_bytes.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"Invalid UTF-8 forbidden in {label}: {exc}") from None
+
+
+def _write_regular_file_bytes_nofollow(path: Path, data: bytes, label: str) -> None:
+    """Write canonical file bytes without following symlinks or blocking (O_NOFOLLOW | O_NONBLOCK + S_ISREG)."""
+    require_ok(not path.is_symlink(), f"Symlink path forbidden for {label}")
+    try:
+        fd = os_open(str(path), O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW | O_NONBLOCK, 0o644)
+    except OSError as exc:
+        raise ValueError(f"OS write refused for {label}: {exc}") from None
+    try:
+        require_ok(S_ISREG(fstat(fd).st_mode), f"Non-regular file forbidden for {label}")
+        rem = data
+        while rem:
+            rem = rem[os_write(fd, rem) :]
+    except OSError as exc:
+        raise ValueError(f"OS write refused for {label}: {exc}") from None
+    finally:
+        os_close(fd)
 
 
 def _arctan_inv_bracket_q(m: int, pairs: int) -> tuple[Fraction, Fraction]:
@@ -290,8 +473,8 @@ def machin_pi_bracket_q(pairs: int = 7) -> tuple[int, int, int]:
     m_lo = Fraction(16, 1) * a5_lo - FOUR * a239_hi
     m_hi = Fraction(16, 1) * a5_hi - FOUR * a239_lo
     pi_den = 10**18
-    pi_lo_n = (m_lo.numerator * pi_den) // m_lo.denominator
-    pi_hi_n = (m_hi.numerator * pi_den + m_hi.denominator - 1) // m_hi.denominator
+    pi_lo_n = z_floor_div(m_lo.numerator * pi_den, m_lo.denominator)
+    pi_hi_n = z_floor_div(m_hi.numerator * pi_den + m_hi.denominator - 1, m_hi.denominator)
     return (pi_lo_n, pi_hi_n, pi_den)
 
 
@@ -330,7 +513,7 @@ def find_first_pi_beater(zu: Fraction, q_min: int, q_max: int) -> tuple[int, int
     zu_err_lo_num = zu.numerator * pi_den - zu.denominator * pi_hi_n
     zu_d = zu.denominator
     for q in range(q_min, q_max + 1):
-        p0 = (q * pi_lo_n) // pi_den
+        p0 = z_floor_div(q * pi_lo_n, pi_den)
         for p in (p0, p0 + 1):
             lhs_lo = p * pi_den
             if lhs_lo < q * pi_lo_n:
@@ -349,7 +532,7 @@ def greedy_sylvester_egyptian(target: Fraction) -> tuple[int, ...]:
     denoms: list[int] = []
     rem = target
     while rem > ZERO:
-        d = (rem.denominator + rem.numerator - 1) // rem.numerator
+        d = z_floor_div(rem.denominator + rem.numerator - 1, rem.numerator)
         denoms.append(d)
         rem = rem - Fraction(1, d)
     return tuple(denoms)
@@ -415,7 +598,7 @@ def cancellation_kappa_q(x: Fraction) -> tuple[Fraction, int]:
     require_ok(x > ZERO, "x must be > 0")
     require_ok(x < ONE, "x must be < 1")
     kappa = q_div(x, ONE - x)
-    q_int = kappa.numerator // kappa.denominator
+    q_int = z_floor_div(kappa.numerator, kappa.denominator)
     bit_loss = 0 if q_int == 0 else q_int.bit_length() - 1
     return (kappa, bit_loss)
 
@@ -467,6 +650,153 @@ def cayley_s3_inverse_q(q: QuatQ) -> Vec3Q:
     return (q_div(q1, op0), q_div(q2, op0), q_div(q3, op0))
 
 
+PolyZ = dict[tuple[int, ...], int]
+
+
+def poly_clean(terms: dict[tuple[int, ...], int]) -> PolyZ:
+    return {exp: coeff for exp, coeff in terms.items() if coeff != 0}
+
+
+def poly_add(a: PolyZ, b: PolyZ) -> PolyZ:
+    out = dict(a)
+    for exp, coeff in b.items():
+        out[exp] = out.get(exp, 0) + coeff
+    return poly_clean(out)
+
+
+def poly_sub(a: PolyZ, b: PolyZ) -> PolyZ:
+    out = dict(a)
+    for exp, coeff in b.items():
+        out[exp] = out.get(exp, 0) - coeff
+    return poly_clean(out)
+
+
+def poly_mul(a: PolyZ, b: PolyZ) -> PolyZ:
+    out: dict[tuple[int, ...], int] = {}
+    for ea, ca in a.items():
+        for eb, cb in b.items():
+            exp = tuple(x + y for x, y in zip(ea, eb))
+            out[exp] = out.get(exp, 0) + ca * cb
+    return poly_clean(out)
+
+
+def _poly_const(nvars: int, coeff: int) -> PolyZ:
+    if coeff == 0:
+        return {}
+    return {tuple(0 for _ in range(nvars)): coeff}
+
+
+def _poly_var(nvars: int, idx: int) -> PolyZ:
+    return {tuple(1 if j == idx else 0 for j in range(nvars)): 1}
+
+
+def certify_stereo_cayley_polynomial_bijections() -> int:
+    """Generically prove S^2(Q)\\{N}<->Q^2, S^3(Q)\\{-1}<->Q^3, and equatorial embedding via exact Z-polynomials.
+
+    Returns exact count of verified polynomial identities (19 when all hold identically over Q):
+      - Z[u, v]: unit sphere, North Pole exclusion (D - Nz == 2), left inverse Pi(Phi(u,v)) == (u,v) (4 ids)
+      - Z[x, y, z] mod (x^2+y^2+z^2-1): right inverse Phi(Pi(x,y,z)) == (x,y,z) for z != 1 (4 ids)
+      - Z[w1, w2, w3]: unit S^3, South Pole exclusion (D + N0 == 2), left inverse C^-1(C(w)) == w (5 ids)
+      - Z[q0, q1, q2, q3] mod (q0^2+q1^2+q2^2+q3^2-1): right inverse C(C^-1(q)) == q for q0 != -1 (5 ids)
+      - Z[u, v]: equatorial embedding cayley_s3(u, v, 0) == (-z, x, y, 0) (1 id)
+    """
+    # Part A & E: Z[u, v] stereographic S^2 image, pole exclusion, left inverse, and equatorial embedding
+    u, v = _poly_var(2, 0), _poly_var(2, 1)
+    c1_2, c2_2 = _poly_const(2, 1), _poly_const(2, 2)
+    r2_uv = poly_add(poly_mul(u, u), poly_mul(v, v))
+    d_uv = poly_add(c1_2, r2_uv)
+    nx_uv = poly_mul(c2_2, u)
+    ny_uv = poly_mul(c2_2, v)
+    nz_uv = poly_sub(r2_uv, c1_2)
+    s2_norm_id = poly_sub(
+        poly_add(poly_add(poly_mul(nx_uv, nx_uv), poly_mul(ny_uv, ny_uv)), poly_mul(nz_uv, nz_uv)),
+        poly_mul(d_uv, d_uv),
+    )
+    d_minus_nz = poly_sub(d_uv, nz_uv)
+    s2_left_u = poly_sub(nx_uv, poly_mul(u, d_minus_nz))
+    s2_left_v = poly_sub(ny_uv, poly_mul(v, d_minus_nz))
+    n0_eq = poly_sub(c1_2, r2_uv)
+    eq_embed_id = poly_add(n0_eq, nz_uv)
+
+    # Part B: Z[x, y, z] right inverse Phi(Pi(x, y, z)) == (x, y, z) modulo S2 = x^2 + y^2 + z^2 - 1
+    x, y, z = _poly_var(3, 0), _poly_var(3, 1), _poly_var(3, 2)
+    c1_3, c2_3 = _poly_const(3, 1), _poly_const(3, 2)
+    omz = poly_sub(c1_3, z)
+    omz2 = poly_mul(omz, omz)
+    x2y2 = poly_add(poly_mul(x, x), poly_mul(y, y))
+    s2_ideal = poly_sub(poly_add(x2y2, poly_mul(z, z)), c1_3)
+    d2_clr = poly_add(omz2, x2y2)
+    nz_clr = poly_sub(x2y2, omz2)
+    d2_on_s2 = poly_sub(d2_clr, s2_ideal)
+    two_omz = poly_mul(c2_3, omz)
+    s2_right_d = poly_sub(d2_on_s2, two_omz)
+    s2_right_x = poly_sub(poly_mul(c2_3, poly_mul(x, omz)), poly_mul(x, d2_on_s2))
+    s2_right_y = poly_sub(poly_mul(c2_3, poly_mul(y, omz)), poly_mul(y, d2_on_s2))
+    s2_right_z = poly_sub(poly_sub(nz_clr, s2_ideal), poly_mul(z, d2_on_s2))
+
+    # Part C: Z[w1, w2, w3] Cayley spinor S^3 image, pole exclusion, and left inverse
+    w1, w2, w3 = _poly_var(3, 0), _poly_var(3, 1), _poly_var(3, 2)
+    r2_w = poly_add(poly_add(poly_mul(w1, w1), poly_mul(w2, w2)), poly_mul(w3, w3))
+    d_w = poly_add(c1_3, r2_w)
+    # Exact symbolic quaternion square (1 + w)^2 = (1 - ||w||^2, 2*w1, 2*w2, 2*w3)
+    n0_w = poly_sub(c1_3, r2_w)
+    n1_w = poly_add(poly_mul(c1_3, w1), poly_mul(w1, c1_3))
+    n2_w = poly_add(poly_mul(c1_3, w2), poly_mul(w2, c1_3))
+    n3_w = poly_add(poly_mul(c1_3, w3), poly_mul(w3, c1_3))
+    s3_norm_id = poly_sub(
+        poly_add(
+            poly_add(poly_mul(n0_w, n0_w), poly_mul(n1_w, n1_w)),
+            poly_add(poly_mul(n2_w, n2_w), poly_mul(n3_w, n3_w)),
+        ),
+        poly_mul(d_w, d_w),
+    )
+    d_plus_n0 = poly_add(d_w, n0_w)
+    s3_left_w1 = poly_sub(n1_w, poly_mul(w1, d_plus_n0))
+    s3_left_w2 = poly_sub(n2_w, poly_mul(w2, d_plus_n0))
+    s3_left_w3 = poly_sub(n3_w, poly_mul(w3, d_plus_n0))
+
+    # Part D: Z[q0, q1, q2, q3] right inverse C(C^-1(q)) == q modulo S3 = q0^2 + q1^2 + q2^2 + q3^2 - 1
+    q0, q1, q2, q3 = _poly_var(4, 0), _poly_var(4, 1), _poly_var(4, 2), _poly_var(4, 3)
+    c1_4, c2_4 = _poly_const(4, 1), _poly_const(4, 2)
+    op0 = poly_add(c1_4, q0)
+    op02 = poly_mul(op0, op0)
+    qvec2 = poly_add(poly_add(poly_mul(q1, q1), poly_mul(q2, q2)), poly_mul(q3, q3))
+    s3_ideal = poly_sub(poly_add(poly_mul(q0, q0), qvec2), c1_4)
+    d3_clr = poly_add(op02, qvec2)
+    n0_clr = poly_sub(op02, qvec2)
+    d3_on_s3 = poly_sub(d3_clr, s3_ideal)
+    two_op0 = poly_mul(c2_4, op0)
+    s3_right_d = poly_sub(d3_on_s3, two_op0)
+    s3_right_q0 = poly_sub(poly_add(n0_clr, s3_ideal), poly_mul(q0, d3_on_s3))
+    s3_right_q1 = poly_sub(poly_mul(c2_4, poly_mul(q1, op0)), poly_mul(q1, d3_on_s3))
+    s3_right_q2 = poly_sub(poly_mul(c2_4, poly_mul(q2, op0)), poly_mul(q2, d3_on_s3))
+    s3_right_q3 = poly_sub(poly_mul(c2_4, poly_mul(q3, op0)), poly_mul(q3, d3_on_s3))
+
+    return sum(
+        (
+            1 if s2_norm_id == {} else 0,
+            1 if d_minus_nz == c2_2 else 0,
+            1 if s2_left_u == {} else 0,
+            1 if s2_left_v == {} else 0,
+            1 if s2_right_d == {} else 0,
+            1 if s2_right_x == {} else 0,
+            1 if s2_right_y == {} else 0,
+            1 if s2_right_z == {} else 0,
+            1 if s3_norm_id == {} else 0,
+            1 if d_plus_n0 == c2_3 else 0,
+            1 if s3_left_w1 == {} else 0,
+            1 if s3_left_w2 == {} else 0,
+            1 if s3_left_w3 == {} else 0,
+            1 if s3_right_d == {} else 0,
+            1 if s3_right_q0 == {} else 0,
+            1 if s3_right_q1 == {} else 0,
+            1 if s3_right_q2 == {} else 0,
+            1 if s3_right_q3 == {} else 0,
+            1 if eq_embed_id == {} else 0,
+        )
+    )
+
+
 def pingala_nasta(n: int, k: int) -> tuple[int, ...]:
     """Authentic Pingala Chandasastra (nasta): 1-based rank k -> n-bit (0=guru, 1=laghu)."""
     require_ok(n >= 1, "Pingala n must be >= 1")
@@ -477,10 +807,10 @@ def pingala_nasta(n: int, k: int) -> tuple[int, ...]:
     for _ in range(n):
         if (cur & 1) == 0:
             bits.append(1)
-            cur = cur // 2
+            cur = cur >> 1
         else:
             bits.append(0)
-            cur = (cur + 1) // 2
+            cur = (cur + 1) >> 1
     return tuple(bits)
 
 
@@ -532,14 +862,20 @@ def decode_pratyahara_interval(
     start_phoneme: str,
     end_marker: str,
 ) -> tuple[int, int, frozenset[str]]:
-    """Decode a Paninian pratyahara (start_phoneme, end_marker) into contiguous slice & phoneme set."""
+    """Decode a Paninian pratyahara (start_phoneme, end_marker) into contiguous slice & phoneme set.
+
+    Disambiguates repeated 'h' (Sutra 5 hayavaraT at slot 9 vs Sutra 14 hal at slot 42) via the
+    canonical first-occurrence rule: scanning 0..end_idx in ascending order and breaking at the
+    earliest matching slot so 'h'-initial classes (haz, hal) start at slot 9 while slot 42 supplies
+    'h' to consonant suffixes ending at 'l' (val, ral, jhal, zal).
+    """
     require_ok(end_marker in marker_end, f"Unknown it-marker: {end_marker}")
     end_idx = marker_end[end_marker]
     start_idx = -1
     for idx in range(end_idx + 1):
         if slots[idx] == start_phoneme:
             start_idx = idx
-            break
+            break  # First-occurrence rule disambiguates repeated 'h' (slot 9 vs slot 42)
     require_ok(start_idx >= 0, f"Start phoneme {start_phoneme!r} not found before {end_marker!r}")
     return (start_idx, end_idx, frozenset(slots[start_idx : end_idx + 1]))
 
@@ -562,18 +898,18 @@ def is_c1p_interval_on_order(order: tuple[str, ...], target: frozenset[str]) -> 
 
 
 def mod_inv_int(a: int, m: int) -> int:
-    """Exact pure-integer modular inverse a^-1 mod m via iterative Extended Euclidean algorithm (zero pow calls)."""
+    """Exact pure-integer modular inverse a^-1 mod m via iterative Extended Euclidean algorithm (zero pow/%/div)."""
     require_ok(m >= 1, "mod_inv modulus must be >= 1")
     if m == 1:
         return 0
-    r0, r1 = m, a % m
+    r0, r1 = m, z_mod(a, m)
     t0, t1 = 0, 1
     while r1 != 0:
-        q = r0 // r1
-        r0, r1 = r1, r0 - q * r1
+        q, r_rem = z_divmod_nonneg(r0, r1)
+        r0, r1 = r1, r_rem
         t0, t1 = t1, t0 - q * t1
     require_ok(r0 == 1, "mod_inv inputs must be coprime")
-    return t0 % m
+    return z_mod(t0, m)
 
 
 def solve_noncoprime_crt(congruences: tuple[tuple[int, int], ...]) -> tuple[int, int]:
@@ -581,18 +917,19 @@ def solve_noncoprime_crt(congruences: tuple[tuple[int, int], ...]) -> tuple[int,
     require_ok(len(congruences) >= 1, "congruences must be non-empty")
     r0, m0 = congruences[0]
     require_ok(m0 >= 1, "CRT modulus must be >= 1")
-    x = r0 % m0
+    x = z_mod(r0, m0)
     mod = m0
     for ri, mi in congruences[1:]:
         require_ok(mi >= 1, "CRT modulus must be >= 1")
         g = math.gcd(mod, mi)
-        diff = ri - x
-        require_ok(diff % g == 0, "Inconsistent non-coprime CRT congruences")
-        mod_r = mod // g
-        mi_r = mi // g
+        diff = z_mod(ri - x, mi)
+        dq, dr = z_divmod_nonneg(diff, g)
+        require_ok(dr == 0, "Inconsistent non-coprime CRT congruences")
+        mod_r, _ = z_divmod_nonneg(mod, g)
+        mi_r, _ = z_divmod_nonneg(mi, g)
         inv = mod_inv_int(mod_r, mi_r)
-        step = ((diff // g) * inv) % mi_r
-        x = (x + mod * step) % (mod_r * mi)
+        _, step = z_divmod_nonneg(dq * inv, mi_r)
+        _, x = z_divmod_nonneg(x + mod * step, mod_r * mi)
         mod = mod_r * mi
     return (x, mod)
 
@@ -732,7 +1069,7 @@ def sona_loop_count_with_wall(m: int, n: int, split_wall: bool, wall_y: int = 1)
             key = (x << 12) | (y << 2) | (2 if dx < 0 else 0) | (1 if dy < 0 else 0)
         if key in visited:
             loops += 1
-    return loops // 2
+    return loops >> 1
 
 
 def graph_connected_components(n_verts: int, edges: tuple[tuple[int, int], ...]) -> int:
@@ -766,6 +1103,47 @@ def graph_connected_components(n_verts: int, edges: tuple[tuple[int, int], ...])
 def graph_betti1(n_verts: int, edges: tuple[tuple[int, int], ...]) -> int:
     """Compute exact first Betti number beta_1(G) = |E| - |V| + c(G)."""
     return len(edges) - n_verts + graph_connected_components(n_verts, edges)
+
+
+# Canonical Casarabe C_{2,6} (hub 0 + inner 6-ring 1..6 + outer 6-ring 7..12) and spanning tree T_13 adjacency pins
+CASARABE_C2_6_EXPECTED_EDGES: frozenset[tuple[int, int]] = frozenset(
+    (
+        (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6),
+        (1, 7), (2, 8), (3, 9), (4, 10), (5, 11), (6, 12),
+        (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (1, 6),
+        (7, 8), (8, 9), (9, 10), (10, 11), (11, 12), (7, 12),
+    )
+)
+CASARABE_C2_6_EXPECTED_DEGREES: tuple[int, ...] = (6, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3)
+TREE_T13_EXPECTED_EDGES: frozenset[tuple[int, int]] = frozenset(
+    (
+        (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6),
+        (1, 7), (2, 8), (3, 9), (4, 10), (5, 11), (6, 12),
+    )
+)
+TREE_T13_EXPECTED_DEGREES: tuple[int, ...] = (6, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1)
+
+
+def graph_simple_edges_and_degrees(
+    n_verts: int,
+    edges: tuple[tuple[int, int], ...],
+) -> tuple[frozenset[tuple[int, int]], tuple[int, ...]]:
+    """Validate simple undirected graph (no self-loops or duplicate edges) and return (canonical_edges, degrees)."""
+    require_ok(n_verts >= 1, "Simple graph must have >= 1 vertex")
+    degrees = [0] * n_verts
+    canon: set[tuple[int, int]] = set()
+    for u, v in edges:
+        require_ok(0 <= u, "Simple graph vertex u < 0")
+        require_ok(u < n_verts, "Simple graph vertex u >= n_verts")
+        require_ok(0 <= v, "Simple graph vertex v < 0")
+        require_ok(v < n_verts, "Simple graph vertex v >= n_verts")
+        require_ok(u != v, "Simple graph forbids self-loops")
+        edge = (u, v) if u < v else (v, u)
+        require_ok(edge not in canon, "Simple graph forbids duplicate edges")
+        canon.add(edge)
+        degrees[u] += 1
+        degrees[v] += 1
+    return (frozenset(canon), tuple(degrees))
 
 
 def verify_khipu_tree_checksum(node: dict[str, Any]) -> bool:
@@ -951,8 +1329,8 @@ def pont_beta_sq_h34_q(bin_n: int, total_l: int) -> Fraction:
     """Exact finite-baseline Hurst-3/4 variance factor beta^2(N, L) = sqrt(N)*(1-(L/N)^(-1/2))/(1-L^(-1/2))."""
     require_ok(bin_n >= 1, "bin_n must be >= 1")
     require_ok(total_l > bin_n, "total_l must exceed bin_n")
-    require_ok(total_l % bin_n == 0, "total_l must be divisible by bin_n")
-    m_bins = total_l // bin_n
+    m_bins, rem_l = z_divmod_nonneg(total_l, bin_n)
+    require_ok(rem_l == 0, "total_l must be divisible by bin_n")
     rn = math.isqrt(bin_n)
     rm = math.isqrt(m_bins)
     require_ok(rn * rn == bin_n, "bin_n must be a perfect square for exact Q")
@@ -966,14 +1344,14 @@ def pont_beta_sq_h12_q(bin_n: int, total_l: int) -> Fraction:
 
     Explicitly constructs all L orthogonal +-1 sequences of length L (power of 2), computes
     each sequence's empirical mean, contiguous bin_n-block sums, and unbiased sample variance
-    both binned (M = L // bin_n) and unbinned (L), then averages across all L realizations to
+    both binned (M = floor(L / bin_n)) and unbinned (L), then averages across all L realizations to
     return exact beta^2_white(N, L) = N * E[s^2_bin] / E[s^2_raw].
     """
     require_ok(bin_n >= 1, "white-noise bin_n must be >= 1")
     require_ok(total_l > bin_n, "white-noise total_l must exceed bin_n")
     require_ok((total_l & (total_l - 1)) == 0, "white-noise total_l must be a power of 2")
-    require_ok(total_l % bin_n == 0, "white-noise total_l must be divisible by bin_n")
-    m_bins = total_l // bin_n
+    m_bins, rem_l = z_divmod_nonneg(total_l, bin_n)
+    require_ok(rem_l == 0, "white-noise total_l must be divisible by bin_n")
     rows: list[list[int]] = [[1]]
     cur = 1
     while cur < total_l:
@@ -1080,20 +1458,20 @@ def certify_four_class_obstructions() -> dict[str, Any]:
         sum(
             (
                 1 if math.gcd(12, 11) == 1 else 0,
-                1 if farabi_lhs % 11 == 1 else 0,
-                1 if farabi_rhs % 11 == 0 else 0,
+                1 if z_divmod_nonneg(farabi_lhs, 11)[1] == 1 else 0,
+                1 if z_divmod_nonneg(farabi_rhs, 11)[1] == 0 else 0,
                 1 if farabi_gap == farabi_expected_gap else 0,
             )
         )
         == 4
     )
-    holder_comma = Fraction(3**53, 1 << 84)
-    holder_comma_gt_1 = holder_comma > ONE
+    mercator_comma = Fraction(3**53, 1 << 84)
+    mercator_comma_gt_1 = mercator_comma > ONE
 
     # 2. Zu Chongzhi [3; 7, 15, 1] = 355/113 + exhaustive first beater scan q in [114, 16604]
     zu = cf_convergent((3, 7, 15, 1))
     arch_hi = Fraction(22, 7)
-    zu_beats_22_7_floor = (arch_hi - PI_HI) // (zu - PI_LO)
+    zu_beats_22_7_floor = q_floor_div(arch_hi - PI_HI, zu - PI_LO)
     first_beater_p, first_beater_q = find_first_pi_beater(zu, 114, 16604)
 
     # 3. Rhind 2/17 and non-2/n Egyptian 5/21 vs computed greedy Sylvester algorithm
@@ -1138,7 +1516,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
     pi_50 = [madhava_accelerated_pi_q(50, order) for order in range(4)]
     e0_lo_50, _ = interval_abs_err_bounds(pi_50[0], PI_LO, PI_HI)
     _, e3_hi_50 = interval_abs_err_bounds(pi_50[3], PI_LO, PI_HI)
-    madhava_r3_speedup = e0_lo_50 // e3_hi_50
+    madhava_r3_speedup = q_floor_div(e0_lo_50, e3_hi_50)
     madhava_enclosure_ok = (
         sum(
             (
@@ -1153,7 +1531,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
     class_a_checks = sum(
         (
             1 if farabi_obstructed else 0,
-            1 if holder_comma_gt_1 else 0,
+            1 if mercator_comma_gt_1 else 0,
             1 if zu == Fraction(355, 113) else 0,
             1 if zu_beats_22_7_floor == 4740 else 0,
             1 if (first_beater_p, first_beater_q) == (52163, 16604) else 0,
@@ -1179,7 +1557,10 @@ def certify_four_class_obstructions() -> dict[str, Any]:
     _, zoom_14_b = cancellation_kappa_q(multiscale_zoom_arg_q(14))
     _, zoom_16_b = cancellation_kappa_q(multiscale_zoom_arg_q(16))
 
-    # Al-Biruni Isti'ab stereographic S^2 <-> Q^2 and Cayley S^3 <-> Q^3 two-sided rational bijections + embedding
+    # Generic multivariate polynomial bijection proof over Z[u,v], Z[x,y,z], Z[w1,w2,w3], Z[q0,q1,q2,q3]
+    stereo_cayley_poly_proof = certify_stereo_cayley_polynomial_bijections()
+
+    # Plus 5-point numerical round-trips exercising the runtime Q^2 <-> S^2(Q) and Q^3 <-> S^3(Q) maps
     stereo_pts = (
         (ZERO, ZERO),
         (ONE, ZERO),
@@ -1224,6 +1605,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
             1 if zoom_13_b == 51 else 0,
             1 if zoom_14_b == 55 else 0,
             1 if zoom_16_b == 63 else 0,
+            1 if stereo_cayley_poly_proof == 19 else 0,
             1 if stereo_bijection_ok == 5 else 0,
             1 if stereo_cayley_embed_ok == 5 else 0,
             1 if cayley_s3_bijection_ok == 5 else 0,
@@ -1289,7 +1671,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
             if pingala_uddista(bits) == k:
                 if sum(bits[j] << j for j in range(n)) == k - 1:
                     pingala_510_exact += 1
-    sig = [((i * 37 + 11) % 19) - 9 for i in range(256)]
+    sig = [z_divmod_nonneg(i * 37 + 11, 19)[1] - 9 for i in range(256)]
     hat = fwht_int(sig)
     inv = fwht_int(hat)
     fwht_involution_exact = sum(1 for a, b in zip(sig, inv) if b == 256 * a)
@@ -1308,7 +1690,9 @@ def certify_four_class_obstructions() -> dict[str, Any]:
     a16_matrix = certify_a16_secded_matrix(A16_H_ROWS)
     a16_masks = tuple(sum(bit << j for j, bit in enumerate(row)) for row in A16_H_ROWS)
 
-    bamana_even_judge = 0
+    # Bamana 4x4 tableau: (wr ^ wl) has even weight by F_2 parity-conservation identity
+    # (row-XOR parity == col-XOR parity == total bit-weight mod 2), paired with 5-bit A_16 syndrome correspondence.
+    bamana_even_judge_parity_identity = 0
     bamana_a16_exact = 0
     for w in range(65536):
         m0 = w & 0xF
@@ -1324,7 +1708,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
         wr = m0 ^ m1 ^ n1
         wl = d0 ^ d1 ^ n3
         if ((wr ^ wl).bit_count() & 1) == 0:
-            bamana_even_judge += 1
+            bamana_even_judge_parity_identity += 1
         p0 = (w & a16_masks[0]).bit_count() & 1
         a16_match = (
             (p0 ^ (wr.bit_count() & 1))
@@ -1350,16 +1734,24 @@ def certify_four_class_obstructions() -> dict[str, Any]:
                         if s2 * s0 == 1:
                             untwisted_sections += 1
 
-    # 5. Explicit Casarabe C_{2,6} graph (13 verts, 24 edges) vs spanning tree T_13 + cut resilience & khipu tree checksum
+    # 5. Explicit Casarabe C_{2,6} graph (13 verts, pinned 24-edge adjacency & degrees) vs spanning tree T_13 + cut resilience & khipu tree checksum
     casarabe_edges: tuple[tuple[int, int], ...] = (
         tuple((0, i) for i in range(1, 7))
         + tuple((i, i + 6) for i in range(1, 7))
-        + tuple((i, (i % 6) + 1) for i in range(1, 7))
-        + tuple((i + 6, (i % 6) + 7) for i in range(1, 7))
+        + tuple((i, z_divmod_nonneg(i, 6)[1] + 1) for i in range(1, 7))
+        + tuple((i + 6, z_divmod_nonneg(i, 6)[1] + 7) for i in range(1, 7))
     )
     tree_edges: tuple[tuple[int, int], ...] = (
         tuple((0, i) for i in range(1, 7)) + tuple((i, i + 6) for i in range(1, 7))
     )
+    casarabe_edge_set, casarabe_degrees = graph_simple_edges_and_degrees(13, casarabe_edges)
+    tree_edge_set, tree_degrees = graph_simple_edges_and_degrees(13, tree_edges)
+    casarabe_adjacency_exact = (
+        casarabe_edge_set == CASARABE_C2_6_EXPECTED_EDGES,
+        casarabe_degrees == CASARABE_C2_6_EXPECTED_DEGREES,
+        tree_edge_set == TREE_T13_EXPECTED_EDGES,
+        tree_degrees == TREE_T13_EXPECTED_DEGREES,
+    ) == (True, True, True, True)
     casarabe_betti1 = graph_betti1(13, casarabe_edges)
     tree_betti1 = graph_betti1(13, tree_edges)
     casarabe_cut_comps = graph_connected_components(13, casarabe_edges[1:])
@@ -1392,13 +1784,14 @@ def certify_four_class_obstructions() -> dict[str, Any]:
             1 if pingala_510_exact == 510 else 0,
             1 if fwht_involution_exact == 256 else 0,
             1 if fwht_parity_exact == 256 else 0,
-            1 if bamana_even_judge == 65536 else 0,
+            1 if bamana_even_judge_parity_identity == 65536 else 0,
             1 if bamana_a16_exact == 65536 else 0,
             1 if a16_matrix["distinct_1bit_syndromes"] == 16 else 0,
             1 if a16_matrix["nonzero_disjoint_2bit_syndromes"] == 120 else 0,
             1 if a16_matrix["codeword_count"] == 2048 else 0,
             1 if a16_matrix["min_nonzero_weight"] == 4 else 0,
             1 if (twisted_sections, untwisted_sections) == (0, 2) else 0,
+            1 if casarabe_adjacency_exact else 0,
             1 if (casarabe_betti1, tree_betti1) == (12, 0) else 0,
             1 if (casarabe_cut_comps, tree_cut_comps) == (1, 2) else 0,
             1 if (khipu_valid_ok, khipu_tamper_caught) == (True, True) else 0,
@@ -1483,7 +1876,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
         "class_a_diophantine_checks_ok": z_int(class_a_checks),
         "class_a_diophantine_checks_total": 15,
         "class_a_farabi_obstructed": farabi_obstructed,
-        "class_a_holder_comma_gt_1": holder_comma_gt_1,
+        "class_a_mercator_comma_gt_1": mercator_comma_gt_1,
         "class_a_farabi_gap": str(z_int(farabi_gap)),
         "class_a_zu_beats_22_7_floor": z_int(zu_beats_22_7_floor),
         "class_a_zu_first_beater": f"{z_int(first_beater_p)}/{z_int(first_beater_q)}",
@@ -1496,7 +1889,7 @@ def certify_four_class_obstructions() -> dict[str, Any]:
         "class_a_madhava_telescoping_counts": [z_int(d1_exact), z_int(d2_exact), z_int(d3_exact)],
         "class_a_madhava_r3_n50_speedup_floor": z_int(madhava_r3_speedup),
         "class_b_cancellation_checks_ok": z_int(class_b_checks),
-        "class_b_cancellation_checks_total": 11,
+        "class_b_cancellation_checks_total": 12,
         "class_b_biruni_kappa": q_str(kb),
         "class_b_bit_losses": {
             "biruni": z_int(bb),
@@ -1506,11 +1899,12 @@ def certify_four_class_obstructions() -> dict[str, Any]:
             "zoom_14": z_int(zoom_14_b),
             "zoom_16": z_int(zoom_16_b),
         },
-        "class_b_stereo_s2_bijection_count": z_int(stereo_bijection_ok),
+        "class_b_stereo_cayley_poly_proof_identities": z_int(stereo_cayley_poly_proof),
+        "class_b_stereo_s2_roundtrip_count": z_int(stereo_bijection_ok),
         "class_b_stereo_cayley_embed_count": z_int(stereo_cayley_embed_ok),
-        "class_b_cayley_s3_bijection_count": z_int(cayley_s3_bijection_ok),
+        "class_b_cayley_s3_roundtrip_count": z_int(cayley_s3_bijection_ok),
         "class_c_topological_checks_ok": z_int(class_c_checks),
-        "class_c_topological_checks_total": 18,
+        "class_c_topological_checks_total": 19,
         "class_c_sona_576_exact_count": z_int(sona_576_exact),
         "class_c_sona_wall_surgery_2x2_2x3": [
             z_int(sona_2_2_plain),
@@ -1523,9 +1917,11 @@ def certify_four_class_obstructions() -> dict[str, Any]:
         "class_c_dup_h_resolves": dup_h_resolves,
         "class_c_pingala_510_bijection_count": z_int(pingala_510_exact),
         "class_c_fwht256_involution_and_parity": [z_int(fwht_involution_exact), z_int(fwht_parity_exact)],
-        "class_c_bamana_65536_even_and_a16": [z_int(bamana_even_judge), z_int(bamana_a16_exact)],
+        "class_c_bamana_65536_parity_identity_and_a16": [z_int(bamana_even_judge_parity_identity), z_int(bamana_a16_exact)],
         "class_c_a16_secded_matrix": a16_matrix,
         "class_c_z2_twisted_vs_untwisted_sections": [z_int(twisted_sections), z_int(untwisted_sections)],
+        "class_c_casarabe_adjacency_exact": casarabe_adjacency_exact,
+        "class_c_casarabe_degree_sequence": [z_int(d) for d in casarabe_degrees],
         "class_c_casarabe_graph_counts": [13, z_int(len(casarabe_edges)), z_int(len(tree_edges))],
         "class_c_casarabe_vs_tree_betti1": [z_int(casarabe_betti1), z_int(tree_betti1)],
         "class_c_casarabe_vs_tree_cut_comps": [z_int(casarabe_cut_comps), z_int(tree_cut_comps)],
@@ -1538,7 +1934,12 @@ def certify_four_class_obstructions() -> dict[str, Any]:
         "class_d_kemeny_snell_lumpability_defects": [q_str(delta_lumpable), q_str(delta_nonlumpable)],
         "class_d_trotter_defect_eps_1_4": q_str(trotter_defect),
         "class_d_strang_quaternion_eps_1_4": [q_str(c) for c in strang_q],
-        "panini_slot_and_phoneme_counts": [z_int(len(slots)), z_int(len(distinct_phonemes)), z_int(len(CANONICAL_PRATYAHARAS))],
+        "panini_slot_and_phoneme_counts": [
+            z_int(len(slots)),
+            z_int(len(distinct_phonemes)),
+            z_int(len(CANONICAL_PRATYAHARAS)),
+            z_int(len(SIVASUTRAS)),
+        ],
     }
 
 
@@ -1680,27 +2081,31 @@ def certify_modular_flow_and_partition(panini_counts: list[int]) -> dict[str, An
     maya_moduli = (260, 365, 584)
     maya_residues = (125, 300, 81)
     x_maya, lcm_maya = solve_noncoprime_crt(((125, 260), (300, 365), (81, 584)))
-    crt_roundtrip_ok = tuple(x_maya % m for m in maya_moduli) == maya_residues
+    crt_roundtrip_ok = tuple(z_divmod_nonneg(x_maya, m)[1] for m in maya_moduli) == maya_residues
     # Exhaustive forward + inverse check across ALL 37,960 elements of Z/37960Z onto compatible subgroup
     # G_compat = {(r1, r2, r3) : r1 == r2 (mod 5), r2 == r3 (mod 73), r1 == r3 (mod 4)}, |G_compat| = 260*365*584 / 1460 = 37960
     crt_bijection_all = 0
     for sample_x in range(lcm_maya):
-        r1 = sample_x % 260
-        r2 = sample_x % 365
-        r3 = sample_x % 584
-        compat = (r1 % 5 == r2 % 5, r2 % 73 == r3 % 73, r1 % 4 == r3 % 4) == (True, True, True)
+        r1 = z_divmod_nonneg(sample_x, 260)[1]
+        r2 = z_divmod_nonneg(sample_x, 365)[1]
+        r3 = z_divmod_nonneg(sample_x, 584)[1]
+        compat = (
+            z_divmod_nonneg(r1, 5)[1] == z_divmod_nonneg(r2, 5)[1],
+            z_divmod_nonneg(r2, 73)[1] == z_divmod_nonneg(r3, 73)[1],
+            (r1 & 3) == (r3 & 3),
+        ) == (True, True, True)
         if compat:
             re_x, re_lcm = solve_noncoprime_crt(((r1, 260), (r2, 365), (r3, 584)))
             if (re_x, re_lcm) == (sample_x, lcm_maya):
                 crt_bijection_all += 1
 
     gcd_th = math.gcd(260, 365)
-    lcm_th = (260 * 365) // gcd_th
+    lcm_th = z_floor_div(260 * 365, gcd_th)
     gcd_vh = math.gcd(584, 365)
-    lcm_vh = (584 * 365) // gcd_vh
+    lcm_vh = z_floor_div(584 * 365, gcd_vh)
     gcd_tv = math.gcd(260, 584)
-    phase_compression = (260 * 365 * 584) // lcm_maya
-    compat_subgroup_order = (260 * 365 * 584) // (gcd_th * gcd_vh * gcd_tv)
+    phase_compression = z_floor_div(260 * 365 * 584, lcm_maya)
+    compat_subgroup_order = z_floor_div(260 * 365 * 584, gcd_th * gcd_vh * gcd_tv)
     dresden_gcd = math.gcd(11960, 405)
     dresden_ratio = Fraction(11960, 405)
 
@@ -1725,11 +2130,19 @@ def certify_modular_flow_and_partition(panini_counts: list[int]) -> dict[str, An
     beta2_white_t2 = pont_beta_sq_h12_q(256, 1024)
     delta_beta2_white = beta2_white_t2 - beta2_white_t1
 
-    # 4. Panini C1P compression ratios derived directly from decoded counts
-    n_slots, n_phonemes, n_classes = panini_counts
+    # 4. Panini C1P fixed-width binary encoding costs derived from decoded Sivasutra counts:
+    #    - Naive dense bitmask: 1 bit per distinct phoneme (42 bits/class -> 43 * 42 = 1,806 bits).
+    #    - Fixed-width phoneme ID: ceil(log2(42)) = 6 bits/slot (2^5 < 42 <= 2^6) -> 43 * 6 = 258-bit slot table.
+    #    - Fixed-width it-marker ID: ceil(log2(14)) = 4 bits/marker (2^3 < 14 <= 2^4).
+    #    - Pratyahara descriptor (start_phoneme_id, end_marker_id): 6 + 4 = 10 bits/class -> 43 * 10 = 430 bits.
+    n_slots, n_phonemes, n_classes, n_markers = panini_counts
+    phoneme_id_bits = (n_phonemes - 1).bit_length()
+    marker_id_bits = (n_markers - 1).bit_length()
+    descriptor_bits_per_class = phoneme_id_bits + marker_id_bits
     naive_bits = n_classes * n_phonemes
-    desc_bits = n_classes * 10
-    total_bits = desc_bits + n_slots * 6
+    desc_bits = n_classes * descriptor_bits_per_class
+    table_bits = n_slots * phoneme_id_bits
+    total_bits = desc_bits + table_bits
     panini_desc_ratio = Fraction(naive_bits, desc_bits)
     panini_total_ratio = Fraction(naive_bits, total_bits)
 
@@ -1768,6 +2181,15 @@ def certify_modular_flow_and_partition(panini_counts: list[int]) -> dict[str, An
         "two_clock_record_shift_delta_beta2": q_str(delta_beta2_record),
         "two_clock_white_noise_beta2_n16_n256": [q_str(beta2_white_t1), q_str(beta2_white_t2)],
         "two_clock_white_noise_delta_beta2": q_str(delta_beta2_white),
+        "panini_encoding_bit_widths": {
+            "phoneme_id_bits": z_int(phoneme_id_bits),
+            "it_marker_id_bits": z_int(marker_id_bits),
+            "descriptor_bits_per_class": z_int(descriptor_bits_per_class),
+            "naive_bits_total": z_int(naive_bits),
+            "descriptor_bits_total": z_int(desc_bits),
+            "sivasutra_table_bits": z_int(table_bits),
+            "encoded_bits_total": z_int(total_bits),
+        },
         "panini_c1p_descriptor_ratio": q_str(panini_desc_ratio),
         "panini_c1p_total_ratio": q_str(panini_total_ratio),
     }
@@ -1857,7 +2279,7 @@ def build_periodic_table_from_pillars(
 
     ev_pt01 = _ev(
         False,
-        (h1["class_a_farabi_obstructed"], h1["class_a_holder_comma_gt_1"]) == (True, True),
+        (h1["class_a_farabi_obstructed"], h1["class_a_mercator_comma_gt_1"]) == (True, True),
         False,
         h1["class_a_farabi_gap"] != "0",
     )
@@ -1919,11 +2341,12 @@ def build_periodic_table_from_pillars(
     )
     ev_pt08 = _ev(
         (
-            h1["class_b_stereo_s2_bijection_count"],
-            h1["class_b_cayley_s3_bijection_count"],
+            h1["class_b_stereo_cayley_poly_proof_identities"],
+            h1["class_b_stereo_s2_roundtrip_count"],
+            h1["class_b_cayley_s3_roundtrip_count"],
             h1["class_b_stereo_cayley_embed_count"],
         )
-        == (5, 5, 5),
+        == (19, 5, 5, 5),
         False,
         False,
         h1["class_b_stereo_cayley_embed_count"] == 5,
@@ -1938,7 +2361,7 @@ def build_periodic_table_from_pillars(
         (
             h1["class_c_pingala_510_bijection_count"],
             h1["class_c_fwht256_involution_and_parity"],
-            h1["class_c_bamana_65536_even_and_a16"],
+            h1["class_c_bamana_65536_parity_identity_and_a16"],
             a16m["distinct_1bit_syndromes"],
             a16m["nonzero_disjoint_2bit_syndromes"],
             a16m["codeword_count"],
@@ -1964,7 +2387,15 @@ def build_periodic_table_from_pillars(
         False,
         False,
         False,
-        (h1["class_c_casarabe_vs_tree_betti1"], cg, cc, kh) == ([12, 0], [13, 24, 12], [1, 2], [True, True]),
+        (
+            h1["class_c_casarabe_adjacency_exact"],
+            h1["class_c_casarabe_degree_sequence"],
+            h1["class_c_casarabe_vs_tree_betti1"],
+            cg,
+            cc,
+            kh,
+        )
+        == (True, list(CASARABE_C2_6_EXPECTED_DEGREES), [12, 0], [13, 24, 12], [1, 2], [True, True]),
     )
     ev_pt13 = _ev(
         False,
@@ -2017,7 +2448,7 @@ def build_periodic_table_from_pillars(
             "DIOPHANTINE_RESONANCE_LATTICE",
             "Islamicate (Al-Farabi 53-TET)",
             "Exact Integer Power Obstruction (12^53 != 2^7 * 11^53)",
-            f"gcd(12,11)=1 => 12^53 != 2^7*11^53 (gap {h1['class_a_farabi_gap']}); Holder comma 3^53/2^84 > 1 ({h1['class_a_holder_comma_gt_1']})",
+            f"gcd(12,11)=1 => 12^53 != 2^7*11^53 (gap {h1['class_a_farabi_gap']}); Mercator's comma 3^53/2^84 > 1 ({h1['class_a_mercator_comma_gt_1']})",
             "CLASS_A_DIOPHANTINE",
             ev_pt01,
             {"farabi_gap": h1["class_a_farabi_gap"], "farabi_obstructed": h1["class_a_farabi_obstructed"]},
@@ -2104,14 +2535,16 @@ def build_periodic_table_from_pillars(
             "SUBTRACTIVE_CANCELLATION_WALL",
             "Islamicate (Al-Biruni Isti'ab Stereographic) <-> Rational S^3(Q) Cayley Lift",
             "Division-Only Rational Stereographic & Cayley Spinor Bijections",
-            f"S^2<->Q^2 two-sided bijection {h1['class_b_stereo_s2_bijection_count']}/5; S^3<->Q^3 Cayley two-sided bijection {h1['class_b_cayley_s3_bijection_count']}/5; "
-            f"equatorial embedding {h1['class_b_stereo_cayley_embed_count']}/5",
+            f"Generic Z-polynomial bijection proof ({h1['class_b_stereo_cayley_poly_proof_identities']}/19 identities over Z[u,v], Z[x,y,z], Z[w1,w2,w3], Z[q0,q1,q2,q3]) + "
+            f"5-point numerical round-trips S^2<->Q^2 ({h1['class_b_stereo_s2_roundtrip_count']}/5), S^3<->Q^3 ({h1['class_b_cayley_s3_roundtrip_count']}/5), "
+            f"equatorial embedding ({h1['class_b_stereo_cayley_embed_count']}/5)",
             "CLASS_B_CANCELLATION",
             ev_pt08,
             {
-                "s2_bijection": h1["class_b_stereo_s2_bijection_count"],
-                "s3_bijection": h1["class_b_cayley_s3_bijection_count"],
-                "embed_matches": h1["class_b_stereo_cayley_embed_count"],
+                "poly_bijection_identities": h1["class_b_stereo_cayley_poly_proof_identities"],
+                "s2_5pt_roundtrip": h1["class_b_stereo_s2_roundtrip_count"],
+                "s3_5pt_roundtrip": h1["class_b_cayley_s3_roundtrip_count"],
+                "embed_5pt_matches": h1["class_b_stereo_cayley_embed_count"],
             },
         ),
         _make_entry(
@@ -2119,12 +2552,14 @@ def build_periodic_table_from_pillars(
             "TOPOLOGICAL_PARTITION_OBSTRUCTION",
             "South Asian (Panini 14 Sivasutras) <-> Minimal Sufficient Partition",
             "C1P Contiguous Interval Compression & Tucker C_3 Obstruction",
-            f"{h1['class_c_panini_43_c1p_count']}/43 C1P classes decoded; compression {h3['panini_c1p_descriptor_ratio']} ({h3['panini_c1p_total_ratio']} w/ table); "
+            f"{h1['class_c_panini_43_c1p_count']}/43 C1P classes decoded; fixed-width bit costs "
+            f"(6b phoneme ID + 4b it-marker ID = 10b descriptor, 43x6b table) yield {h3['panini_c1p_descriptor_ratio']} ({h3['panini_c1p_total_ratio']} w/ table); "
             f"Tucker C_3 {h1['class_c_tucker_c3_single_copy_orders']}/6 single-copy orders, dup-h resolved={h1['class_c_dup_h_resolves']}",
             "CLASS_C_TOPOLOGICAL",
             ev_pt09,
             {
                 "panini_c1p_exact": h1["class_c_panini_43_c1p_count"],
+                "encoding_bit_widths": h3["panini_encoding_bit_widths"],
                 "tucker_orders": h1["class_c_tucker_c3_single_copy_orders"],
                 "dup_h_resolves": h1["class_c_dup_h_resolves"],
             },
@@ -2136,14 +2571,15 @@ def build_periodic_table_from_pillars(
             "F_2^n Hypercube Bijection & Explicit 5x16 GF(2) SECDED Parity-Check Matrix H",
             f"Pingala {h1['class_c_pingala_510_bijection_count']}/510 bijection; FWHT_256 {h1['class_c_fwht256_involution_and_parity']}; "
             f"A_16 5x16 H: {a16m['distinct_1bit_syndromes']}/16 distinct 1-bit, {a16m['nonzero_disjoint_2bit_syndromes']}/120 disjoint 2-bit, "
-            f"{a16m['codeword_count']} codewords, d_min={a16m['min_nonzero_weight']}; Bamana correspondence {h1['class_c_bamana_65536_even_and_a16']}",
+            f"{a16m['codeword_count']} codewords, d_min={a16m['min_nonzero_weight']}; "
+            f"Bamana parity-conservation identity & A_16 syndrome correspondence {h1['class_c_bamana_65536_parity_identity_and_a16']}",
             "CLASS_C_TOPOLOGICAL",
             ev_pt10,
             {
                 "pingala_bijection": h1["class_c_pingala_510_bijection_count"],
                 "fwht256_involution_and_parity": h1["class_c_fwht256_involution_and_parity"],
                 "a16_secded_matrix": a16m,
-                "bamana_even_and_a16": h1["class_c_bamana_65536_even_and_a16"],
+                "bamana_parity_identity_and_a16": h1["class_c_bamana_65536_parity_identity_and_a16"],
             },
         ),
         _make_entry(
@@ -2161,12 +2597,14 @@ def build_periodic_table_from_pillars(
             "TOPOLOGICAL_PARTITION_OBSTRUCTION",
             "Andean Tree-Sum Checksums & Amazonian Casarabe C_{2,6} Radial-Ring Topology",
             "Hierarchical Tree-Sum Integrity & Casarabe C_{2,6} Cycle Cut Resilience (beta_1)",
-            f"Casarabe C_{{2,6}} ({cg[0]} vertices: hub 0 + inner 6-ring 1..6 + outer 6-ring 7..12; {cg[1]} edges: 12 spokes + 12 ring edges; "
+            f"Casarabe C_{{2,6}} ({cg[0]} vertices, pinned 24-edge adjacency={h1['class_c_casarabe_adjacency_exact']}, degrees={h1['class_c_casarabe_degree_sequence']}, "
             f"beta_1={h1['class_c_casarabe_vs_tree_betti1'][0]}, 1-cut comps={cc[0]}) vs spanning tree T_13 ({cg[2]} edges; "
             f"beta_1={h1['class_c_casarabe_vs_tree_betti1'][1]}, 1-cut comps={cc[1]}); khipu tree valid={kh[0]}, 1-cord tamper caught={kh[1]}",
             "CLASS_C_TOPOLOGICAL",
             ev_pt12,
             {
+                "casarabe_adjacency_exact": h1["class_c_casarabe_adjacency_exact"],
+                "casarabe_degree_sequence": h1["class_c_casarabe_degree_sequence"],
                 "graph_counts_v_ec_et": cg,
                 "betti1_casarabe_vs_tree": h1["class_c_casarabe_vs_tree_betti1"],
                 "cut_comps_casarabe_vs_tree": cc,
@@ -2260,22 +2698,139 @@ def _is_nonneg_int_const(expr: ast.expr) -> bool:
     return False
 
 
+def _collect_pure_annotation_ids(ann: ast.expr | None, out: set[int]) -> None:
+    """Record Name node IDs inside pure static type annotations (rejecting Calls, Attributes, and NamedExpr)."""
+    if ann is None:
+        return
+    for sub in ast.walk(ann):
+        if isinstance(sub, (ast.Call, ast.Attribute, ast.NamedExpr, ast.Lambda)):
+            return
+    for sub in ast.walk(ann):
+        if isinstance(sub, ast.Name):
+            out.add(id(sub))
+
+
 def check_source_zero_floats_and_logs(py_path: Path) -> int:
-    """Parse Python AST and count forbidden float/complex/div/pow/getattr/builtins/alias/Fraction constructs (must be 0)."""
-    src = py_path.read_text(encoding="utf-8")
-    tree = ast.parse(src, filename=str(py_path))
+    """Parse Python AST and count forbidden purity/allowlist violations (returns 0 iff clean, >= 1 fail-closed).
+
+    Fails closed (returning >= 1, never raising SyntaxError) on symlinks, unreadable/missing files,
+    invalid UTF-8/BOM/CRLF, SyntaxError/null-bytes, imports outside the fixed standard-library allowlist,
+    float/complex literals, '/', '//', '%', or '@' operators, negative/variable '**' powers, format-spec
+    f-strings, bare asserts, any dunder attribute access, forbidden builtin/stdlib names or attributes,
+    and any unguarded rebinding or misuse of Fraction, math, or sys aliases.
+    """
+    try:
+        raw_bytes = _read_regular_file_bytes_nofollow(py_path, py_path.name)
+        src = _decode_strict_utf8_no_bom_crlf(raw_bytes, py_path.name)
+        tree = ast.parse(src, filename=str(py_path))
+    except (ValueError, SyntaxError, RecursionError):
+        return 1
+
+    allowed_direct_imports = frozenset(
+        (
+            "argparse",
+            "ast",
+            "copy",
+            "functools",
+            "hashlib",
+            "hmac",
+            "io",
+            "json",
+            "subprocess",
+            "tempfile",
+            "verify_periodic_table_invariants",
+        )
+    )
+    allowed_math = frozenset(("gcd", "isqrt"))
+    allowed_sys = frozenset(("argv", "executable", "exit", "path", "stderr", "stdout"))
+    allowed_from_imports: dict[str, frozenset[str]] = {
+        "__future__": frozenset(("annotations",)),
+        "contextlib": frozenset(("redirect_stderr", "redirect_stdout")),
+        "fractions": frozenset(("Fraction",)),
+        "math": allowed_math,
+        "os": frozenset(
+            (
+                "O_CREAT",
+                "O_EXCL",
+                "O_NOFOLLOW",
+                "O_NONBLOCK",
+                "O_RDONLY",
+                "O_TRUNC",
+                "O_WRONLY",
+                "close",
+                "fstat",
+                "mkfifo",
+                "open",
+                "read",
+                "replace",
+                "symlink",
+                "unlink",
+                "write",
+            )
+        ),
+        "pathlib": frozenset(("Path",)),
+        "stat": frozenset(("S_ISDIR", "S_ISREG")),
+        "sys": allowed_sys,
+        "typing": frozenset(("Any", "Callable")),
+    }
     forbidden_names = frozenset(
-        ("float", "log", "log2", "log10", "sqrt", "complex", "pow", "getattr", "eval", "exec", "__import__")
+        (
+            "float",
+            "complex",
+            "pow",
+            "divmod",
+            "round",
+            "format",
+            "log",
+            "log2",
+            "log10",
+            "sqrt",
+            "getattr",
+            "setattr",
+            "delattr",
+            "hasattr",
+            "vars",
+            "globals",
+            "locals",
+            "dir",
+            "eval",
+            "exec",
+            "compile",
+            "__import__",
+            "builtins",
+            "__builtins__",
+            "object",
+            "memoryview",
+            "bytearray",
+            "open",
+            "input",
+            "breakpoint",
+            "chr",
+        )
     )
     forbidden_attrs = forbidden_names | frozenset(
-        ("from_float", "from_decimal", "__truediv__", "__rtruediv__", "__itruediv__", "__pow__")
+        (
+            "from_float",
+            "from_decimal",
+            "as_integer_ratio",
+            "hex",
+            "fromhex",
+            "conjugate",
+            "real",
+            "imag",
+            "cast",
+            "unpack",
+            "unpack_from",
+            "iter_unpack",
+            "pack",
+            "format_map",
+            "modules",
+        )
     )
-    forbidden_mods = frozenset(("cmath", "decimal", "statistics", "builtins", "operator", "importlib", "ctypes"))
-    forbidden_refs = frozenset(("builtins", "__builtins__"))
-    allowed_math = frozenset(("gcd", "isqrt"))
+    allowed_dunder_names = frozenset(("__file__", "__name__", "__future__"))
 
     math_aliases: set[str] = {"math"}
-    frac_mod_aliases: set[str] = {"fractions"}
+    sys_aliases: set[str] = {"sys"}
     frac_cls_aliases: set[str] = {"Fraction"}
     bad_nodes = 0
 
@@ -2285,35 +2840,129 @@ def check_source_zero_floats_and_logs(py_path: Path) -> int:
                 local = alias.asname if alias.asname is not None else alias.name
                 if alias.name == "math":
                     math_aliases.add(local)
-                elif alias.name == "fractions":
-                    frac_mod_aliases.add(local)
-                elif alias.name in forbidden_mods:
+                elif alias.name == "sys":
+                    sys_aliases.add(local)
+                elif alias.name not in allowed_direct_imports:
+                    bad_nodes += 1
+                if local in forbidden_names:
                     bad_nodes += 1
         elif isinstance(node, ast.ImportFrom):
+            mod_name = node.module or ""
             if node.level > 0:
                 bad_nodes += 1
-            elif node.module == "math":
-                for alias in node.names:
-                    if alias.name not in allowed_math:
-                        bad_nodes += 1
-            elif node.module == "fractions":
-                for alias in node.names:
-                    if alias.name == "Fraction":
-                        local = alias.asname if alias.asname is not None else alias.name
-                        frac_cls_aliases.add(local)
-                    elif alias.name == "*":
-                        bad_nodes += 1
-            elif node.module in forbidden_mods:
+            elif mod_name not in allowed_from_imports:
                 bad_nodes += 1
+            else:
+                permitted = allowed_from_imports[mod_name]
+                for alias in node.names:
+                    local = alias.asname if alias.asname is not None else alias.name
+                    if alias.name not in permitted:
+                        bad_nodes += 1
+                    elif mod_name == "fractions":
+                        frac_cls_aliases.add(local)
+                    if local in forbidden_names:
+                        bad_nodes += 1
+
+    valid_typecheck_ids: set[int] = set()
+    valid_frac_name_ids: set[int] = set()
+    valid_math_name_ids: set[int] = set()
+    valid_sys_name_ids: set[int] = set()
+
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            _collect_pure_annotation_ids(node.returns, valid_frac_name_ids)
+            all_args = (
+                list(node.args.posonlyargs)
+                + list(node.args.args)
+                + list(node.args.kwonlyargs)
+            )
+            if node.args.vararg is not None:
+                all_args.append(node.args.vararg)
+            if node.args.kwarg is not None:
+                all_args.append(node.args.kwarg)
+            for a_node in all_args:
+                _collect_pure_annotation_ids(a_node.annotation, valid_frac_name_ids)
+        elif isinstance(node, ast.AnnAssign):
+            _collect_pure_annotation_ids(node.annotation, valid_frac_name_ids)
+        elif isinstance(node, ast.Attribute):
+            if isinstance(node.value, ast.Name):
+                if node.value.id in math_aliases:
+                    if node.attr in allowed_math:
+                        valid_math_name_ids.add(id(node.value))
+                if node.value.id in sys_aliases:
+                    if node.attr in allowed_sys:
+                        valid_sys_name_ids.add(id(node.value))
+        elif isinstance(node, ast.Compare):
+            if len(node.ops) == 1:
+                if isinstance(node.ops[0], (ast.Is, ast.IsNot)):
+                    comp = node.comparators[0]
+                    if isinstance(comp, ast.Name):
+                        if comp.id in frac_cls_aliases:
+                            if isinstance(node.left, ast.Call):
+                                if isinstance(node.left.func, ast.Name):
+                                    if node.left.func.id == "type":
+                                        valid_frac_name_ids.add(id(comp))
+        elif isinstance(node, ast.Call):
+            fn = node.func
+            if isinstance(fn, ast.Name):
+                if fn.id == "isinstance":
+                    if len(node.args) == 2:
+                        if len(node.keywords) == 0:
+                            cls_arg = node.args[1]
+                            if isinstance(cls_arg, ast.Name):
+                                if cls_arg.id in ("float", "complex"):
+                                    valid_typecheck_ids.add(id(cls_arg))
+                            elif isinstance(cls_arg, ast.Tuple):
+                                for elt in cls_arg.elts:
+                                    if isinstance(elt, ast.Name):
+                                        if elt.id in ("float", "complex"):
+                                            valid_typecheck_ids.add(id(elt))
+                elif fn.id in frac_cls_aliases:
+                    if len(node.args) == 2:
+                        if len(node.keywords) == 0:
+                            arg_ok = True
+                            for arg in node.args:
+                                if isinstance(arg, ast.Starred):
+                                    arg_ok = False
+                                elif isinstance(arg, ast.Constant):
+                                    if isinstance(arg.value, (str, bytes, float, complex)):
+                                        arg_ok = False
+                            if arg_ok:
+                                valid_frac_name_ids.add(id(fn))
 
     for node in ast.walk(tree):
         if isinstance(node, ast.Constant):
             if isinstance(node.value, (float, complex)):
                 bad_nodes += 1
-        elif isinstance(node, ast.Div):
+        elif isinstance(node, (ast.Div, ast.FloorDiv, ast.Mod, ast.MatMult)):
             bad_nodes += 1
+        elif isinstance(node, ast.Assert):
+            bad_nodes += 1
+        elif isinstance(node, ast.FormattedValue):
+            if node.format_spec is not None:
+                bad_nodes += 1
         elif isinstance(node, ast.Name):
-            if node.id in forbidden_refs:
+            if node.id in forbidden_names:
+                if id(node) not in valid_typecheck_ids:
+                    bad_nodes += 1
+            if node.id.startswith("__"):
+                if node.id.endswith("__"):
+                    if node.id not in allowed_dunder_names:
+                        bad_nodes += 1
+            if node.id in frac_cls_aliases:
+                if id(node) not in valid_frac_name_ids:
+                    bad_nodes += 1
+            if node.id in math_aliases:
+                if id(node) not in valid_math_name_ids:
+                    bad_nodes += 1
+            if node.id in sys_aliases:
+                if id(node) not in valid_sys_name_ids:
+                    bad_nodes += 1
+        elif isinstance(node, ast.Attribute):
+            if node.attr.startswith("__"):
+                if node.attr.endswith("__"):
+                    bad_nodes += 1
+            if node.attr in forbidden_attrs:
                 bad_nodes += 1
         elif isinstance(node, ast.BinOp):
             if isinstance(node.op, ast.Pow):
@@ -2323,38 +2972,15 @@ def check_source_zero_floats_and_logs(py_path: Path) -> int:
             if isinstance(node.op, ast.Pow):
                 if not _is_nonneg_int_const(node.value):
                     bad_nodes += 1
-        elif isinstance(node, ast.Call):
-            fn = node.func
-            if isinstance(fn, ast.Name):
-                if fn.id in forbidden_names:
-                    bad_nodes += 1
-                elif fn.id in frac_cls_aliases:
-                    if len(node.args) != 2:
-                        bad_nodes += 1
-                    elif len(node.keywords) != 0:
-                        bad_nodes += 1
-                    else:
-                        for arg in node.args:
-                            if isinstance(arg, ast.Constant):
-                                if isinstance(arg.value, (str, float, complex)):
-                                    bad_nodes += 1
-            elif isinstance(fn, ast.Attribute):
-                if fn.attr in forbidden_attrs:
-                    bad_nodes += 1
-                elif isinstance(fn.value, ast.Name):
-                    if fn.value.id in math_aliases:
-                        if fn.attr not in allowed_math:
-                            bad_nodes += 1
-                    elif fn.value.id in frac_mod_aliases:
-                        if fn.attr == "Fraction":
-                            bad_nodes += 1
     return bad_nodes
 
 
 def build_certificate() -> dict[str, Any]:
     h1, h2, h3 = copy.deepcopy(_compute_live_pillars())
     pt = build_periodic_table_from_pillars(h1, h2, h3)
-    ast_bad = check_source_zero_floats_and_logs(Path(__file__).resolve())
+    verifier_path = Path(__file__).resolve()
+    test_companion_path = verifier_path.with_name("test_periodic_table_invariants.py")
+    ast_bad = check_source_zero_floats_and_logs(verifier_path) + check_source_zero_floats_and_logs(test_companion_path)
 
     cert: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
@@ -2378,34 +3004,37 @@ def build_certificate() -> dict[str, Any]:
 
 def validate_certificate(cert: dict[str, Any]) -> None:
     """Hardened fail-closed certificate validator (rejects floats & forged witnesses even with recomputed hash)."""
+    require_ok(isinstance(cert, dict), "Certificate root must be a JSON object")
     assert_no_floats_recursive(cert)
-    require_ok(cert["schema_version"] == SCHEMA_VERSION, "Schema version mismatch")
-    require_ok(cert["target_repo"] == "Foundation-0/continuum", "Target repo mismatch")
-    require_ok(cert["compute_policy_status"] == COMPUTE_POLICY_STATUS, "Compute policy mismatch")
-    require_ok(cert["ast_float_div_and_log_count"] == 0, "AST must contain zero floats, true divisions, or forbidden math calls")
+    require_ok(cert.get("schema_version") == SCHEMA_VERSION, "Schema version mismatch")
+    require_ok(cert.get("target_repo") == "Foundation-0/continuum", "Target repo mismatch")
+    require_ok(cert.get("compute_policy_status") == COMPUTE_POLICY_STATUS, "Compute policy mismatch")
+    require_ok(cert.get("ast_float_div_and_log_count") == 0, "AST must contain zero floats, true divisions, or forbidden math calls")
 
     h1 = cert["four_class_obstructions"]
     require_ok(h1["class_a_diophantine_checks_total"] == 15, "Expected 15 Class-A checks")
     require_ok(h1["class_a_diophantine_checks_ok"] == h1["class_a_diophantine_checks_total"], "Class-A check mismatch")
+    require_ok(h1["class_a_mercator_comma_gt_1"] is True, "Mercator's comma witness mismatch")
     require_ok(h1["class_a_zu_beats_22_7_floor"] == 4740, "Zu Chongzhi floor witness mismatch")
     require_ok(h1["class_a_zu_first_beater"] == "52163/16604", "Zu first beater witness mismatch")
     require_ok(h1["class_a_antikythera_beat_9_times_53"] == 477, "Antikythera beat witness mismatch")
     require_ok(h1["class_a_madhava_r3_n50_speedup_floor"] == 27872151775, "Madhava R3 n=50 speedup witness mismatch")
 
-    require_ok(h1["class_b_cancellation_checks_total"] == 11, "Expected 11 Class-B checks")
+    require_ok(h1["class_b_cancellation_checks_total"] == 12, "Expected 12 Class-B checks")
     require_ok(h1["class_b_cancellation_checks_ok"] == h1["class_b_cancellation_checks_total"], "Class-B check mismatch")
     require_ok(h1["class_b_biruni_kappa"] == "215989/11", "Al-Biruni kappa witness mismatch")
-    require_ok(h1["class_b_stereo_s2_bijection_count"] == 5, "Stereographic S^2 bijection count mismatch")
-    require_ok(h1["class_b_cayley_s3_bijection_count"] == 5, "Cayley S^3 bijection count mismatch")
+    require_ok(h1["class_b_stereo_cayley_poly_proof_identities"] == 19, "Generic polynomial bijection proof count mismatch")
+    require_ok(h1["class_b_stereo_s2_roundtrip_count"] == 5, "Stereographic S^2 5-point round-trip mismatch")
+    require_ok(h1["class_b_cayley_s3_roundtrip_count"] == 5, "Cayley S^3 5-point round-trip mismatch")
 
-    require_ok(h1["class_c_topological_checks_total"] == 18, "Expected 18 Class-C checks")
+    require_ok(h1["class_c_topological_checks_total"] == 19, "Expected 19 Class-C checks")
     require_ok(h1["class_c_topological_checks_ok"] == h1["class_c_topological_checks_total"], "Class-C check mismatch")
     require_ok(h1["class_c_sona_576_exact_count"] == 576, "Sona 576/576 sweep mismatch")
     require_ok(h1["class_c_panini_43_c1p_count"] == 43, "Panini 43/43 C1P count mismatch")
     require_ok(h1["class_c_tucker_c3_single_copy_orders"] == 0, "Tucker C_3 witness mismatch")
     require_ok(h1["class_c_pingala_510_bijection_count"] == 510, "Pingala 510/510 bijection mismatch")
     require_ok(h1["class_c_fwht256_involution_and_parity"] == [256, 256], "FWHT_256 witness mismatch")
-    require_ok(h1["class_c_bamana_65536_even_and_a16"] == [65536, 65536], "Bamana 65536 A_16 witness mismatch")
+    require_ok(h1["class_c_bamana_65536_parity_identity_and_a16"] == [65536, 65536], "Bamana 65536 parity identity and A_16 mismatch")
     require_ok(
         h1["class_c_a16_secded_matrix"] == {
             "parity_check_rows": 5,
@@ -2418,6 +3047,11 @@ def validate_certificate(cert: dict[str, Any]) -> None:
         "A_16 SECDED 5x16 matrix witness mismatch",
     )
     require_ok(h1["class_c_z2_twisted_vs_untwisted_sections"] == [0, 2], "Z_2 sheaf section witness mismatch")
+    require_ok(h1["class_c_casarabe_adjacency_exact"] is True, "Casarabe C_{2,6} adjacency mismatch")
+    require_ok(
+        h1["class_c_casarabe_degree_sequence"] == list(CASARABE_C2_6_EXPECTED_DEGREES),
+        "Casarabe C_{2,6} degree sequence mismatch",
+    )
     require_ok(h1["class_c_casarabe_vs_tree_betti1"] == [12, 0], "Casarabe Betti_1 witness mismatch")
 
     require_ok(h1["class_d_commutation_checks_total"] == 8, "Expected 8 Class-D checks")
@@ -2483,10 +3117,11 @@ def validate_certificate(cert: dict[str, Any]) -> None:
 
 def validate_periodic_table(table: dict[str, Any]) -> None:
     """Hardened fail-closed validator for periodic_table_of_invariants.json."""
+    require_ok(isinstance(table, dict), "Periodic table root must be a JSON object")
     assert_no_floats_recursive(table)
-    require_ok(table["schema_version"] == PERIODIC_TABLE_SCHEMA, "Periodic table schema mismatch")
-    require_ok(table["compute_policy_status"] == COMPUTE_POLICY_STATUS, "Periodic table policy mismatch")
-    require_ok(table["entry_count"] == 16, "Expected 16 entries in periodic table")
+    require_ok(table.get("schema_version") == PERIODIC_TABLE_SCHEMA, "Periodic table schema mismatch")
+    require_ok(table.get("compute_policy_status") == COMPUTE_POLICY_STATUS, "Periodic table policy mismatch")
+    require_ok(table.get("entry_count") == 16, "Expected 16 entries in periodic table")
     entries = table["entries"]
     require_ok(len(entries) == table["entry_count"], "Periodic table entries length mismatch")
     require_ok(table["family_count"] == 5, "Expected 5 families in periodic table")
@@ -2521,17 +3156,17 @@ def verify_committed_artifacts(
     live_table: dict[str, Any],
 ) -> tuple[str, str]:
     """Fail-closed validation of committed periodic_table_certificate.json and periodic_table_of_invariants.json."""
+    require_ok(not artifact_dir.is_symlink(), "Artifact directory must not be a symlink")
+    require_ok(artifact_dir.is_dir(), "Artifact directory does not exist")
     cert_path = artifact_dir.joinpath("periodic_table_certificate.json")
     pt_path = artifact_dir.joinpath("periodic_table_of_invariants.json")
-    require_ok(cert_path.is_file(), "Missing committed periodic_table_certificate.json on disk")
-    require_ok(pt_path.is_file(), "Missing committed periodic_table_of_invariants.json on disk")
 
-    cert_raw_bytes = cert_path.read_bytes()
-    pt_raw_bytes = pt_path.read_bytes()
-    require_ok(b"\r" not in cert_raw_bytes, "CRLF forbidden in periodic_table_certificate.json")
-    require_ok(b"\r" not in pt_raw_bytes, "CRLF forbidden in periodic_table_of_invariants.json")
-    disk_cert = loads_strict_no_float_json(cert_raw_bytes.decode("utf-8"))
-    disk_table = loads_strict_no_float_json(pt_raw_bytes.decode("utf-8"))
+    cert_raw_bytes = _read_regular_file_bytes_nofollow(cert_path, "periodic_table_certificate.json")
+    pt_raw_bytes = _read_regular_file_bytes_nofollow(pt_path, "periodic_table_of_invariants.json")
+    cert_text = _decode_strict_utf8_no_bom_crlf(cert_raw_bytes, "periodic_table_certificate.json")
+    pt_text = _decode_strict_utf8_no_bom_crlf(pt_raw_bytes, "periodic_table_of_invariants.json")
+    disk_cert = loads_strict_no_float_json(cert_text)
+    disk_table = loads_strict_no_float_json(pt_text)
 
     validate_certificate(disk_cert)
     validate_periodic_table(disk_table)
@@ -2547,6 +3182,23 @@ def verify_committed_artifacts(
     )
 
 
+def write_committed_artifacts(
+    artifact_dir: Path,
+    live_cert: dict[str, Any],
+    live_table: dict[str, Any],
+) -> tuple[str, str]:
+    """Safely write canonical committed JSON artifacts without following symlinks and verify readback."""
+    require_ok(not artifact_dir.is_symlink(), "Artifact directory must not be a symlink")
+    require_ok(artifact_dir.is_dir(), "Artifact directory does not exist")
+    cert_path = artifact_dir.joinpath("periodic_table_certificate.json")
+    pt_path = artifact_dir.joinpath("periodic_table_of_invariants.json")
+    cert_bytes = (json.dumps(live_cert, sort_keys=True, indent=2) + "\n").encode("utf-8")
+    pt_bytes = (json.dumps(live_table, sort_keys=True, indent=2) + "\n").encode("utf-8")
+    _write_regular_file_bytes_nofollow(cert_path, cert_bytes, "periodic_table_certificate.json")
+    _write_regular_file_bytes_nofollow(pt_path, pt_bytes, "periodic_table_of_invariants.json")
+    return verify_committed_artifacts(artifact_dir, live_cert, live_table)
+
+
 def format_summary(cert: dict[str, Any]) -> str:
     h1 = cert["four_class_obstructions"]
     h2 = cert["opposing_pair_conservation"]
@@ -2556,8 +3208,8 @@ def format_summary(cert: dict[str, Any]) -> str:
         (
             "Foundation-0/continuum: Self-Contained Cross-Civilizational Periodic Table of Invariants",
             f"AST_FLOAT_DIV_LOG={cert['ast_float_div_and_log_count']} "
-            f"OBSTRUCTIONS: A={h1['class_a_diophantine_checks_ok']}/15 B={h1['class_b_cancellation_checks_ok']}/11 "
-            f"C={h1['class_c_topological_checks_ok']}/18 D={h1['class_d_commutation_checks_ok']}/8",
+            f"OBSTRUCTIONS: A={h1['class_a_diophantine_checks_ok']}/15 B={h1['class_b_cancellation_checks_ok']}/12 "
+            f"C={h1['class_c_topological_checks_ok']}/19 D={h1['class_d_commutation_checks_ok']}/8",
             f"OPPOSING_PAIRS={h2['opposing_pair_checks_ok']}/13 MODULAR_FLOW={h3['modular_flow_checks_ok']}/15",
             f"PERIODIC_TABLE: entries={pts['entry_count']} in_module={pts['in_module_verified_entries']} "
             f"families={pts['family_count']} sha256={pts['periodic_table_sha256']}",
@@ -2566,40 +3218,64 @@ def format_summary(cert: dict[str, Any]) -> str:
     )
 
 
+def _emit_structured_failure(msg: str) -> int:
+    """Emit a single-line FAIL record on stderr (no traceback) and return RC=2."""
+    err_msg = msg.replace("\r", " ").replace("\n", " ")
+    try:
+        print(f"FAIL CONTINUUM_PERIODIC_TABLE_INVARIANTS error={err_msg}", file=sys.stderr)
+    except OSError:
+        pass
+    return 2
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Self-Contained Pure-Q/Z Verifier for Foundation-0/continuum Periodic Table.")
     mode_grp = parser.add_mutually_exclusive_group()
     mode_grp.add_argument("--json", action="store_true", help="Emit canonical certificate JSON.")
     mode_grp.add_argument("--periodic-table-json", action="store_true", help="Emit periodic_table_of_invariants.json.")
     mode_grp.add_argument("--check", action="store_true", help="Validate live math AND committed JSON files on disk.")
+    mode_grp.add_argument("--write", action="store_true", help="Write canonical committed JSON files to --artifact-dir.")
     parser.add_argument(
         "--artifact-dir",
         type=Path,
         default=Path(__file__).resolve().parent,
-        help="Directory holding committed JSON artifacts for --check.",
+        help="Directory holding committed JSON artifacts for --check / --write.",
     )
     args = parser.parse_args(argv)
 
-    cert = build_certificate()
-    validate_certificate(cert)
-    table = build_periodic_table()
-    validate_periodic_table(table)
+    try:
+        cert = build_certificate()
+        validate_certificate(cert)
+        table = build_periodic_table()
+        validate_periodic_table(table)
 
-    if args.periodic_table_json:
-        print(json.dumps(table, sort_keys=True, indent=2))
-    elif args.json:
-        print(json.dumps(cert, sort_keys=True, indent=2))
-    elif args.check:
-        cert_file_sha, pt_file_sha = verify_committed_artifacts(args.artifact_dir, cert, table)
-        print(
-            f"PASS CONTINUUM_PERIODIC_TABLE_INVARIANTS "
-            f"result_sha256={cert['result_sha256']} "
-            f"cert_file_sha256={cert_file_sha} "
-            f"table_file_sha256={pt_file_sha}"
-        )
-    else:
-        print(format_summary(cert))
-    return 0
+        if args.periodic_table_json:
+            print(json.dumps(table, sort_keys=True, indent=2))
+        elif args.json:
+            print(json.dumps(cert, sort_keys=True, indent=2))
+        elif args.write:
+            cert_file_sha, pt_file_sha = write_committed_artifacts(args.artifact_dir, cert, table)
+            print(
+                f"WROTE CONTINUUM_PERIODIC_TABLE_INVARIANTS "
+                f"result_sha256={cert['result_sha256']} "
+                f"cert_file_sha256={cert_file_sha} "
+                f"table_file_sha256={pt_file_sha}"
+            )
+        elif args.check:
+            cert_file_sha, pt_file_sha = verify_committed_artifacts(args.artifact_dir, cert, table)
+            print(
+                f"PASS CONTINUUM_PERIODIC_TABLE_INVARIANTS "
+                f"result_sha256={cert['result_sha256']} "
+                f"cert_file_sha256={cert_file_sha} "
+                f"table_file_sha256={pt_file_sha}"
+            )
+        else:
+            print(format_summary(cert))
+        return 0
+    except OSError as exc:
+        return _emit_structured_failure(f"OS I/O error: {exc}")
+    except (ValueError, KeyError, TypeError, UnicodeDecodeError, RecursionError) as exc:
+        return _emit_structured_failure(str(exc))
 
 
 if __name__ == "__main__":
