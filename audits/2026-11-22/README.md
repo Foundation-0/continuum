@@ -1,25 +1,31 @@
 # Audit: Foundation-0/continuum (2026-11-22)
 
-Auditor: amp-vela (Muse seat), at A's request, alongside the site work in
-[PR #4](https://github.com/Foundation-0/continuum/pull/4). Method: Aletheia
-single-agent loop. Every Python artifact was executed locally. Headline
-identities were re-derived with zero-shared-code checkers, kept beside this
-report in [`checks/`](checks/). Failed checker assumptions were repaired
-before any negative verdict.
+Independent automated audit, 22 November 2026, covering the then-open
+pull requests and the site work in
+[PR #4](https://github.com/Foundation-0/continuum/pull/4). Every Python
+artifact was executed locally. Headline identities were re-derived with
+zero-shared-code checkers, kept beside this report in
+[`checks/`](checks/). Failed checker assumptions were repaired before any
+negative verdict.
 
 Issues filed from this audit:
 [session-material privacy decision](https://github.com/Foundation-0/continuum/issues/5),
 [missing license](https://github.com/Foundation-0/continuum/issues/6),
 [zero-float wording](https://github.com/Foundation-0/continuum/issues/7).
 
-Rerun the independent checks from the repository root:
+Rerun the independent checks from the repository root. The exact
+identities checker is stdlib-only. `check_probe_shadow.py` needs numpy
+and scipy (this audit ran numpy 2.5.4 and scipy 1.18.1); under `-I`
+those must be on the interpreter's isolated path, for example a venv
+created for the run, because `-I` hides user-site installs.
 
 ```bash
 python3 -I -B audits/2026-11-22/checks/check_exact_identities.py
 python3 -I -O -B audits/2026-11-22/checks/check_exact_identities.py
 python3 -I -B -W error audits/2026-11-22/checks/check_exact_identities.py
-git show origin/anthology:gemini-code-1795203041292.py > /tmp/probe_original.py
-python3 -I -B audits/2026-11-22/checks/check_probe_shadow.py /tmp/probe_original.py
+probe=$(mktemp)
+git show origin/anthology:gemini-code-1795203041292.py > "$probe"
+python3 -I -B audits/2026-11-22/checks/check_probe_shadow.py "$probe"
 ```
 
 ## 0. Inventory
@@ -32,7 +38,8 @@ python3 -I -B audits/2026-11-22/checks/check_probe_shadow.py /tmp/probe_original
 | `expedition/synthesis-instruments` ([PR #3](https://github.com/Foundation-0/continuum/pull/3)) | Six synthesis instruments plus the double-slit instrument, two reports, one prior-art fence, one test file, one certificate | Open |
 | `site/continuum-pages` ([PR #4](https://github.com/Foundation-0/continuum/pull/4)) | The GitHub Pages site | Open, awaiting required review |
 
-No issues. No CI anywhere until PR #4. No license, no `.gitignore`, no
+No issues prior to this audit (which opened #5, #6, and #7). No CI
+anywhere until PR #4. No license, no `.gitignore`, no
 CODEOWNERS. Org ruleset `protect-main` requires a pull request with one
 approving review for `main`. Public repository, about 240 KiB of objects.
 
@@ -56,7 +63,7 @@ approving review for `main`. Public repository, about 240 KiB of objects.
 
 ## 2. Exact instruments: reproduction
 
-All six synthesis instruments plus the double-slit observer were run under
+Five exact synthesis instruments plus the double-slit observer were run under
 `python3 -I -B`, `-I -O -B` and `-I -B -W error` (double-slit also
 `-I -O -B -W error`). Every run exited 0 with bit-identical `--json`
 (SHA-256 prefixes: tropical `fd554535`, two-loop `4857c33f`, optimal
@@ -127,7 +134,7 @@ library versions. Local run used numpy 2.5.4, scipy 1.18.1.
 Written fresh for this audit, importing nothing from the repository:
 
 - **Möbius cross-ratio cancellation.** For
-  `q(p. R, c) = (rp + c(1−p)) / (rp + (1−p))`, the cross-ratio of four
+  `q(p, r, c) = (rp + c(1−p)) / (rp + (1−p))`, the cross-ratio of four
   images equals the cross-ratio of the four points for every tested
   rational `(r, c)`, `q(1) = 1` always, and the non-Möbius variant
   `r(p) = 6 + 10p` breaks it. The instrument's own output reproduces its

@@ -1,8 +1,13 @@
 """First-hand check of the PR #2 prototype shadow, on the original code.
 
+Needs numpy and scipy (the loaded prototype imports scipy.signal.hilbert).
+Under python -I those packages must be on the isolated interpreter path;
+user-site installs are hidden. This audit ran numpy 2.5.4 and scipy 1.18.1.
+
 Usage:
-  git show origin/anthology:gemini-code-1795203041292.py > /tmp/probe_original.py
-  python3 -I -B audits/2026-11-22/checks/check_probe_shadow.py /tmp/probe_original.py
+  probe=$(mktemp)
+  git show origin/anthology:gemini-code-1795203041292.py > "$probe"
+  python3 -I -B audits/2026-11-22/checks/check_probe_shadow.py "$probe"
 
 The claim under test (AUDIT-007R): the original probe_window reports
 near-perfect coupling for two independent linear drifts, while staying
@@ -12,13 +17,27 @@ reproduces on the original artifact.
 import importlib.util
 import sys
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError as exc:
+    raise SystemExit(
+        "check_probe_shadow.py needs numpy and scipy; under python -I "
+        "install them on the isolated interpreter path (user-site is hidden)."
+    ) from exc
 
 
 def main(path):
     spec = importlib.util.spec_from_file_location("probe_original", path)
+    if spec is None or spec.loader is None:
+        raise SystemExit(f"could not load prototype from {path}")
     mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+    try:
+        spec.loader.exec_module(mod)
+    except ImportError as exc:
+        raise SystemExit(
+            "the loaded prototype needs numpy and scipy; under python -I "
+            "install them on the isolated interpreter path (user-site is hidden)."
+        ) from exc
     rng = np.random.default_rng(7)
     t = np.arange(900.0)
     drifts = mod.probe_window({
