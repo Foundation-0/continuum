@@ -1,0 +1,568 @@
+{
+  "cpu_only": true,
+  "cross_references": [
+    "Foundation-0/continuum",
+    "Foundation-0/cave-expedition#31",
+    "Foundation-0/aletheia"
+  ],
+  "exp_q60a": {
+    "aletheia_calculus_parity": {
+      "dark_mode_dim_dark": 1,
+      "dark_mode_r_cross": 1,
+      "live_checked": false,
+      "mode": "SELF_CONTAINED_EXACT",
+      "operators_checked": [
+        "\u29c5",
+        "\u29c4",
+        "\u2ae9"
+      ],
+      "r5_gate_parity": true
+    },
+    "cs09_galactic_duality_verified": true,
+    "dark_mode_shadow_pi_inf": {
+      "coupling_map_q": [
+        [
+          "-2/1"
+        ]
+      ],
+      "dim_dark": 1,
+      "kernel_basis_q": [
+        [
+          "-1/1",
+          "1/1"
+        ]
+      ],
+      "r_cross": 1,
+      "schur_q": [
+        [
+          "4/1"
+        ]
+      ]
+    },
+    "finite_fourier_vs_fwht256": [
+      {
+        "c_ff": 3,
+        "cleared_lhs_at_m_star": 100,
+        "cleared_rhs_at_m_star": 99,
+        "exceeds_byte_width_256": true,
+        "m_star": 10,
+        "n_star": 1024
+      },
+      {
+        "c_ff": 4,
+        "cleared_lhs_at_m_star": 289,
+        "cleared_rhs_at_m_star": 288,
+        "exceeds_byte_width_256": true,
+        "m_star": 17,
+        "n_star": 131072
+      }
+    ],
+    "galactic_shadow_count": 10,
+    "karatsuba_exact_recurrence": {
+      "global_n_star": 280,
+      "re_crossing_count": 23,
+      "re_crossing_interval": [
+        257,
+        279
+      ],
+      "stage1_truncated_window_256_n_star": 165,
+      "tk_at_256": 63562,
+      "tk_at_257": 155414,
+      "tk_at_279": 156354,
+      "tk_at_280": 156358,
+      "verified_up_to": 8192
+    },
+    "mux_cs09_witness": {
+      "alkashi_u0_all_s_ge_1_lean_theorem": "GalacticShadow.mux_cs09_vs_alkashi_exact_witness",
+      "alkashi_u0_passes_checked_s_1_to_16": true,
+      "s3_eta_q": "3/254",
+      "s3_half_margin_q": "9/542",
+      "s3_passes": true,
+      "s4_collapses": true,
+      "s4_eta_q": "4/253",
+      "s4_half_margin_q": "1/362"
+    },
+    "no_advantage_count": 1,
+    "portal_220_sssp_lean_witness": {
+      "cutoff_590_pow_64_str": "2160373020882152640073530204217550203038369458649719437938848235440878340387193555035212269915534933515580375897610000000000000000000000000000000000000000000000000000000000000000",
+      "cutoff_bit_length": 590,
+      "dyadic_bracket_589_590_exact": true,
+      "dyadic_crossover_m_star": 590,
+      "dyadic_crossover_n_label": "2^590 (N = 2^m dyadic grid only)",
+      "exceeds_universe_2_pow_266": true,
+      "first_crossing_bit_length": 589,
+      "first_crossing_n_label": "589^64 + 1 (least N with N > L_N^64)",
+      "first_crossing_n_str": "1938111981431118598628903515753047043696668555260980322369489207124043350454271623211173187479582684856639938987287147281633027619968763786364928512965370630489835656691917635842",
+      "integer_crossover_bit_length": 590,
+      "integer_crossover_n_star_label": "590^64 + 1 (eventual: least N0 with N > L_N^64 for all N >= N0)",
+      "integer_crossover_n_star_str": "2160373020882152640073530204217550203038369458649719437938848235440878340387193555035212269915534933515580375897610000000000000000000000000000000000000000000000000000000000000001",
+      "integer_crossover_universal_induction_exact": true,
+      "refail_window_first_n_str": "2026130648867672343023636652192949780767796011837127392576004555513014068072709055859231957493703024554784124321924213467966382361040905912054138102594708831572842677442143322111",
+      "refail_window_last_n_str": "2160373020882152640073530204217550203038369458649719437938848235440878340387193555035212269915534933515580375897610000000000000000000000000000000000000000000000000000000000000000",
+      "source": "arXiv:2611.34911v1 / igholami/sssp-lean (Alg. 8: N <= L_N^64, L_N = ceil(log2(N + 2)))"
+    },
+    "portfolio_matched": 15,
+    "portfolio_results": [
+      {
+        "dominance_ratio_at_n_phys_q": null,
+        "expected_status": "GALACTIC_SHADOW",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "266/1",
+          "log2_upper_q": "266/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "118571099379011784113736688648896417641748464297615937576404566024103044751294464"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "1000/1",
+          "log2_upper_q": "1001/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "10715086071862673209484250490600018105614048117055336074437503883703510511249361224931983788156958581275946729175531468251871452856923140435984577574698574803934567774824230985421074605062371141877954182153046474983581941267398767559165543946077062914571196477686542167660429831652624386837205668069377"
+        },
+        "observed_status": "GALACTIC_SHADOW",
+        "pair_id": "williams_23727_vs_stothers_23737_halving",
+        "shadow_detected": true,
+        "source": "Lipton 2011 (matrix-breakthrough-2011)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": null,
+        "expected_status": "GALACTIC_SHADOW",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "266/1",
+          "log2_upper_q": "266/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "118571099379011784113736688648896417641748464297615937576404566024103044751294464"
+        },
+        "n_star": {
+          "kind": "pow2_bound",
+          "log2_lower_q": "6906285000000000000000/1",
+          "log2_upper_q": "6906285000000000000000/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": null
+        },
+        "observed_status": "GALACTIC_SHADOW",
+        "pair_id": "pass_omega_9_4_vs_strassen_q28c",
+        "shadow_detected": true,
+        "source": "EXP-Q28c / Portal 140 (lukehutch/matmul-9-ov-4)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": null,
+        "expected_status": "TERRESTRIAL_CROSSOVER",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "15/1",
+          "log2_upper_q": "16/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "37837"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "10/1",
+          "log2_upper_q": "11/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "1367"
+        },
+        "observed_status": "TERRESTRIAL_CROSSOVER",
+        "pair_id": "strassen_hybrid_vs_cubed_gemm_sm86",
+        "shadow_detected": false,
+        "source": "Lipton comment-7566 (D'Alberto-Nicolau GotoBLAS crossover)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": null,
+        "expected_status": "GALACTIC_SHADOW",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "15/1",
+          "log2_upper_q": "16/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "37837"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "17/1",
+          "log2_upper_q": "18/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "161560"
+        },
+        "observed_status": "GALACTIC_SHADOW",
+        "pair_id": "dickson_10x_cw_vs_cubed_gemm_8gib",
+        "shadow_detected": true,
+        "source": "Lipton comment-7566 (Dickson 10x crossover)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": null,
+        "expected_status": "GALACTIC_SHADOW",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "36/1",
+          "log2_upper_q": "36/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "68719476736"
+        },
+        "n_star": {
+          "kind": "pow2_bound",
+          "log2_lower_q": "713739807325663489766475852620783120641/1",
+          "log2_upper_q": "713739807325663489766475852620783120641/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": null
+        },
+        "observed_status": "GALACTIC_SHADOW",
+        "pair_id": "harvey_vanderhoeven_nlogn_vs_schonhage_strassen",
+        "shadow_detected": true,
+        "source": "Lipton 2019 (integer-mult-nlogn-2019)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": null,
+        "expected_status": "TERRESTRIAL_CROSSOVER",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "12/1",
+          "log2_upper_q": "12/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "4096"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "5/1",
+          "log2_upper_q": "6/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "38"
+        },
+        "observed_status": "TERRESTRIAL_CROSSOVER",
+        "pair_id": "karatsuba_vs_schoolbook_limbs",
+        "shadow_detected": false,
+        "source": "GMP limb multiplication (L1 32 KiB = 4096 64-bit limbs; power N*=38)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": "78/31",
+        "expected_status": "GALACTIC_SHADOW",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "31/1",
+          "log2_upper_q": "31/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "2147483648"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "79/1",
+          "log2_upper_q": "79/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "604462909807314587353088"
+        },
+        "observed_status": "GALACTIC_SHADOW",
+        "pair_id": "aks_sorting_network_vs_batcher_bitonic",
+        "shadow_detected": true,
+        "source": "Knuth 1998 / Lipton 2014 (galactic-sorting-2014)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": null,
+        "expected_status": "GALACTIC_SHADOW",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "36/1",
+          "log2_upper_q": "36/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "68719476736"
+        },
+        "n_star": {
+          "kind": "pow2_bound",
+          "log2_lower_q": "64/1",
+          "log2_upper_q": "64/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 2,
+          "value_int_str": null
+        },
+        "observed_status": "GALACTIC_SHADOW",
+        "pair_id": "aks_primality_vs_aprcl_deterministic",
+        "shadow_detected": true,
+        "source": "Lipton 2011 / Primality (b > 2^(2^64) bit-length)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": null,
+        "expected_status": "NO_ASYMPTOTIC_ADVANTAGE",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "14/1",
+          "log2_upper_q": "14/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "16384"
+        },
+        "n_star": null,
+        "observed_status": "NO_ASYMPTOTIC_ADVANTAGE",
+        "pair_id": "aks_primality_vs_miller_rabin_nondominance",
+        "shadow_detected": false,
+        "source": "Primality R5 non-dominance control (AKS b^6 vs 40*b^3)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": "9/8",
+        "expected_status": "GALACTIC_SHADOW",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "8/1",
+          "log2_upper_q": "8/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "256"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "10/1",
+          "log2_upper_q": "10/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "1024"
+        },
+        "observed_status": "GALACTIC_SHADOW",
+        "pair_id": "finite_fourier_vs_fwht_256",
+        "shadow_detected": true,
+        "source": "Track S164 (FiniteFourier C=3 vs FWHT_256)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": "18889/3456",
+        "expected_status": "GALACTIC_SHADOW",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "15/1",
+          "log2_upper_q": "16/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "49152"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "21/1",
+          "log2_upper_q": "22/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "4000001"
+        },
+        "observed_status": "GALACTIC_SHADOW",
+        "pair_id": "siliquant_voronoi_asymptotic_vs_a16_lop3_popc",
+        "shadow_detected": true,
+        "source": "SiliKernels (A_16 LOP3+POPC vs hampack reuse crossover)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": "3/4096",
+        "expected_status": "TERRESTRIAL_CROSSOVER",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "13/1",
+          "log2_upper_q": "13/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "8192"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "2/1",
+          "log2_upper_q": "3/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "6"
+        },
+        "observed_status": "TERRESTRIAL_CROSSOVER",
+        "pair_id": "holosphere_v4_cayley_su2_sfast_vs_dense_kv",
+        "shadow_detected": false,
+        "source": "Track S159 / S164 / S171 (S_fast 65,536 B vs FP16 KV 12,288 B/tok)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": "1048576/131073",
+        "expected_status": "GALACTIC_SHADOW",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "17/1",
+          "log2_upper_q": "17/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "131072"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "20/1",
+          "log2_upper_q": "20/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "1048576"
+        },
+        "observed_status": "GALACTIC_SHADOW",
+        "pair_id": "holosphere_high_overhead_rf_vs_dense_attention",
+        "shadow_detected": true,
+        "source": "Linear random-feature attention C=2^20 vs dense T^2"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": "23/128",
+        "expected_status": "TERRESTRIAL_CROSSOVER",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "5/1",
+          "log2_upper_q": "6/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "40"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "2/1",
+          "log2_upper_q": "3/1",
+          "strict_above_lower": true,
+          "strict_below_upper": true,
+          "tower_height": 1,
+          "value_int_str": "6"
+        },
+        "observed_status": "TERRESTRIAL_CROSSOVER",
+        "pair_id": "cs29_ephemeral_worker_vs_inline_coordinator",
+        "shadow_detected": false,
+        "source": "Track S166 / SOP-20 (W=19200, s=256 vs B=4096)"
+      },
+      {
+        "dominance_ratio_at_n_phys_q": null,
+        "expected_status": "GALACTIC_SHADOW",
+        "matched": true,
+        "n_phys_max": {
+          "kind": "exact_int",
+          "log2_lower_q": "266/1",
+          "log2_upper_q": "266/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "118571099379011784113736688648896417641748464297615937576404566024103044751294464"
+        },
+        "n_star": {
+          "kind": "exact_int",
+          "log2_lower_q": "590/1",
+          "log2_upper_q": "590/1",
+          "strict_above_lower": false,
+          "strict_below_upper": false,
+          "tower_height": 1,
+          "value_int_str": "4052261297735344686047273304385899561535592023674254785152009111026028136145418111718463914987406049109568248643848426935932764722081811824108276205189417663145685354884286644224"
+        },
+        "observed_status": "GALACTIC_SHADOW",
+        "pair_id": "igholami_sssp_lean_vs_dijkstra_cutoff",
+        "shadow_detected": true,
+        "source": "Portal 220 / arXiv:2611.34911v1 (igholami/sssp-lean Alg. 8: N <= L_N^64; dyadic N = 2^m crossover m* = 590 (N = 2^590); first integer crossing 589^64 + 1; eventual integer crossover N* = 590^64 + 1 > 2^266)"
+      }
+    ],
+    "portfolio_total": 15,
+    "s161_ag4_25_pconn": 782242,
+    "s161_ag4_25_sym": 782500,
+    "s161_cross_scale_pg5_27_over_ag4_25_q": "14920471/391121",
+    "s161_pg5_27": 29840942,
+    "terrestrial_crossover_count": 4
+  },
+  "exp_q60b": {
+    "boundary_n11_vs_n10_ok": true,
+    "lds_coupling": {
+      "m1_kill_rate_q": "1/1",
+      "m1_killed": 12,
+      "m1_total": 12,
+      "m2_coupling_rate_q": "1/1",
+      "m2_killed": 60,
+      "m2_pairwise_masking_witness": {
+        "m1_cmp_neg_killed_without_boundary": true,
+        "m1_sub_swap_killed_without_boundary": true,
+        "m2_pairwise_masking_killed_with_boundary": true,
+        "m2_pairwise_masking_survives_without_boundary": true
+      },
+      "m2_survivors": [],
+      "m2_total": 60
+    },
+    "r5_reject_cases_caught": 9,
+    "r5_reject_cases_total": 9
+  },
+  "lean_bundle": {
+    "axioms_verified_count": 0,
+    "file_sha256": {
+      "GalacticShadow.lean": "98018d32582b630d0195e30db680d581745094b7ce4470c9a0a6c62529449862",
+      "lake-manifest.json": "b3ac284e48dc3ce4790960b4400f824095bfc9fed69f846edcee4b6d69755e2e",
+      "lakefile.toml": "6dba36945b6b6db0121bc9d8d2070b6c6057a02c8b758b9c9e498694874cd739",
+      "lean-toolchain": "582a63f8f9c5128067b688778c1051cf1464c3ca9d57b9325025c051c29b774a"
+    },
+    "lean_line_count": 416,
+    "lean_live_mode": "STATIC_ONLY",
+    "lean_module": "GalacticShadow",
+    "lean_static_status": "STATIC_PASS",
+    "lean_toolchain": "leanprover/lean4:v4.36.0",
+    "live_lean_checked": false,
+    "pinned_lean_sha256_verified": true,
+    "propext_only_theorems": null,
+    "propext_quot_theorems": null,
+    "public_theorems": 12,
+    "theorem_signatures_sha256": "369d38789473f0efce7c1c57718aefb00023a79bf4f875fc0ce2d5153d6b3046",
+    "theorem_types_live_checked": false,
+    "zero_axiom_theorems": null
+  },
+  "novelty_classification": "N1",
+  "oracle_class": "exact",
+  "payload_sha256": "3f3359b1c61c655bf577f72244cf790e153f6ec773675672218a330ba2dd8701",
+  "queue_id": "EXP-Q60a+EXP-Q60b",
+  "schema": "s174.q60.galactic_shadow_certificate.v2",
+  "source_sha256": {
+    "galactic_shadow_verifier.py": "7de664951759a2bc5922db80cb2d8d68311d3e995d8e4e528dcf4a2bfde3d997",
+    "test_galactic_shadow_r5.py": "21d3c2f4a2508ca03ce70c1f856418a57ef8af4cf8ecb1d97667e37c719f42da"
+  },
+  "stage": "STAGE2_FORTRESS",
+  "track": "S174",
+  "weights_inside_expedition": 0,
+  "zero_ast_div": true,
+  "zero_bare_asserts": true,
+  "zero_floats": true
+}

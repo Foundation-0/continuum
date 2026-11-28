@@ -1,0 +1,179 @@
+name: Verify Galactic Shadow Duality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-3mode:
+    name: Pure-Q/Z 3-Mode Isolated Verification (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Verify pinned SHA-256 of Track S174 artifacts before execution
+        working-directory: studies/galactic-shadow-duality
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum --check --strict - <<'EOF'
+          98018d32582b630d0195e30db680d581745094b7ce4470c9a0a6c62529449862  GalacticShadow.lean
+          7de664951759a2bc5922db80cb2d8d68311d3e995d8e4e528dcf4a2bfde3d997  galactic_shadow_verifier.py
+          21d3c2f4a2508ca03ce70c1f856418a57ef8af4cf8ecb1d97667e37c719f42da  test_galactic_shadow_r5.py
+          d057ee8ba21c30435ac2d876c1ebc2080553668009a8943bce73ba7ca3610718  s174_stage2_certificate.json
+          66824cba8e804b1b7a697c15144a9f1f9bdfe16005a39d7470546632ecd3cff1  REPORT.md
+          582a63f8f9c5128067b688778c1051cf1464c3ca9d57b9325025c051c29b774a  lean-toolchain
+          6dba36945b6b6db0121bc9d8d2070b6c6057a02c8b758b9c9e498694874cd739  lakefile.toml
+          b3ac284e48dc3ce4790960b4400f824095bfc9fed69f846edcee4b6d69755e2e  lake-manifest.json
+          EOF
+
+      - name: Verify live math & committed STATIC_ONLY certificate byte parity across 3 isolated modes
+        working-directory: studies/galactic-shadow-duality
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CUDA_VISIBLE_DEVICES=""
+          export PYTHONDONTWRITEBYTECODE=1
+          TMP_DIR=$(mktemp -d)
+          trap 'rm -rf "$TMP_DIR"' EXIT
+          python3 -I -B galactic_shadow_verifier.py --check > "$TMP_DIR/out1.bin"
+          python3 -I -O -B galactic_shadow_verifier.py --check > "$TMP_DIR/out2.bin"
+          python3 -I -B -W error galactic_shadow_verifier.py --check > "$TMP_DIR/out3.bin"
+          test -s "$TMP_DIR/out1.bin"
+          cmp -s "$TMP_DIR/out1.bin" "$TMP_DIR/out2.bin"
+          cmp -s "$TMP_DIR/out1.bin" "$TMP_DIR/out3.bin"
+          cmp -s "$TMP_DIR/out1.bin" s174_stage2_certificate.json
+
+      - name: Run assertion-free R1-R7 & mutation-killing test suite across 3 isolated modes
+        working-directory: studies/galactic-shadow-duality
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CUDA_VISIBLE_DEVICES=""
+          export PYTHONDONTWRITEBYTECODE=1
+          TMP_DIR=$(mktemp -d)
+          trap 'rm -rf "$TMP_DIR"' EXIT
+          for flags in "-I -B" "-I -O -B" "-I -B -W error"; do
+            set +e
+            python3 $flags test_galactic_shadow_r5.py > "$TMP_DIR/suite.out"
+            RC=$?
+            set -e
+            BYTES=$(wc -c < "$TMP_DIR/suite.out" | tr -d ' ')
+            echo "test_galactic_shadow_r5.py [$flags]: rc=$RC stdout_bytes=$BYTES"
+            test "$RC" -eq 0
+            test "$BYTES" -eq 0
+          done
+
+      - name: Verify zero CRLF, zero symlinks, zero non-regular files, zero .lake/, and zero bytecode artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -B -c '
+          import os, stat
+          from pathlib import Path
+          for p in sorted(Path("studies/galactic-shadow-duality").rglob("*")):
+              if p.is_symlink():
+                  raise SystemExit(f"Symlink forbidden: {p}")
+              if p.name in ("__pycache__", ".lake") or p.suffix in (".pyc", ".pyo"):
+                  raise SystemExit(f"Build/bytecode artifact forbidden: {p}")
+              st = os.lstat(p)
+              if stat.S_ISDIR(st.st_mode):
+                  continue
+              if not stat.S_ISREG(st.st_mode):
+                  raise SystemExit(f"Non-regular file forbidden: {p}")
+              if b"\r" in p.read_bytes():
+                  raise SystemExit(f"CRLF detected in {p}")
+          '
+
+  verify-lean-436:
+    name: Lean 4.36.0 Kernel & Axiom Audit (12/12 Theorems)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache Lean 4.36.0 toolchain under ~/.elan
+        id: cache-lean4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.elan/toolchains/leanprover--lean4---v4.36.0
+          key: lean4-v4.36.0-${{ runner.os }}-${{ runner.arch }}-2b7ab1ed
+
+      - name: Install Lean 4.36.0 from SHA-256-verified official release
+        if: steps.cache-lean4.outputs.cache-hit != 'true'
+        env:
+          LEAN_TARBALL_URL: "https://github.com/leanprover/lean4/releases/download/v4.36.0/lean-4.36.0-linux.tar.zst"
+          LEAN_TARBALL_SHA256: "2b7ab1ed8b92d2e6abfaf41344823b510064dbc9c0260cac73eb496ab2dea6eb"
+          TMP_ARCHIVE: ${{ runner.temp }}/lean-4.36.0-linux.tar.zst
+        run: |
+          set -euo pipefail
+          [ "$(uname -m)" = "x86_64" ]
+          LEAN_DIR="$HOME/.elan/toolchains/leanprover--lean4---v4.36.0"
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 --retry-delay 5 \
+            -o "$TMP_ARCHIVE" "$LEAN_TARBALL_URL"
+          printf '%s  %s\n' "$LEAN_TARBALL_SHA256" "$TMP_ARCHIVE" | sha256sum -c -
+          mkdir -p "$LEAN_DIR"
+          tar --zstd -xf "$TMP_ARCHIVE" --strip-components=1 -C "$LEAN_DIR"
+          rm -f "$TMP_ARCHIVE"
+
+      - name: Run standalone lean 4.36.0 & live kernel replay (--check --live-lean)
+        working-directory: studies/galactic-shadow-duality
+        env:
+          CUDA_VISIBLE_DEVICES: ""
+          PYTHONDONTWRITEBYTECODE: "1"
+          LEAN_BIN_SHA256: "db7f559d05795e7af52e42bc966c90240a39dcb9712161c54c97afa546e20c00"
+        run: |
+          set -euo pipefail
+          LEAN_DIR="$HOME/.elan/toolchains/leanprover--lean4---v4.36.0"
+          test -f "$LEAN_DIR/bin/lean" && ! test -L "$LEAN_DIR/bin/lean"
+          test -f "$LEAN_DIR/bin/lake" && ! test -L "$LEAN_DIR/bin/lake"
+          printf '%s  %s\n' "$LEAN_BIN_SHA256" "$LEAN_DIR/bin/lean" | sha256sum -c -
+          export PATH="$LEAN_DIR/bin:$PATH"
+          lean --version
+          lean --version | grep -Fq "version 4.36.0,"
+          LEAN_OUT=$(lean GalacticShadow.lean 2>&1)
+          test -z "$LEAN_OUT"
+          python3 -I -B galactic_shadow_verifier.py --check --live-lean > /tmp/s174_live_lean.json
+          python3 -I -B -c '
+          import json
+          from pathlib import Path
+          d = json.loads(Path("/tmp/s174_live_lean.json").read_text(encoding="utf-8"))
+          lb = d["lean_bundle"]
+          if lb["live_lean_checked"] is not True:
+              raise SystemExit("live_lean_checked must be True")
+          mode = lb["lean_live_mode"]
+          if mode != "LIVE_LEAN_4_36_0_PASS":
+              raise SystemExit(f"unexpected mode: {mode}")
+          psha = d["payload_sha256"]
+          if psha != "a967e497db93ccca05b352f6fcaa425429b8f224d2d8b78438bd875ac1bcc80f":
+              raise SystemExit(f"unexpected payload_sha256: {psha}")
+          '
+          rm -f /tmp/s174_live_lean.json
+          test ! -e .lake
+          test ! -e __pycache__
