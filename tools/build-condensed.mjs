@@ -179,10 +179,10 @@ const BLOCKS = {
     "Strong bit: seven checked tools, exact fractions. Box size = file size.",
   ],
   // Each instrument runs on the Python standard library...
-  "defdb31a": [
-    "Each runs on the Python standard library and prints a reproducible verdict. They sit in an open pull request, not on main; links go to that branch. Merging is the repository's call, not this page's.",
-    "Standard-library Python, reproducible verdicts, open pull request. Merge is the repo's call.",
-    "Plain Python tools. Same answer every run. Waiting in pull request.",
+  "a2da1802": [
+    "Each runs on the Python standard library and prints a reproducible verdict.",
+    "Standard-library Python with byte-for-byte reproducible verdicts.",
+    "Plain Python. Same answer each run.",
   ],
   // A page about invariants should say plainly...
   "f1ba1b87": [
