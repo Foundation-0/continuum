@@ -9,7 +9,7 @@
 //             with the scaling that separates looped from Kerr.
 //   scale     block averaging with the commutation defect printed for
 //             the naive and the renormalised macro dynamics.
-//   atlas     the exact instruments of pull request 16 as a value field:
+//   atlas     the exact instruments now on main through pull request 16 as a value field:
 //             cell area is file size in bytes, nothing else.
 //
 // Reading is Eido D6: the whole article condenses as it is skimmed
@@ -309,18 +309,18 @@ function initScale() {
 
 /* ---------- Atlas: the verified instruments as a value field ---------- */
 
-// Bytes are the file sizes at pull request 16 head c08fa704
-// (git cat-file -s), pending merge, not at main. hrefs point
-// at that pull request's head, not at a deletable branch name.
+// Bytes are the file sizes on main through pull request 16,
+// at merge commit 4f78015e (git cat-file -s). hrefs point
+// at that commit, a full SHA, not at a moving branch name.
 // Area encodes bytes and nothing else; threads join each family.
 export const INSTRUMENTS = [
-  { name: "double-slit observer", file: "double_slit_continuum_observer.py", bytes: 56613, audit: "AUDIT-054", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/c08fa704ed136d3d8d5d2d9220c8641b9bee1793/expedition-double-slit-continuum/double_slit_continuum_observer.py" },
-  { name: "optimal inertia rank", file: "optimal_inertia_rank.py", bytes: 56500, audit: "AUDIT-006R", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/c08fa704ed136d3d8d5d2d9220c8641b9bee1793/expedition-synthesis/optimal_inertia_rank.py" },
-  { name: "tropical quotient sheaf", file: "tropical_quotient_sheaf_bridge.py", bytes: 49182, audit: "AUDIT-004", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/c08fa704ed136d3d8d5d2d9220c8641b9bee1793/expedition-synthesis/tropical_quotient_sheaf_bridge.py" },
-  { name: "fold sheaf collapse", file: "fold_sheaf_collapse.py", bytes: 35346, audit: "AUDIT-019", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/c08fa704ed136d3d8d5d2d9220c8641b9bee1793/expedition-synthesis/fold_sheaf_collapse.py" },
-  { name: "continuum probes audit", file: "audit_continuum_probes.py", bytes: 29603, audit: "AUDIT-007R", family: "sampled", href: "https://github.com/Foundation-0/continuum/blob/c08fa704ed136d3d8d5d2d9220c8641b9bee1793/expedition-synthesis/audit_continuum_probes.py" },
-  { name: "homotopy Bregman bridge", file: "portal78_homotopy_bregman_bridge.py", bytes: 28952, audit: "AUDIT-008R", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/c08fa704ed136d3d8d5d2d9220c8641b9bee1793/expedition-synthesis/portal78_homotopy_bregman_bridge.py" },
-  { name: "two-loop omitted variable", file: "two_loop_omitted_variable.py", bytes: 16404, audit: "AUDIT-005", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/c08fa704ed136d3d8d5d2d9220c8641b9bee1793/expedition-synthesis/two_loop_omitted_variable.py" },
+  { name: "double-slit observer", file: "double_slit_continuum_observer.py", bytes: 56613, audit: "AUDIT-054", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/4f78015ef4c11673b8d98bc3ebf453ca7293054c/expedition-double-slit-continuum/double_slit_continuum_observer.py" },
+  { name: "optimal inertia rank", file: "optimal_inertia_rank.py", bytes: 56500, audit: "AUDIT-006R", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/4f78015ef4c11673b8d98bc3ebf453ca7293054c/expedition-synthesis/optimal_inertia_rank.py" },
+  { name: "tropical quotient sheaf", file: "tropical_quotient_sheaf_bridge.py", bytes: 49182, audit: "AUDIT-004", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/4f78015ef4c11673b8d98bc3ebf453ca7293054c/expedition-synthesis/tropical_quotient_sheaf_bridge.py" },
+  { name: "fold sheaf collapse", file: "fold_sheaf_collapse.py", bytes: 35346, audit: "AUDIT-019", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/4f78015ef4c11673b8d98bc3ebf453ca7293054c/expedition-synthesis/fold_sheaf_collapse.py" },
+  { name: "continuum probes audit", file: "audit_continuum_probes.py", bytes: 29603, audit: "AUDIT-007R", family: "sampled", href: "https://github.com/Foundation-0/continuum/blob/4f78015ef4c11673b8d98bc3ebf453ca7293054c/expedition-synthesis/audit_continuum_probes.py" },
+  { name: "homotopy Bregman bridge", file: "portal78_homotopy_bregman_bridge.py", bytes: 28952, audit: "AUDIT-008R", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/4f78015ef4c11673b8d98bc3ebf453ca7293054c/expedition-synthesis/portal78_homotopy_bregman_bridge.py" },
+  { name: "two-loop omitted variable", file: "two_loop_omitted_variable.py", bytes: 16404, audit: "AUDIT-005", family: "exact", href: "https://github.com/Foundation-0/continuum/blob/4f78015ef4c11673b8d98bc3ebf453ca7293054c/expedition-synthesis/two_loop_omitted_variable.py" },
 ];
 
 const atlasState = { layout: null, hit: -1 };

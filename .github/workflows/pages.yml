@@ -3,6 +3,8 @@ name: Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions: {}
@@ -27,7 +29,9 @@ jobs:
       - name: Test the instruments and the site
         run: npm test
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+        if: github.event_name != 'pull_request'
       - name: Assemble the site
+        if: github.event_name != 'pull_request'
         run: |
           mkdir _site
           cp -R site src css _site/
@@ -49,10 +53,12 @@ jobs:
           </html>
           HTML
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        if: github.event_name != 'pull_request'
         with:
           path: _site
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10

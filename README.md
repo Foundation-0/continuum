@@ -54,4 +54,4 @@ Pushes to `main` test and publish the site with GitHub Pages
 
 The research content itself lives in the open pull requests: #1 (the
 framework), #2 (the anthology of session forms) and #16 (the audited
-instruments the site draws on, superseding #3, pending merge).
+instruments the site draws on, now on main, superseding #3).
