@@ -1,17 +1,18 @@
 # Round 4E — Arm R4E: Double-Slit & Triple-Slit Continuum–Observer Backaction, Deck-Splitting Quantum Eraser & Sorkin Tomography (`AUDIT-054`)
 
 - **Owner:** `gravity-probe` (Arm R4E, `#296`) | **Portal & `N0` Fence:** `session-cartographer` ([DOUBLE_SLIT_PRIOR_ART.md](DOUBLE_SLIT_PRIOR_ART.md))
-- **Workspace:** `symbiosis/round4/continuum-double-slit/`
+- **Directory:** `expedition-double-slit-continuum/`
 - **Artifacts:** `double_slit_continuum_observer.py`, `test_double_slit_r5.py`, `double_slit_continuum_certificate.json`, `DOUBLE_SLIT_PRIOR_ART.md`, `DOUBLE_SLIT_CONTINUUM_REPORT.md`
-- **Oracle Class & Honest Novelty:** `exact` (**100% pure Python 3 stdlib `fractions.Fraction` & $\mathbb{Q}[i]$, ZERO floats anywhere**) | Honest **`N1`** (coordinate-free zero-float 4-regime operator unification linking `AUDIT-018`/`041`/`047R`/`051` to double-slit & Sorkin triple-slit tomography; all `DS-N0-01`–`DS-N0-11` classical/modern foundations strictly quarantined as `N0`).
+- **Scope:** These checks are algebraic toy models (labelled graphs and a qubit / Bell pair), not a physical continuum or a laboratory double-slit experiment.
+- **Oracle Class & Novelty:** `exact` (**pure Python 3 stdlib `fractions.Fraction` & $\mathbb{Q}[i]$, no floats in the certificate**) | labelled **`N0`** in this tree (no mechanism-first record in two neighbouring fields is shipped here). The names `DS-N0-01`–`DS-N0-11` are a prior-art quarantine, left unchanged.
 
 ---
 
-## 1. Direct Verdict on the User's Postulate (All 5 Laws of Aletheia)
+## 1. Informal prompt, tested on algebraic toy models
 
-> **User Postulate:** *"the double slit experiment phenomenon occurs as a result of observation mechanisms influencing the continuum"*
+> An informal prompt (quoted here only as the text that was tested, not as a physical claim): *"the double slit experiment phenomenon occurs as a result of observation mechanisms influencing the continuum"*
 
-Applying radical Law-2 steelmanning alongside exact pure-$\mathbb{Q}/\mathbb{Q}[i]$ Law-3 falsification separates the postulate into **four uniquely distinguishable algebraic regimes**:
+The checks below separate that prompt into **four algebraic regimes** on labelled graphs and a qubit / Bell pair. They are not a verdict on a physical continuum or on the laboratory double-slit experiment.
 
 | Exact Pure-$\mathbb{Q}/\mathbb{Q}[i]$ Discriminator | **Regime I** (Linear Quantum System $\oplus$ Continuum Bath, $g_{\mathrm{slit}}=0, \eta=0$) | **Regime II** (Local Classical Continuum Disturbance / Classical Memory) | **Regime III-A** (Linear Continuum + Slit-to-Slit Looped-Schur Coupling $g_{\mathrm{slit}} \neq 0$, `DS-N0-09`) | **Regime III-B** (Intrinsic Nonlinear Kerr Continuum $\eta \neq 0, g_{\mathrm{slit}}=0$) |
 |---|---|---|---|---|
@@ -22,7 +23,7 @@ Applying radical Law-2 steelmanning alongside exact pure-$\mathbb{Q}/\mathbb{Q}[
 | **Source-Intensity Scaling of $\kappa_3(\lambda \psi)$ ($\lambda \in \mathbb{Q}_{>0}$)** | `0` | `0` | **EXACTLY DEGREE-0 INVARIANT** ($\kappa_3(\lambda\alpha) \equiv \kappa_3(\alpha)$, `0` residual!) | **STRICTLY SCALE-BREAKING** ($\kappa_3^{\mathrm{quartic}}(\lambda\psi) \equiv \lambda^2 \kappa_3^{\mathrm{quartic}}(\psi)$!) |
 
 **Bottom-Line Answer (Brutal Honesty):**
-1. **Where the Postulate SUCCEEDS (Regime I — Law-2 Steelman):** If "observation mechanisms influencing the continuum" means a **linear quantum coupling** between the 2-slit loop ($\beta_1 = 1$) and an active **quantum continuum-observer bath $C$**, followed by Schur/partial-trace fiber elimination (`⧄ C`), it reproduces **100% of double-slit phenomenology** with zero floats: exact Englert complementarity $V^2 + D^2 = 1$ (pure bath) / $< 1$ (mixed bath), exact GKSL `16x16` Schur dephasing rate $\gamma_{\mathrm{eff}} = 2g^2/\Gamma = 9/50$ on $(X, Y)$ while preserving $(I, Z)$, exact `AUDIT-047R` Part 3 **surgical coherence severing** $\Lambda_B^{\mathrm{red}}(\chi_{\mathrm{slit}\,A}) \equiv \Lambda_B^{(G\setminus\{A\})}(1)$, AND exact `AUDIT-047R` Part 4 **signed 2-lift deck-splitting quantum erasure** $M_{\mathrm{deck}}^\top \tilde\Lambda_{\tilde B} M_{\mathrm{deck}} \equiv 2(\Lambda_B^{(+1)} \oplus \Lambda_B^{(\chi)})$ ($V_+ = V_- = 1$, $P_+ + P_- \equiv \frac{1}{2} = P_{\mathrm{uncond}}$, exact no-signaling).
+1. **Where the Postulate SUCCEEDS (Regime I — Law-2 Steelman):** If "observation mechanisms influencing the continuum" is read, on these algebraic models, as a **linear quantum coupling** between the 2-slit loop ($\beta_1 = 1$) and an active **bath $C$**, followed by Schur/partial-trace fiber elimination (`⧄ C`), the models reproduce the listed algebraic identities with no floats: exact Englert complementarity $V^2 + D^2 = 1$ (pure bath) / $< 1$ (mixed bath), exact GKSL `16x16` Schur dephasing rate $\gamma_{\mathrm{eff}} = 2g^2/\Gamma = 9/50$ on $(X, Y)$ while preserving $(I, Z)$, exact `AUDIT-047R` Part 3 **surgical coherence severing** $\Lambda_B^{\mathrm{red}}(\chi_{\mathrm{slit}\,A}) \equiv \Lambda_B^{(G\setminus\{A\})}(1)$, AND exact `AUDIT-047R` Part 4 **signed 2-lift deck-splitting quantum erasure** $M_{\mathrm{deck}}^\top \tilde\Lambda_{\tilde B} M_{\mathrm{deck}} \equiv 2(\Lambda_B^{(+1)} \oplus \Lambda_B^{(\chi)})$ ($V_+ = V_- = 1$, $P_+ + P_- \equiv \frac{1}{2} = P_{\mathrm{uncond}}$, exact no-signaling).
 2. **Where a Naive Classical Version FAILS (Regime II — Law-3 Falsification):** A purely **local classical continuum disturbance** at the slits (or classical hydrodynamic memory `DS-N0-06`) reproduces marginal fringe loss ($V = 0$), proving marginal visibility decay alone is non-diagnostic. However, it is algebraically trapped inside $(D_Z^{\mathrm{cl}})^2 + (V_X^{\mathrm{cl}})^2 \le 1$, $(D_Z^{\mathrm{cl}} + V_X^{\mathrm{cl}})^2 \le 2 < 4$, AND our **16-vertex Fine–Farkas CHSH delayed-choice witness** proves that Regime I's exact 3-4-5 Pythagorean delayed-choice eraser correlator **$S_{\mathrm{CHSH}} = \frac{14}{5} > 2$** is strictly Farkas-infeasible in ANY local classical continuum model (requiring a `1/2` marginal signaling violation to fake $(D_Z, V_X) = (1, 1)$ classically!).
 3. **Where Nonlinear Continuum Deformation Is Directly Falsifiable — and How to Separate It from Linear Looped Trajectories (Regime III-A vs. III-B):**
    - In Regime I (linear continuum + Born rule, even with arbitrary linear bath decoherence $G_{jk}$), Sorkin's invariant satisfies **$I_{ABC} \equiv 0$ identically**.

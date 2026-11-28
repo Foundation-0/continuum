@@ -43,8 +43,8 @@ bridging three concrete mathematical objects across Foundation-0 repositories:
        C_44 = 0, nu_100 = 1/(n^2 - n - 1), t-invariance, and exact congruence PSD inertia!
 
 Run:
-  python3 -O -B expedition-synthesis/tropical_quotient_sheaf_bridge.py
-  python3 -O -B expedition-synthesis/tropical_quotient_sheaf_bridge.py --json
+  python3 -I -O -B expedition-synthesis/tropical_quotient_sheaf_bridge.py
+  python3 -I -O -B expedition-synthesis/tropical_quotient_sheaf_bridge.py --json
 """
 from __future__ import annotations
 
@@ -690,11 +690,11 @@ def exact_sheaf_elastic_schur_complement(n: int, c_pos: Fraction) -> Dict[str, A
     # Exact Schur complement S_cell = K_ee + B^T U_star; energy density C = S_cell / 2^n
     # Note: W(eps) = (1/2) * (1/2^n) * eps^T S_cell eps = (1/2) * sum C_ij eps_i eps_j,
     # so C_11 = S_cell[0][0] / 2^n, C_12 = S_cell[0][1] / 2^n!
-    # Wait: check convention vs incentre-lattices PROOF.md:
-    # PROOF.md: W(eps) = (1/2) C_11 sum eps_ii^2 + (1/2) C_12 sum_{i!=j} eps_ii eps_jj
-    #         = 2^-n [ (2(n-1)^2/n^2) sum eps_ii^2 + (2/n^2) sum_{i!=j} eps_ii eps_jj ],
-    # which uses E = (1/2) * (k=2) * sum delta^2 OR W = (1/2) eps^T C eps with k=1 giving
-    # C11 = 4(n-1)^2/(n^2 2^n)? Let's verify exact factor of 2 directly from S_cell!
+    # Convention vs incentre-lattices PROOF.md:
+    # W(eps) = (1/2) C_11 sum eps_ii^2 + (1/2) C_12 sum_{i!=j} eps_ii eps_jj
+    #        = 2^{-n} [ (2(n-1)^2/n^2) sum eps_ii^2 + (2/n^2) sum_{i!=j} eps_ii eps_jj ].
+    # The factor of 2 is read from S_cell below: C = S_cell / 2^n, so
+    # C11 = 4(n-1)^2/(n^2 2^n).
     S_cell = [[K_ee[i][j] + sum((B[r][i] * U_star[r][j] for r in range(n_dofs)), Fraction(0))
                for j in range(m_s)] for i in range(m_s)]
     vol = Fraction(2 ** n)

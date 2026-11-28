@@ -38,8 +38,8 @@ Theorem (Exact Pythagorean Gap & Falsifier #6 Phase Boundary):
         on ALL fresh unseen anchors when Psi_perp beta* in Col(P_rev_perp)!
 
 Run:
-  python3 -O -B expedition-synthesis/two_loop_omitted_variable.py
-  python3 -O -B expedition-synthesis/two_loop_omitted_variable.py --json
+  python3 -I -O -B expedition-synthesis/two_loop_omitted_variable.py
+  python3 -I -O -B expedition-synthesis/two_loop_omitted_variable.py --json
 """
 from __future__ import annotations
 
@@ -115,6 +115,20 @@ def orth_projector(B: Mat) -> Mat:
     return mat_mul(mat_mul(B, G_inv), Bt)
 
 
+
+def check_pythagorean_inflation(r_adapt: Vec, r_star: Vec, e1: Fraction, p1_n2: Fraction) -> None:
+    """Raise unless ||r_adapt||^2 == ||r_star||^2 + e1^2 / ||p1||^2."""
+    if norm2(r_adapt) != norm2(r_star) + (e1 * e1) / p1_n2:
+        raise RuntimeError("Pythagorean identity failed!")
+
+
+def check_phase_boundary_iff(e2_adapt: Fraction, e2_ols: Fraction, ratio: Fraction) -> None:
+    """Raise unless the residual shrinks on a_2 exactly when 0 < ratio < 2."""
+    fires = (e2_adapt * e2_adapt < e2_ols * e2_ols)
+    if fires != (Fraction(0) < ratio < Fraction(2)):
+        raise RuntimeError("Phase-boundary iff condition violated!")
+
+
 def run_two_loop_audit() -> Dict[str, Any]:
     # -----------------------------------------------------------------------
     # 1. Exact Canonical Model (m = 6, k = 2 spec Phi, d = 1 omitted Psi)
@@ -184,9 +198,8 @@ def run_two_loop_audit() -> Dict[str, Any]:
         expected_e2_adapt = e2_ols * (Fraction(1) - ratio)
         if e2_adapt != expected_e2_adapt:
             raise RuntimeError("Phase-boundary algebraic formula mismatch!")
+        check_phase_boundary_iff(e2_adapt, e2_ols, ratio)
         falsifier6_fires = (e2_adapt * e2_adapt < e2_ols * e2_ols)
-        if falsifier6_fires != (Fraction(0) < ratio < Fraction(2)):
-            raise RuntimeError("Phase-boundary iff condition violated!")
         sweep.append({
             "alpha_ratio": str(ratio),
             "err_sq_ols": str(e2_ols * e2_ols),
@@ -224,13 +237,40 @@ def run_two_loop_audit() -> Dict[str, Any]:
         if norm2(p1_t) == 0 or e1_t == 0 or e2_t == 0:
             continue
         r_ad_t = vec_sub(r_t, vec_scale(e1_t / norm2(p1_t), p1_t))
-        if norm2(r_ad_t) != norm2(r_t) + (e1_t * e1_t) / norm2(p1_t):
-            raise RuntimeError("Random Pythagorean identity failed!")
+        check_pythagorean_inflation(r_ad_t, r_t, e1_t, norm2(p1_t))
         pythagorean_exact += 1
         rat_t = (dot(p1_t, a2_t) / norm2(p1_t)) / (e2_t / e1_t)
-        if (dot(a2_t, r_ad_t) ** 2 < e2_t ** 2) != (Fraction(0) < rat_t < Fraction(2)):
-            raise RuntimeError("Random phase-boundary iff failed!")
+        check_phase_boundary_iff(dot(a2_t, r_ad_t), e2_t, rat_t)
         phase_iff_exact += 1
+
+    # 4. Generic (not Householder-orthonormal) Phi, Psi on Q^5, same seed stream
+    #    after the Householder block. Class is sampled: one seed, random draws.
+    generic_pyth = 0
+    generic_phase = 0
+    for _ in range(trials):
+        Phi_g = [[Fraction(rng.randint(-3, 3)) for _ in range(2)] for _ in range(5)]
+        Psi_g = [[Fraction(rng.randint(-3, 3)) for _ in range(2)] for _ in range(5)]
+        try:
+            P_g = orth_projector(Phi_g)
+        except ValueError:
+            continue
+        th_g = [Fraction(rng.randint(-4, 4)) for _ in range(2)]
+        be_g = [Fraction(rng.randint(1, 4)), Fraction(rng.randint(-3, 3))]
+        y_g = vec_add(mat_vec(Phi_g, th_g), mat_vec(Psi_g, be_g))
+        r_g = vec_sub(y_g, mat_vec(P_g, y_g))
+        a1_g = [Fraction(rng.randint(-3, 3)) for _ in range(5)]
+        a2_g = [Fraction(rng.randint(-3, 3)) for _ in range(5)]
+        p1_g = mat_vec(P_g, a1_g)
+        e1_g = dot(a1_g, r_g)
+        e2_g = dot(a2_g, r_g)
+        if norm2(p1_g) == 0 or e1_g == 0 or e2_g == 0 or norm2(r_g) == 0:
+            continue
+        r_ad_g = vec_sub(r_g, vec_scale(e1_g / norm2(p1_g), p1_g))
+        check_pythagorean_inflation(r_ad_g, r_g, e1_g, norm2(p1_g))
+        generic_pyth += 1
+        rat_g = (dot(p1_g, a2_g) / norm2(p1_g)) / (e2_g / e1_g)
+        check_phase_boundary_iff(dot(a2_g, r_ad_g), e2_g, rat_g)
+        generic_phase += 1
 
     return {
         "canonical_householder_6d": {
@@ -242,11 +282,21 @@ def run_two_loop_audit() -> Dict[str, Any]:
             "global_ordering_strict": norm2(r_rev_full) < norm2(r_rev_part) < r_star_norm2 < r_adapt_norm2,
         },
         "fresh_anchor_phase_boundary_sweep": sweep,
-        "random_exact_rational_verification": {
+        "random_householder_orthonormal_verification": {
             "seed": 20261120,
+            "class": "sampled",
+            "basis": "Householder orthonormal columns of Phi and Psi",
             "tested_nondegenerate_instances": pythagorean_exact,
-            "pythagorean_exact_matches": pythagorean_exact,
+            "pythagorean_matches": pythagorean_exact,
             "phase_boundary_iff_matches": phase_iff_exact,
+        },
+        "random_generic_phi_verification": {
+            "seed": 20261120,
+            "class": "sampled",
+            "basis": "generic integer Phi and Psi, not constrained to be orthonormal",
+            "tested_nondegenerate_instances": generic_pyth,
+            "pythagorean_matches": generic_pyth,
+            "phase_boundary_iff_matches": generic_phase,
         },
     }
 
@@ -274,10 +324,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 f"adapt^2={row['err_sq_anchor_adapt']:>5s} | part_rev^2={row['err_sq_partial_spec_rev']:>6s} | "
                 f"full_rev^2={row['err_sq_full_spec_rev']:>2s} | Falsifier#6={row['falsifier6_fires']}"
             )
-        r = rep["random_exact_rational_verification"]
+        r = rep["random_householder_orthonormal_verification"]
+        g = rep["random_generic_phi_verification"]
         print(
-            f"3. Random exact Q^5 Householder verification: {r['pythagorean_exact_matches']}/{r['tested_nondegenerate_instances']} "
-            f"Pythagorean & {r['phase_boundary_iff_matches']}/{r['tested_nondegenerate_instances']} phase-boundary iff matches"
+            f"3. Sampled Q^5 Householder (orthonormal Phi, Psi; seed {r['seed']}): "
+            f"{r['pythagorean_matches']}/{r['tested_nondegenerate_instances']} Pythagorean & "
+            f"{r['phase_boundary_iff_matches']}/{r['tested_nondegenerate_instances']} phase-boundary iff matches"
+        )
+        print(
+            f"4. Sampled Q^5 generic Phi, Psi (same seed, not orthonormal): "
+            f"{g['pythagorean_matches']}/{g['tested_nondegenerate_instances']} Pythagorean & "
+            f"{g['phase_boundary_iff_matches']}/{g['tested_nondegenerate_instances']} phase-boundary iff matches"
         )
     return 0
 

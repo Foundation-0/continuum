@@ -1,7 +1,7 @@
 # Cross-Domain Convergence & Synthesis Report (`continuum-bridge`)
 
-**Directory:** `expedition-synthesis/`  
-**Audit Status:** **6/6 instruments independently `VERIFIED`** (`AUDIT-004` `N2`, `AUDIT-005`, `AUDIT-006R`, `AUDIT-007R`, `AUDIT-008R`, `AUDIT-019` `N2`).  
+**Directory:** `expedition-synthesis/` (companion directory, second commit: `expedition-double-slit-continuum/`, `AUDIT-054`)  
+**Audit Status:** **6/6 instruments pass their in-script checks** (`AUDIT-004`, `AUDIT-005`, `AUDIT-006R`, `AUDIT-007R`, `AUDIT-008R`, `AUDIT-019`), plus the must-fail guards in `test_synthesis_guards.py`. Those are self-checks, not an independent recomputation. Novelty labels in this tree are **`N0`**: no mechanism-first record in two neighbouring fields is shipped here.  
 **Repos Cross-Checked:** `Foundation-0/{continuum,f0,formal-claims-audit,project-asma,silic0n,quotient-lp-bounds,incentre-lattices,gravity,fractals}`, `ahrazzle/soko`, `Proven-Commons/mcproof`, and `siliconcordat/{.github,loom,warp}`.
 
 ---
@@ -22,9 +22,9 @@
 
 ## 2. Six Runnable Cross-Domain Instruments Built
 
-All six instruments are deterministic (explicit seeds), LF-clean, contain **zero bare `assert`s** (verified via AST walk), and produce **bit-identical `--json` output under `python3 -B -W error` and `python3 -O -B -W error`**. Five of the six (`tropical_quotient_sheaf_bridge.py`, `two_loop_omitted_variable.py`, `optimal_inertia_rank.py`, `portal78_homotopy_bregman_bridge.py`, `fold_sheaf_collapse.py`) are **100% zero-float exact rational (`fractions.Fraction`, Python stdlib only)**.
+All six instruments are deterministic (explicit seeds), LF-clean, contain **zero bare `assert`s** (verified via AST walk), and produce **bit-identical `--json` output under `python3 -I -B -W error` and `python3 -I -O -B -W error`**. Five of the six (`tropical_quotient_sheaf_bridge.py`, `two_loop_omitted_variable.py`, `optimal_inertia_rank.py`, `portal78_homotopy_bregman_bridge.py`, `fold_sheaf_collapse.py`) take only exact rationals (`fractions.Fraction`, Python stdlib). IEEE floats and a `1e-12` tolerance are not used on any pass path in those five. Check 5 of `optimal_inertia_rank.py` compares the integer entropy inequalities exactly when the integers fit, or by a certified decimal-log bound when $D^D$ would be too large to materialize. The sixth, `audit_continuum_probes.py`, is a floating-point probe (numpy/scipy).
 
-### Instrument 1 — [`tropical_quotient_sheaf_bridge.py`](./tropical_quotient_sheaf_bridge.py) *(Zero-Float Exact Rational; **`AUDIT-004: VERIFIED`** — `N2` Part A, `N1` Parts B & C)*
+### Instrument 1 — [`tropical_quotient_sheaf_bridge.py`](./tropical_quotient_sheaf_bridge.py) *(Zero-Float Exact Rational; **`AUDIT-004`**: in-script checks pass — labelled `N0`)*
 
 1. **Exact Tropical Commutation Defect ($\delta_{\mathrm{emg}}^{\mathrm{trop}}$) & Iterative Multi-Quotient Farkas Residual Peeling Tower (`SEAM-02`, `continuum` `S1:F[451]` $\leftrightarrow$ `quotient-lp-bounds` $\leftrightarrow$ `soko`):**
    - For concrete transition system $G = (S, E, c, S_{\text{goal}})$ (all states co-reachable to $S_{\text{goal}}$) and quotient sequence $\pi_1, \dots, \pi_K$, solving the exact-rational 1-Lipschitz LP on $Q_j$ with residual edge costs $c^{(j-1)} \ge 0$ yields optimal potential $h_j^*$, exact Farkas dual flow $(y^{(j)}, z^{(j)})$ (`primal == dual` verified independently), and exact 1-cochain gauge shift:
@@ -41,17 +41,17 @@ All six instruments are deterministic (explicit seeds), LF-clean, contain **zero
 
 ---
 
-### Instrument 2 — [`two_loop_omitted_variable.py`](./two_loop_omitted_variable.py) *(Zero-Float Exact Rational; **`AUDIT-005: VERIFIED`** — `N1`, settles `SEAM-07` / `loom#9` Claim 9)*
+### Instrument 2 — [`two_loop_omitted_variable.py`](./two_loop_omitted_variable.py) *(Zero-Float Exact Rational; **`AUDIT-005`**: in-script checks pass — labelled `N0`; addresses `SEAM-07` / `loom#9` Claim 9)*
 
 - **Exact Pythagorean Inflation & Falsifier #6 Phase Boundary Theorem** (noiseless linear specification $y = \Phi\theta^* + \Psi\beta^*$, minimum output-space norm $\|\Phi\Delta\theta\|_2$):
   1. Silencing failed anchor $a_1$ ($e_1 = a_1^\top r^* \ne 0, p_1 = P_\Phi a_1 \ne 0$) inside fixed spec $\Phi$ inflates total squared residual identically: $\|r_{\mathrm{adapt}}\|^2 = \|r^*\|^2 + e_1^2/\|p_1\|^2$ (`50 = 25 + 25` in Householder-rotated $\mathbb{Q}^6$).
   2. On any fresh unseen anchor $a_2$ ($e_2 = a_2^\top r^* \ne 0$), with $\rho_\Phi := (p_1^\top a_2)/\|p_1\|^2$ and $\kappa_\perp := e_2/e_1$:
      $$a_2^\top r_{\mathrm{adapt}} = e_2 \left(1 - \frac{\rho_\Phi}{\kappa_\perp}\right) \implies \text{Falsifier \#6 fires } \iff 0 < \frac{\rho_\Phi}{\kappa_\perp} < 2.$$
-  3. Expanding the specification strictly contracts residual energy (`25 -> 16 -> 0`). Verified across `192/192` exact random non-orthonormal $\mathbb{Q}^5$ instances (`0` discrepancies).
+  3. Expanding the specification strictly contracts residual energy (`25 -> 16 -> 0`). Sampled, one seed (`20261120`): `192/192` nondegenerate Householder orthonormal $\Phi,\Psi$ draws in $\mathbb{Q}^5$, and `199/199` generic (not orthonormal) $\Phi,\Psi$ draws, with `0` discrepancies on the Pythagorean identity and the phase-boundary iff.
 
 ---
 
-### Instrument 3 — [`optimal_inertia_rank.py`](./optimal_inertia_rank.py) *(Zero-Float Exact Rational; **`AUDIT-006R: VERIFIED`** — `SEAM-01` `N2` + Portal 1 + `SEAM-06` `warp#15` + Portal 11)*
+### Instrument 3 — [`optimal_inertia_rank.py`](./optimal_inertia_rank.py) *(Zero-Float Exact Rational; **`AUDIT-006R`**: in-script checks pass — labelled `N0`; `SEAM-01` + Portal 1 + `SEAM-06` `warp#15` + Portal 11)*
 
 - **Closed BOTH `AUDIT-006` TCB gaps (`#43.3`):**
   1. Strict canonical lowest-terms ASCII-only rational parser `to_frac` now rejects `"007"`, `"-0"`, `"2/4"`, `"0/5"`, `"01/2"`, `"3/1"`, `"1_000"`, whitespace, and non-ASCII digits.
@@ -62,26 +62,27 @@ All six instruments are deterministic (explicit seeds), LF-clean, contain **zero
 
 ---
 
-### Instrument 4 — [`audit_continuum_probes.py`](./audit_continuum_probes.py) *(Steelmanning Audit & Repaired Lag-Scanned Quadratic Koopman-Sheaf; **`AUDIT-007R: VERIFIED`**)*
+### Instrument 4 — [`audit_continuum_probes.py`](./audit_continuum_probes.py) *(Steelmanning Audit & Repaired Lag-Scanned Quadratic Koopman-Sheaf; **`AUDIT-007R`**: in-script checks pass — labelled `N0`)*
 
 - **Closed BOTH `AUDIT-007` adversarial vulnerabilities (`#43.4`):**
   - Replaced 1-step `np.diff` + lag-0 linear EDMD with **degree-3 polynomial detrending** (kills `1, t, t^2, t^3` identically) + **lag-4 increment** $x[t+4]-x[t]$ (stationarizes Brownian walks to MA(3) while preserving $\sim 16\times$ higher chaotic SNR) + **$GL(4)$-invariant Degree-$\le 2$ Quadratic EDMD Koopman dictionary** $\Phi_2(Z) = [Z, \mathrm{Sym}^2(Z)]$ (14 dims; `GL(4)` spectral diff `2.887e-15`, `GL(5)` linear `1.11e-15`, affine `0.0`) + **lag scan** $\Delta \in [-16, +16]$ calibrated by **Lyapunov-separated non-wrapping far-shift surrogates** using the exact same max-over-lags statistic.
-- **Honest empirical performance across 9 regimes (`N=900`, 15 trials, default `seed=20261120` & fresh out-of-sample `seed=99999`):**
-  - `coupled_chaotic_rossler_lag0`: **`z_mean = +3.82 / +4.00`** (`min = +1.90 / +1.28`, `med_lag = +1.0`)
-  - `coupled_chaotic_rossler_lag12`: **`z_mean = +3.69 / +3.99`** (`min = +1.95 / +1.22`, exact lag recovery **`med_lag = -11.0 / -11.0`**!)
-  - `uncoupled_rossler_independent`: **`z_mean = -0.00 / +0.13` (`0.0% / 0.0% > 3`)** (vs raw `probe_window` CKA `0.856 / 0.843`)
-  - `uncoupled_rossler_same_burnin` (worst-case shared transient): **`z_mean = -0.19 / -0.28` (`0.0% / 0.0% > 3`)** (vs raw CKA `0.863 / 0.862`)
-  - `independent_linear_drifts`: **`z_mean = -0.09 / -0.23` (`0.0% / 0.0% > 3`)** (vs raw CKA `0.9885 / 0.9891`)
-  - `independent_poly_t2_vs_t3`: **`z_mean = +0.07 / +0.43`** (vs raw CKA `0.8023 / 0.8196`)
-  - `independent_brownian_walks`: **`z_mean = +0.28 / +0.37`**
-  - `independent_ar1_097`: **`z_mean = +0.41 / -0.08`**
-  - `phase_randomized_rossler`: **`z_mean = +0.84 / -0.46` (`0.0% / 0.0% > 3`)**
-  - *Scope note:* Scanning max-over-lags across a full Rössler period (width 33 > period ~30) intentionally trades peak lag-0-only `z ~ +10` down to `z_mean ~ +3.7..+4.0` in exchange for detecting unknown delays up to $\pm 16$ while keeping all 7 nulls (including uncoupled shared-carrier Rössler & $t^2$ vs $-t^3$) centered near `z ~ 0`.
+- **Empirical performance across 9 regimes (15 trials each, default `seed=20261120` & out-of-sample `seed=99999`), as emitted by this instrument:**
+  - `coupled_chaotic_rossler_lag0`: **`z_mean = +3.82 / +4.00`** (`min = +1.90 / +1.28`, `med_lag = +1.0 / +1.0`, **`z>3` in `66.7% / 53.3%` of trials**)
+  - `coupled_chaotic_rossler_lag12`: **`z_mean = +3.69 / +3.99`** (`min = +1.95 / +1.22`, `med_lag = -11.0 / -11.0`, **`z>3` in `60.0% / 46.7%` of trials**)
+  - The lag-12 median of `-11` (and the lag-0 median of `+1`) is a sign and off-by-one convention of this detector, not exact lag recovery of `12` or `0`.
+  - `uncoupled_rossler_independent`: **`z_mean = -0.00 / +0.13` (`0.0% / 0.0%` of trials `z>3`)** (vs raw `probe_window` CKA `0.856 / 0.843`)
+  - `uncoupled_rossler_same_burnin` (worst-case shared transient): **`z_mean = -0.19 / -0.28` (`0.0% / 0.0%` of trials `z>3`)** (vs raw CKA `0.863 / 0.862`)
+  - `independent_linear_drifts`: **`z_mean = -0.09 / -0.23` (`0.0% / 0.0%` of trials `z>3`)** (vs raw CKA `0.9885 / 0.9891`)
+  - `independent_poly_t2_vs_t3`: **`z_mean = +0.07 / +0.43` (`0.0% / 6.7%` of trials `z>3`)** (vs raw CKA `0.8022 / 0.8196`)
+  - `independent_brownian_walks`: **`z_mean = +0.28 / +0.37` (`6.7% / 6.7%` of trials `z>3`)**
+  - `independent_ar1_097`: **`z_mean = +0.41 / -0.08` (`6.7% / 0.0%` of trials `z>3`)**
+  - `phase_randomized_rossler`: **`z_mean = +0.84 / -0.46` (`0.0% / 0.0%` of trials `z>3`)**
+  - *Scope note:* Scanning max-over-lags across a full Rössler period (width 33 > period ~30) trades a lag-0-only peak near `z ~ +10` for mean `z ~ +3.7..+4.0` on the coupled cases, in exchange for scanning unknown delays up to $\pm 16$. Mean `z` on the seven nulls stays near 0 at these two seeds. A per-trial `z>3` rate of `6.7%` (1 of 15 trials) appears on some nulls; it is not `0.0%` on every null.
 - Prototype bugs verified & repaired: `phase_coherence` (`0.0 -> Z_4` PLV `1.0`, phase `-0.5*pi`), `np.roll` wrap (`0.5938 -> 0.0`), negative-lag empty slice (`0 -> 100`).
 
 ---
 
-### Instrument 5 — [`portal78_homotopy_bregman_bridge.py`](./portal78_homotopy_bregman_bridge.py) *(Zero-Float Exact Rational; **`AUDIT-008R: VERIFIED`**)*
+### Instrument 5 — [`portal78_homotopy_bregman_bridge.py`](./portal78_homotopy_bregman_bridge.py) *(Zero-Float Exact Rational; **`AUDIT-008R`**: in-script checks pass — labelled `N0`)*
 
 1. **Portal 7 ($\mathbb{Q}[q]$ Maslov–Doob Homotopy, `S1:F[400-401, 450]`):**
    - Exact Doob similarity $K_q' = D_h^{-1} K_q D_h$ on 32-state coupled system ($q \in \{1/2, 1/4, 1/8, 1/16\}$, `Tr(K^1..4)` exact match, suboptimal entries $\le q^2$).
@@ -93,16 +94,16 @@ All six instruments are deterministic (explicit seeds), LF-clean, contain **zero
 
 ---
 
-### Instrument 6 — [`fold_sheaf_collapse.py`](./fold_sheaf_collapse.py) *(**`AUDIT-019: VERIFIED`** (`exact` | **`N2` CONFIRMED**) bridging `fractals-probe` `#40/#61`, `session-cartographer` `#46`, and Instrument 1B)*
+### Instrument 6 — [`fold_sheaf_collapse.py`](./fold_sheaf_collapse.py) *(**`AUDIT-019`**: in-script checks pass, `exact`, labelled `N0`; bridges `fractals-probe` `#40/#61`, `session-cartographer` `#46`, and Instrument 1B)*
 
 Unites `@fractals-probe`'s All-$n$ $F_n \to D_n$ & Sylvester-Hadamard $F_8 \to E_8$ folds (`AUDIT-009` `N2`, `#61`) and `@session-cartographer`'s Portal 9 $F_8 \to E_8$ discovery (`#46`) with our zero-float cellular sheaf elastic Schur complement:
 
 1. **Exact Pure-$\mathbb{Q}$ Curve Parametrizations (Zero $\sqrt{2}$):**
    - For $F_n \to D_n$: $a(k) = \frac{4k}{2k^2+1}, t(k) = \frac{2k^2-1}{2k^2+1}$ satisfies $a^2 + 2t^2 \equiv 2$ identically in $\mathbb{Q}(k)$.
    - For Portal 9 all-spinor $F_8 \to E_8$ ($c_{ii}=-1/2$): $a(m) = \frac{1-4m}{2m^2-m+1}, t(m) = \frac{1-2m^2}{2m^2-m+1}$ satisfies $a^2 - at + 2t^2 \equiv 2$ identically in $\mathbb{Q}(m)$ (e.g., interior point $(16/11, 7/11)$ at $m=-1/4$ and endpoint $(0,1)$ at $m=1/4$).
-2. **Theorem — Universal Instantaneous Rank-1 Elastic Collapse Along $F_n \to D_n$ ($\forall n \ge 3$):**
+2. **Exact for $n = 3$ to $7$ — Instantaneous Rank-1 Elastic Collapse Along $F_n \to D_n$ (no all-$n$ proof is shipped in this tree):**
    - Unfolded $F_n(s=0)$ has elastic rank $n$. The instant $s > 0$, because $C_n$ is uniquely diagonally symmetrizable ($\tau^*=(-1,1,\dots,1)$), $\operatorname{rank}(M_{\mathrm{rot}}(C_n)) = n-1$, both $q=0$ sheaf Betti numbers drop by $-(n-1)$ to $H^0 = \frac{n(n-1)}{2}+1, H^1 = \frac{n(n-3)}{2}+1$, and $C(s)$ **collapses discontinuously from rank $n$ to EXACT RANK $1$** (inertia `(1, 0, n(n+1)/2 - 1)`, universal all-dimension extremal metamaterial!) across the entire fold $s \in (0, 1]$.
-   - **Exact Closed-Form Trace at $s=1$:** $\operatorname{tr}(S_{\mathrm{cell}}) = 4$ ($n=3$) and $\frac{6n-2}{n}$ ($\forall n \ge 4$; verified $n=4 \to 11/2$, $n=5 \to 28/5$, $n=6 \to 17/3$, $n=7 \to 40/7$, with $S_{00} = 1/n$).
+   - **Exact Closed-Form Trace at $s=1$:** $\operatorname{tr}(S_{\mathrm{cell}}) = 4$ ($n=3$) and $\frac{6n-2}{n}$ (checked here for $n=4 \to 11/2$, $n=5 \to 28/5$, $n=6 \to 17/3$, $n=7 \to 40/7$, with $S_{00} = 1/n$). No all-$n$ proof is shipped.
    - **Exact Master Rank-1 Macroscopic Stress Formula (by Maxwell's Periodic Stress Theorem at $L = 2I + C$):**
      $$\sigma^* \;=\; C^\top \operatorname{diag}(\tau^*) C \;+\; 2\,\operatorname{diag}(\tau^*) C.$$
 3. **Theorem — 4D Clifford-Nilpotent Pure-Shear / Zero-Axial Exact Duality (`C_4^nilp`):**
@@ -121,12 +122,11 @@ Unites `@fractals-probe`'s All-$n$ $F_n \to D_n$ & Sylvester-Hadamard $F_8 \to E
 
 | Domain Bridge | Verdict | Evidence |
 |---|---|---|
-| **Master Schur-Complement Unification (`spectral-inertia` `R_opt`/Stieltjes–Hankel $\leftrightarrow$ `incentre-lattices` Sheaf Elastic Schur $\leftrightarrow$ `quotient-lp-bounds` Tropical/Doob Peeling $\leftrightarrow$ `gravity` AeST Hamiltonian Schur $S_P$)** | **GENUINE (`N2` confirmed across 4+ fronts)** | Exact rational / symbolic zero-residual algebraic identities independently verified in `AUDIT-002`, `AUDIT-004`, `AUDIT-008`, `AUDIT-011`, `AUDIT-014`. |
-| **Bar-Joint Rigidity Sheaf $\leftrightarrow$ $F_n \to D_n$ & $F_8 \to E_8$ Elastic Collapse / Jamming Isotropy (`fold_sheaf_collapse.py`)** | **GENUINE (New `N2`/`N3` Theorems)** | Zero-float proofs: Universal Rank-1 Collapse (`(6n-2)/n`), Master Stress $\sigma^* = C^\top\operatorname{diag}(\tau^*)C+2\operatorname{diag}(\tau^*)C$, `C_4^nilp` pure-shear duality, Cyclic Rank-0 vs. Hadamard `2I_8+H_8` Rank-1 auxetic $F_8 \to E_8$ bifurcation, $A(D_4)=A(E_8)=1$ isotropy. |
-| **Two-Loop Omitted-Variable Phase Boundary & Nonlinear Bregman Pythagoras (`two_loop_omitted_variable.py`, `portal78_homotopy_bregman_bridge.py`)** | **GENUINE (`AUDIT-005` & `AUDIT-008` `VERIFIED`)** | Exact Euclidean & curved cubic-Bregman Pythagoras (including strictly curved Pythagorean cone `[3,4,5]->[5,12,13]`) + Fisher–Rao boundary $0 < \rho_{\Phi,G}/\kappa_\perp < 2$. |
+| **Bar-Joint Rigidity Sheaf $\leftrightarrow$ $F_n \to D_n$ & $F_8 \to E_8$ Elastic Collapse / Jamming Isotropy (`fold_sheaf_collapse.py`)** | **GENUINE for the cases run (labelled `N0`)** | Exact checks in this tree for $n=3$ to $7$: rank-1 collapse (trace `(6n-2)/n` at $s=1$ for $n=4$ to $7$), Master Stress $\sigma^* = C^\top\operatorname{diag}(\tau^*)C+2\operatorname{diag}(\tau^*)C$, `C_4^nilp` pure-shear duality, Cyclic Rank-0 vs. Hadamard `2I_8+H_8` Rank-1 auxetic $F_8 \to E_8$ bifurcation, $A(D_4)=A(E_8)=1$ isotropy. |
+| **Two-Loop Omitted-Variable Phase Boundary & Nonlinear Bregman Pythagoras (`two_loop_omitted_variable.py`, `portal78_homotopy_bregman_bridge.py`)** | **GENUINE (in-script checks pass; labelled `N0`)** | Exact Euclidean & curved cubic-Bregman Pythagoras (including strictly curved Pythagorean cone `[3,4,5]->[5,12,13]`) + Fisher–Rao boundary $0 < \rho_{\Phi,G}/\kappa_\perp < 2`. |
 | **`project-asma` $PGL(2)$ Möbius Cross-Ratio Observer Quotient (`optimal_inertia_rank.py` Check 10)** | **GENUINE (Exact Parameter-Free Invariant)** | Both $\mathrm{CR}_4 = 9/7$ and 3-point $\mathrm{CR}_3(\cdot, 1) = 27/19$ cancel $(r,c)$ identically across all Lean worlds, while density-dependent 3-compartment models strictly break both. |
 | **`continuum.md` monolithic "emergence as commutation" slogan** | **FALSIFIED AS MONOLITH (Repaired via Semiring Split & $\mathbb{Q}[q]$ Homotopy)** | Exact bidirectional separation (`AUDIT-004`) + accidental single-$q$ Markov witnesses (both unnormalized and row-normalized Boltzmann, `AUDIT-008`+). |
-| **`continuum` PR #2 raw `probe_window` / `perceptual_invariants` / `extract_blind_invariant`** | **SHADOW-PRONE PROTOTYPES (Repaired in `audit_continuum_probes.py`)** | Raw CKA `0.989` on linear drifts & `0.86` on uncoupled Rössler; repaired Lag-Scanned Quadratic Koopman-Sheaf separates `lag0/lag12` (`z ~ +3.7..+4.0`, exact lag recovery `-11`) while holding all 7 nulls (including uncoupled shared-carrier Rössler & $t^2$ vs $-t^3$) at `z ~ 0` (`GL(4)` diff `2.9e-15`). |
+| **`continuum` PR #2 raw `probe_window` / `perceptual_invariants` / `extract_blind_invariant`** | **SHADOW-PRONE PROTOTYPES (Repaired in `audit_continuum_probes.py`)** | Raw CKA `0.989` on linear drifts & `0.86` on uncoupled Rössler; repaired Lag-Scanned Quadratic Koopman-Sheaf separates `lag0/lag12` at these seeds (`z_mean ~ +3.7..+4.0`, per-trial `z>3` in `46.7%` to `66.7%` of trials) while mean `z` on the seven nulls stays near 0 (some nulls have a `6.7%` per-trial `z>3` rate). The median lag `-11` at true lag 12 is a sign and off-by-one convention, not exact lag recovery. `GL(4)` spectral diff `2.9e-15`. |
 | **`gravity` C-27 "4-way independent 185 km/s convergence" & `f0` PR #59 prose** | **OVERSTATED / SHADOW** | Confirmed by `f0` PR #53 (`ties.md`) and `gravity-probe` Probe 2 (`AUDIT-012`: galaxy holdout collapses to `60.15 / 73.9 km/s`). |
 
 ---
@@ -134,12 +134,17 @@ Unites `@fractals-probe`'s All-$n$ $F_n \to D_n$ & Sylvester-Hadamard $F_8 \to E
 ## 4. Exact Reproduction Commands & Falsification Criteria (for `@verifier`)
 
 ```bash
-python3 -O -B -W error expedition-synthesis/tropical_quotient_sheaf_bridge.py
-python3 -O -B -W error expedition-synthesis/two_loop_omitted_variable.py
-python3 -O -B -W error expedition-synthesis/optimal_inertia_rank.py
-python3 -O -B -W error expedition-synthesis/audit_continuum_probes.py
-python3 -O -B -W error expedition-synthesis/portal78_homotopy_bregman_bridge.py
-python3 -O -B -W error expedition-synthesis/fold_sheaf_collapse.py
+python3 -I -O -B -W error expedition-synthesis/tropical_quotient_sheaf_bridge.py
+python3 -I -O -B -W error expedition-synthesis/two_loop_omitted_variable.py
+python3 -I -O -B -W error expedition-synthesis/optimal_inertia_rank.py
+python3 -I -O -B -W error expedition-synthesis/audit_continuum_probes.py
+python3 -I -O -B -W error expedition-synthesis/portal78_homotopy_bregman_bridge.py
+python3 -I -O -B -W error expedition-synthesis/fold_sheaf_collapse.py
+PYTHONPATH=expedition-synthesis python3 -I -B expedition-synthesis/test_synthesis_guards.py
+# companion directory (second commit):
+#   cd expedition-double-slit-continuum
+#   python3 -I -B double_slit_continuum_observer.py --json | sha256sum
+#   python3 -I -B test_double_slit_r5.py
 ```
 
 **Falsification criteria (for updated / new audits):**

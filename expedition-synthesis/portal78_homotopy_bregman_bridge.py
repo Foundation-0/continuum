@@ -46,8 +46,8 @@ Session 1 Portals 7 & 8 (#38, S1:F[400-401, 412-415, 450-451]):
        for Falsifier #6 on curved manifolds!
 
 Run:
-  python3 -O -B -W error expedition-synthesis/portal78_homotopy_bregman_bridge.py
-  python3 -O -B -W error expedition-synthesis/portal78_homotopy_bregman_bridge.py --json
+  python3 -I -O -B -W error expedition-synthesis/portal78_homotopy_bregman_bridge.py
+  python3 -I -O -B -W error expedition-synthesis/portal78_homotopy_bregman_bridge.py --json
 """
 from __future__ import annotations
 
@@ -119,7 +119,8 @@ def run_portal7_maslov_doob() -> Dict[str, Any]:
         K_orig = build_cole_hopf_matrix(n_st, edges, q)
         K_red = build_cole_hopf_matrix(n_st, red_edges, q)
         K_doob = doob_similarity_transform(K_orig, H, q)
-        if K_red != K_doob:
+        doob_holds = (K_red == K_doob)
+        if not doob_holds:
             raise RuntimeError(f"Doob h-transform identity failed at q={q}")
 
         # Verify exact spectral/cycle-holonomy preservation: Tr(K_orig^k) == Tr(K_red^k) for k=1..4
@@ -147,7 +148,7 @@ def run_portal7_maslov_doob() -> Dict[str, Any]:
             raise RuntimeError(f"Tropical convergence bound violated at q={q}")
         homotopy_rows.append({
             "q": str(q),
-            "exact_doob_similarity_K_red_eq_Dinv_K_D": True,
+            "exact_doob_similarity_K_red_eq_Dinv_K_D": doob_holds,
             "cycle_traces_k1_to_k4_match": traces_match,
             "tr_K2": tr_list[1],
             "max_suboptimal_entry_in_K_red": str(max_nonopt_entry),
@@ -155,7 +156,7 @@ def run_portal7_maslov_doob() -> Dict[str, Any]:
 
     # --- 1B: Accidental Single-q Lumpability vs All-Beta Multiset Rigidity ---
     # 4-state system: goal 0; fiber {1, 2} (quotient state 1); sink/auxiliary state 3 (quotient state 2).
-    # Wait: even simpler! 3 quotient blocks: goal=0, fiber X={1, 2}, target Y={0, 3} with pi = [0, 1, 1, 0]!
+    # Three quotient blocks: goal=0, fiber X={1, 2}, target Y={0, 3} with pi = [0, 1, 1, 0].
     # Vertex 1 has ONE edge of cost 1 into fiber 0: (1 -> 0, cost 1)  => P_{1 -> 0}(q) = q
     # Vertex 2 has TWO edges of cost 2 into fiber 0: (2 -> 0, cost 2) and (2 -> 3, cost 2) => P_{2 -> 0}(q) = 2 q^2
     # Goal fiber {0, 3}: 0 -> 0 (cost 1), 3 -> 3 (cost 1) (identical cost-1 self-loops!).
@@ -171,10 +172,10 @@ def run_portal7_maslov_doob() -> Dict[str, Any]:
     acc_q_sweep = []
     for q_test in (Fraction(1, 4), Fraction(1, 3), Fraction(1, 2), Fraction(2, 3), Fraction(3, 4)):
         Kq = build_cole_hopf_matrix(4, acc_edges, q_test)
-        # Check exact lumpability defect ||(I - Pi) K_q Pi||_HS^2 (remember Pi projects onto fiber-constant cols;
-        # Wait: standard right-action lumpability is K_q Pi == Pi K_q Pi <=> ||(I - Pi) K_q Pi||_HS^2 == 0!)
-        # Let's check: (K_q Pi)_{u, w} = (1/|Y|) sum_{v in Y} (K_q)_{uv} = (1/|Y|) P_{u -> Y}(q)!
-        # So (I - Pi) K_q Pi == 0 IFF P_{u -> Y}(q) is constant on every fiber u in X!
+        # Lumpability defect ||(I - Pi) K_q Pi||_HS^2. Right-action lumpability is
+        # K_q Pi == Pi K_q Pi iff that defect is 0. (K_q Pi)_{u, w} equals
+        # (1/|Y|) P_{u -> Y}(q), so the defect vanishes iff P_{u -> Y}(q) is
+        # constant on every fiber.
         def_sq = linear_markov_commutation_defect_sq(Kq, acc_pi)
         acc_q_sweep.append({
             "q": str(q_test),
@@ -297,6 +298,23 @@ def cubic_grad_F(q: Vec) -> Vec:
     return [qi * qi for qi in q]
 
 
+def check_bregman_pythagoras(d_left: Fraction, d_mid: Fraction, d_right: Fraction, *, mode: str = "inflation") -> bool:
+    """Return True if the Bregman split holds; raise otherwise.
+
+    inflation: d_left == d_mid + d_right and d_right > 0
+    contraction: d_left == d_mid - d_right and d_right > 0
+    """
+    if mode == "inflation":
+        holds = (d_left == d_mid + d_right) and d_right > 0
+    elif mode == "contraction":
+        holds = (d_left == d_mid - d_right) and d_right > 0
+    else:
+        raise ValueError(f"unknown mode {mode}")
+    if not holds:
+        raise RuntimeError(f"Bregman {mode} identity failed: {d_left}, {d_mid}, {d_right}")
+    return holds
+
+
 def run_portal8_nonlinear_bregman() -> Dict[str, Any]:
     # Construct an EXACT rational curved dual-flat family E_Phi = {q > 0 : q^{odot 2} = Phi theta} in Q_{>0}^4!
     # Basis columns of Phi (4 x 2):
@@ -335,10 +353,7 @@ def run_portal8_nonlinear_bregman() -> Dict[str, Any]:
     d_p_qstar = cubic_bregman_div(p, q_star)
     d_p_qadapt = cubic_bregman_div(p, q_adapt)
     d_qstar_qadapt = cubic_bregman_div(q_star, q_adapt)
-    if d_p_qadapt != d_p_qstar + d_qstar_qadapt or d_qstar_qadapt <= 0:
-        raise RuntimeError(
-            f"Nonlinear Bregman Pythagoras failed: {d_p_qadapt} != {d_p_qstar} + {d_qstar_qadapt}"
-        )
+    inflation_holds = check_bregman_pythagoras(d_p_qadapt, d_p_qstar, d_qstar_qadapt, mode="inflation")
 
     # Curved Specification Expansion: add omitted column psi = [1, -1, 0, 0]^T -> Phi' = [Phi, psi]
     # Now q_rev = [3, 1, 3, 3] lies EXACTLY on the expanded curved manifold E_{Phi'}!
@@ -361,13 +376,13 @@ def run_portal8_nonlinear_bregman() -> Dict[str, Any]:
     # Exact Nonlinear Bregman Contraction: D_F(p || q_rev) == D_F(p || q*) - D_F(q_rev || q*)!
     d_p_qrev = cubic_bregman_div(p, q_rev)
     d_qrev_qstar = cubic_bregman_div(q_rev, q_star)
-    if d_p_qrev != d_p_qstar - d_qrev_qstar or d_qrev_qstar <= 0:
-        raise RuntimeError(
-            f"Nonlinear Bregman contraction failed: {d_p_qrev} != {d_p_qstar} - {d_qrev_qstar}"
-        )
+    contraction_holds = check_bregman_pythagoras(d_p_qrev, d_p_qstar, d_qrev_qstar, mode="contraction")
 
     # Full spec expansion (adding [0, 0, 1, -1]) hits q_full = p with D_F(p || p) == 0!
     d_p_p = cubic_bregman_div(p, p)
+    ordering_holds = (d_p_p < d_p_qrev < d_p_qstar < d_p_qadapt)
+    if not ordering_holds:
+        raise RuntimeError("Nonlinear Bregman global ordering failed!")
 
     # --- 2B: Exact Fisher-Rao Tangent Phase Boundary on Non-Uniform Curvature H_F(q*) = diag(2 q*_i) ---
     # Tangent space of E_Phi at q* is spanned by J = H_F(q*)^{-1} Phi = diag(1/(2 q*_i)) Phi.
@@ -439,20 +454,19 @@ def run_portal8_nonlinear_bregman() -> Dict[str, Any]:
     d_c_star = cubic_bregman_div(p_c, q_star_c)
     d_c_adapt = cubic_bregman_div(p_c, q_adapt_c)
     d_c_between = cubic_bregman_div(q_star_c, q_adapt_c)
-    if d_c_adapt != d_c_star + d_c_between or d_c_between <= 0:
-        raise RuntimeError("Curved cone global Bregman Pythagoras failed!")
+    curved_holds = check_bregman_pythagoras(d_c_adapt, d_c_star, d_c_between, mode="inflation")
 
     return {
         "cubic_bregman_global_pythagoras": {
             "D_F_p_qstar": str(d_p_qstar),
             "D_F_p_qadapt": str(d_p_qadapt),
             "D_F_qstar_qadapt": str(d_qstar_qadapt),
-            "exact_inflation_identity_holds": (d_p_qadapt == d_p_qstar + d_qstar_qadapt),
+            "exact_inflation_identity_holds": inflation_holds,
             "D_F_p_qrev_partial": str(d_p_qrev),
             "D_F_qrev_qstar": str(d_qrev_qstar),
-            "exact_contraction_identity_holds": (d_p_qrev == d_p_qstar - d_qrev_qstar),
+            "exact_contraction_identity_holds": contraction_holds,
             "D_F_p_full_rev": str(d_p_p),
-            "strict_global_ordering": (d_p_p < d_p_qrev < d_p_qstar < d_p_qadapt),
+            "strict_global_ordering": ordering_holds,
         },
         "genuinely_curved_pythagorean_cone_pythagoras": {
             "q_star": [str(x) for x in q_star_c],
@@ -461,7 +475,7 @@ def run_portal8_nonlinear_bregman() -> Dict[str, Any]:
             "D_F_p_qstar": str(d_c_star),
             "D_F_qstar_qadapt": str(d_c_between),
             "D_F_p_qadapt": str(d_c_adapt),
-            "exact_curved_identity_holds": (d_c_adapt == d_c_star + d_c_between),
+            "exact_curved_identity_holds": curved_holds,
         },
         "fisher_rao_curved_tangent_boundary": {
             "nonuniform_hessian_diag": [str(2 * qi) for qi in q_star],

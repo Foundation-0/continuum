@@ -36,8 +36,8 @@ Foundation-0/continuum PR #2 (matching Gemini Session 1):
      and `extract_blind_invariant` (`1795203102878.py`: negative-lag empty slice -> `t0 >= max_lag`).
 
 Run:
-  python3 -O -B -W error expedition-synthesis/audit_continuum_probes.py
-  python3 -O -B -W error expedition-synthesis/audit_continuum_probes.py --json
+  python3 -I -O -B -W error expedition-synthesis/audit_continuum_probes.py
+  python3 -I -O -B -W error expedition-synthesis/audit_continuum_probes.py --json
 """
 from __future__ import annotations
 

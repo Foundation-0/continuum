@@ -4,9 +4,9 @@ Double-Slit & Triple-Slit Continuum-Observer Backaction, Deck-Splitting Quantum 
 Local Classical Farkas No-Go, Sorkin Triple-Slit Looped-Schur vs. Kerr Separation,
 and Parallel-Sum Screening over Pure Q and Q(i).
 
-Tests the user postulate ("the double slit experiment phenomenon occurs as a result of
-observation mechanisms influencing the continuum") across FOUR razor-sharp, coordinate-free,
-zero-float algebraic regimes:
+Tests an informal prompt ("the double slit experiment phenomenon occurs as a result of
+observation mechanisms influencing the continuum") on algebraic toy models (labelled
+graphs and a qubit / Bell pair), not a physical continuum, across four algebraic regimes:
   - Regime I     (Law-2 Steelman): Coupled linear quantum system (+) continuum-observer bath
                  with Schur pinching (⧄), exact pure-Q complementarity V^2 + D^2 <= 1,
                  GKSL 16x16 Liouvillian Schur dephasing rate 2g^2/Gamma, AUDIT-047R Part 3
@@ -38,8 +38,10 @@ STRICT LAW-4 N0 PRIOR-ART QUARANTINE (DS-N0-01..DS-N0-11):
   Jaeger-Shimony-Vaidman (1995), Englert (1996), Kim et al. (2000), Peres-Terno (2004),
   Couder-Fort (2006), Sinha et al. (2010), De Raedt et al. (2012), Sawant et al. (2014),
   Bush (2015), Magana-Loaiza et al. (2016), Rengaraj et al. (2018).
-  Honest Novelty Classification: N1 (coordinate-free zero-float 4-regime operator unification
-  linking AUDIT-018/041/047R/051 to double-slit & Sorkin triple-slit tomography).
+  Novelty label in this tree: N0 (no mechanism-first record in two neighbouring
+  fields is shipped here). The checks are a coordinate-free zero-float 4-regime
+  operator unification linking AUDIT-018/041/047R/051 to algebraic double-slit
+  and Sorkin triple-slit toy models.
 """
 
 from __future__ import annotations
@@ -1117,7 +1119,7 @@ def build_certificate() -> Dict[str, Any]:
     payload: Dict[str, Any] = {
         "probe": "double_slit_continuum_observer",
         "oracle_class": "exact",
-        "honest_novelty_claim": "N1",
+        "honest_novelty_claim": "N0",
         "zero_floats_pure_Q_Qi": True,
         "law4_n0_prior_art_quarantined": [
             "DS-N0-01: Bohr-Einstein (1927), Feynman Lectures Vol. III (1965)",

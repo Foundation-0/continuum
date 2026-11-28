@@ -2,10 +2,11 @@
 """Exact-Rational Universal Rank-1 Extremal Elastic Collapse & 4D Pure-Shear Duality Along F_n -> D_n.
 
 100% zero-float (`fractions.Fraction` only, stdlib only) cross-domain synthesis instrument uniting:
-  - `fractals-probe`'s All-Dimension Continuous Folding Theorem (`F_n -> D_n`, forall n >= 3)
-    and Clifford-nilpotent 4D fold `C_4^nilp` (`probes/fractals/ALL_N_DN_FOLD_PROOF.md`, #40/#42),
-  - `continuum-bridge`'s Cellular Sheaf Cohomology & Zero-Float Elastic Schur Complement
-    (`synthesis/tropical_quotient_sheaf_bridge.py`, `AUDIT-004` VERIFIED), and
+  - `fractals-probe`'s folding construction (`F_n -> D_n`; the source proof is cited
+    as `probes/fractals/ALL_N_DN_FOLD_PROOF.md` in that repo and is not in this tree)
+    and Clifford-nilpotent 4D fold `C_4^nilp` (#40/#42),
+  - this tree's cellular sheaf cohomology and elastic Schur complement
+    (`expedition-synthesis/tropical_quotient_sheaf_bridge.py`), and
   - Exact Rational Congruence Inertia Certification (`synthesis/optimal_inertia_rank.py`).
 
 Main New Mathematical Discoveries (100% Zero-Float Exact Rational Proofs & Certificates):
@@ -15,7 +16,7 @@ Main New Mathematical Discoveries (100% Zero-Float Exact Rational Proofs & Certi
      satisfies a(k)^2 + 2 t(k)^2 == 2 identically in Q(k), yielding exact rational bar vectors
      b_i(k) = a(k) e_i + t(k) (C_n)_i (|b_i|^2 == 2) along the ENTIRE continuous folding curve!
 
-  2. Theorem (Universal Instantaneous Rank-1 Elastic Collapse Along F_n -> D_n, forall n >= 3):
+  2. Check (Rank-1 Elastic Collapse Along F_n -> D_n, exact here for n = 3 to 7):
      At s = 0 (unfolded F_n): dim H^0(F_0) = n(n+1)/2, dim H^1(F_0) = n(n-1)/2, and the
      macroscopic elastic stiffness tensor C(0) has RANK n (inertia (n, 0, n(n-1)/2), zero shear).
      THE INSTANT s > 0 (t > 0, across the ENTIRE open-to-closed fold s in (0, 1]):
@@ -29,7 +30,8 @@ Main New Mathematical Discoveries (100% Zero-Float Exact Rational Proofs & Certi
            pure intra-cell stresses;
          - Therefore, C(s) COLLAPSES DISCONTINUOUSLY FROM RANK n TO RANK 1 AT s = 0+
            (inertia (1, 0, n(n+1)/2 - 1) — a universal all-dimension rank-1 extremal /
-           pentamode-class metamaterial!) for EVERY s in (0, 1] and EVERY n >= 3!
+           pentamode-class metamaterial!) at every checked s in (0, 1] and every n
+           actually run in this file (n = 3 to 7). No proof for all n is shipped.
      Exact Closed-Form Rank-1 Stiffness Trace at s = 1 (L_n(1) = 2 I_n + C_n, vol = 4n):
        - For C_3 (n = 3): tr(S_cell) = 4,           tr(C_el) = 1/3.
        - For C_n (n >= 4): tr(S_cell) = (6n - 2)/n, tr(C_el) = (3n - 1)/(2 n^2)
@@ -70,8 +72,8 @@ Main New Mathematical Discoveries (100% Zero-Float Exact Rational Proofs & Certi
            (C11 = 9, C12 = C44_voigt = 3, A(E_8) = 1), contrasting with D_8's A(D_8) = 1/3!
 
 Run:
-  python3 -O -B -W error expedition-synthesis/fold_sheaf_collapse.py
-  python3 -O -B -W error expedition-synthesis/fold_sheaf_collapse.py --json
+  python3 -I -O -B -W error expedition-synthesis/fold_sheaf_collapse.py
+  python3 -I -O -B -W error expedition-synthesis/fold_sheaf_collapse.py --json
 """
 from __future__ import annotations
 
@@ -99,7 +101,7 @@ Mat = List[List[Fraction]]
 
 
 def make_twisted_cycle_Cn(n: int) -> List[List[int]]:
-    """fractals-probe's universal twisted n-cycle fold generator C_n (n >= 3)."""
+    """Twisted n-cycle fold generator C_n, used here for n = 3 to 7."""
     if n < 3:
         raise ValueError("REQUIRE_N_GE_3")
     C = [[0] * n for _ in range(n)]

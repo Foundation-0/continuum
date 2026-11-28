@@ -36,8 +36,8 @@ Main New Mathematical Result (Jointly Scale-and-Weight Optimal Trace-Inertia Ran
     for all rational lam > 0, whereas R_G collapses under rescaling.
 
 Run:
-  python3 -O -B expedition-synthesis/optimal_inertia_rank.py
-  python3 -O -B expedition-synthesis/optimal_inertia_rank.py --json
+  python3 -I -O -B expedition-synthesis/optimal_inertia_rank.py
+  python3 -I -O -B expedition-synthesis/optimal_inertia_rank.py --json
 """
 from __future__ import annotations
 
@@ -425,6 +425,137 @@ def verify_general_congruence_inertia(
 # 3. Jointly Scale-and-Weight Optimal Trace-Inertia Rank Bound (R_opt)
 # ---------------------------------------------------------------------------
 
+def _lcm(a: int, b: int) -> int:
+    return a // math.gcd(a, b) * b
+
+
+_EXACT_POW_BIT_BUDGET = 80_000
+
+
+def _pow_prod_bit_estimate(factors: Sequence[Tuple[int, int]]) -> int:
+    total = 0
+    for base, exp in factors:
+        if base <= 1 or exp <= 0:
+            continue
+        total += exp * max(base.bit_length(), 1)
+    return total
+
+
+def _pow_prod_exact(factors: Sequence[Tuple[int, int]]) -> int:
+    acc = 1
+    for base, exp in factors:
+        if exp < 0:
+            raise ValueError("negative exponent")
+        if exp == 0 or base == 1:
+            continue
+        if base <= 0:
+            raise ValueError("non-positive base")
+        acc *= pow(base, exp)
+    return acc
+
+
+def _ln_bounds(n: int, prec: int) -> Tuple["Decimal", "Decimal"]:
+    """Directed bounds on ln(n), padded by one ulp."""
+    from decimal import Decimal, localcontext, ROUND_FLOOR, ROUND_CEILING
+    if n < 1:
+        raise ValueError("ln of non-positive")
+    if n == 1:
+        z = Decimal(0)
+        return z, z
+    with localcontext() as ctx:
+        ctx.prec = prec
+        ctx.rounding = ROUND_FLOOR
+        lo = Decimal(n).ln()
+        ctx.rounding = ROUND_CEILING
+        hi = Decimal(n).ln()
+    return lo.next_minus(), hi.next_plus()
+
+
+def _pow_prod_cmp(left: Sequence[Tuple[int, int]], right: Sequence[Tuple[int, int]]) -> int:
+    """Compare prod a^e on the left to prod b^f on the right.
+
+    Returns 1, 0, or -1. Uses exact integer powers when the values fit a
+    bit budget; otherwise a certified decimal-log comparison. Equality of
+    large values is confirmed by raising precision, then (if still tied)
+    by falling back to exact powers only when the bit estimate allows it.
+    """
+    from decimal import Decimal, localcontext
+    left = [(int(b), int(e)) for b, e in left if e != 0]
+    right = [(int(b), int(e)) for b, e in right if e != 0]
+    bits = _pow_prod_bit_estimate(left) + _pow_prod_bit_estimate(right)
+    if bits <= _EXACT_POW_BIT_BUDGET:
+        lv = _pow_prod_exact(left)
+        rv = _pow_prod_exact(right)
+        return (lv > rv) - (lv < rv)
+
+    prec = 80
+    while prec <= 4096:
+        left_lo = left_hi = Decimal(0)
+        right_lo = right_hi = Decimal(0)
+        with localcontext() as ctx:
+            ctx.prec = prec
+            for base, exp in left:
+                lo, hi = _ln_bounds(base, prec)
+                left_lo += Decimal(exp) * lo
+                left_hi += Decimal(exp) * hi
+            for base, exp in right:
+                lo, hi = _ln_bounds(base, prec)
+                right_lo += Decimal(exp) * lo
+                right_hi += Decimal(exp) * hi
+        if left_lo >= right_hi:
+            return 1
+        if left_hi <= right_lo:
+            # equal only if both intervals collapse to the same point;
+            # padding means a genuine equality stays overlapped.
+            if left_hi < right_lo:
+                return -1
+        prec *= 2
+    raise RuntimeError(
+        f"entropy integer comparison inconclusive at prec={prec // 2} "
+        f"(bit estimate {bits}); values may be equal or extremely close"
+    )
+
+
+def entropy_hierarchy_holds(eigs: Sequence[Fraction]) -> bool:
+    """Return whether rank >= exp(H_1) >= R_2, compared in exact integers.
+
+    For probabilities p_i = n_i/D this is r^D * prod n_i^{n_i} >= D^D
+    and prod n_i^{n_i} * D^D <= (sum n_i^2)^D. The integers themselves are
+    compared exactly when they fit a bit budget, or by a certified
+    decimal-log bound when D^D would be too large to materialize. No
+    IEEE float and no 1e-12 tolerance on the pass path.
+    """
+    pos = [e for e in eigs if e > 0]
+    if not pos:
+        return False
+    tot = sum(pos, Fraction(0))
+    probs = [e / tot for e in pos]
+    denom = 1
+    for p in probs:
+        denom = _lcm(denom, p.denominator)
+    nums = [p.numerator * (denom // p.denominator) for p in probs]
+    if sum(nums) != denom:
+        return False
+    rank = len(pos)
+    sum_n2 = sum(n_i * n_i for n_i in nums)
+    # r^D * prod n_i^{n_i} >= D^D
+    low_left = [(rank, denom)] + [(n_i, n_i) for n_i in nums]
+    low_right = [(denom, denom)]
+    if _pow_prod_cmp(low_left, low_right) < 0:
+        return False
+    # (sum n_i^2)^D >= prod n_i^{n_i} * D^D
+    high_left = [(sum_n2, denom)]
+    high_right = [(n_i, n_i) for n_i in nums] + [(denom, denom)]
+    if _pow_prod_cmp(high_left, high_right) < 0:
+        return False
+    return True
+
+
+def check_entropy_hierarchy(eigs: Sequence[Fraction], label: str) -> None:
+    if not entropy_hierarchy_holds(eigs):
+        raise RuntimeError(f"Entropy hierarchy violated on {label}")
+
+
 def r_opt_bound(
     tr_M: Fraction,
     tr_Q_lower: Fraction,
@@ -727,17 +858,12 @@ def run_suite() -> Dict[str, Any]:
         G_sp = [[eigs[i] if i == j else Fraction(0) for j in range(n)] for i in range(n)]
         r_exact = sum(1 for e in eigs if e > 0)
         r2_exact = r_opt_bound(trace(G_sp), Fraction(0), hs_norm_sq(G_sp), 0)["bound"]
-        tot = float(sum(eigs, Fraction(0)))
-        probs = [float(e) / tot for e in eigs if e > 0]
-        r_eff = math.exp(-sum(p * math.log(p) for p in probs))
-        if not (r_exact + 1e-12 >= r_eff >= float(r2_exact) - 1e-12):
-            raise RuntimeError(f"Entropy hierarchy violated on {label}")
+        check_entropy_hierarchy(eigs, label)
         entropy_bridge.append({
             "case": label,
             "exact_rank_exp_H0": r_exact,
-            "shannon_r_eff_exp_H1": round(r_eff, 6),
-            "exact_renyi2_R_opt_b0": round(float(r2_exact), 6),
-            "exact_renyi2_fraction": str(r2_exact),
+            "exact_renyi2_R_opt_b0": str(r2_exact),
+            "entropy_hierarchy_exact": True,
         })
     report["checks"]["session1_session2_entropy_bridge"] = entropy_bridge
 

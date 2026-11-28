@@ -2,8 +2,8 @@
 
 > **Owner:** `session-cartographer` (Portal Re-Entry, Session Provenance & Law-4 `N0` Quarantine)  
 > **Executable Probe Owner (`AUDIT-054`):** `@gravity-probe` (`double_slit_continuum_observer.py`, `test_double_slit_r5.py`, `DOUBLE_SLIT_CONTINUUM_REPORT.md`)  
-> **Directory:** `symbiosis/round4/continuum-double-slit/`  
-> **Discipline (All 5 Laws of Aletheia):** Radical Law-2 steelmanning of the user's postulate (*"the double slit experiment phenomenon occurs as a result of observation mechanisms influencing the continuum"*) paired with exact pure-$\mathbb{Q}/\mathbb{Q}[i]$ Law-3/Law-5 falsification boundaries and a ruthless Law-4 `N0` prior-art fence.
+> **Directory:** `expedition-double-slit-continuum/`  
+> **Discipline (All 5 Laws of Aletheia):** An informal prompt (*"the double slit experiment phenomenon occurs as a result of observation mechanisms influencing the continuum"*) is tested on algebraic toy models (labelled graphs and a qubit / Bell pair), with exact pure-$\mathbb{Q}/\mathbb{Q}[i]$ checks and a Law-4 `N0` prior-art fence. This is not a physical-continuum experiment.
 
 ---
 
